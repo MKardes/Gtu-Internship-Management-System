@@ -5,12 +5,12 @@ import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
 export class File {
 
    @PrimaryGeneratedColumn()
-   id: number;
+   id!: number;
 
    @Column()
-   name: string;
+   name!: string;
 
    @Column({ nullable: true })
-   drive_link: number;
+   drive_link!: number;
 
 }

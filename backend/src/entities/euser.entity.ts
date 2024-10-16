@@ -1,19 +1,19 @@
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
 
-@Entity("user")
+@Entity("euser")
 @Unique(['id', 'mail'])
-export class User {
+export class EUser {
 
    @PrimaryGeneratedColumn("uuid")
-   id: string;
+   id!: string;
 
    @Column()
-   mail: string;
+   mail!: string;
 
    @Column()
-   username: string;
+   username!: string;
 
    @Column()
-   password: string;
+   password!: string;
 
 }
