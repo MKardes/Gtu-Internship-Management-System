@@ -5,21 +5,21 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeo
 export class Student {
 
     @PrimaryGeneratedColumn()
-    id: number;
+    id!: number;
 
     @Column()
-    school_id: string;
+    school_id!: string;
 
     @Column()
-    name: string;
+    name!: string;
 
     @Column()
-    surname: string;
+    surname!: string;
 
     @Column({ nullable: true })
-    turkish_id: string;
+    turkish_id!: string;
 
     @Column()
-    created_at: Date;
+    created_at!: Date;
        
 }

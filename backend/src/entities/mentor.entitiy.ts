@@ -5,18 +5,18 @@ import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
 export class Mentor {
 
    @PrimaryGeneratedColumn()
-   id: number;
+   id!: number;
 
    @Column({ nullable: true })
-   mail: string;
+   mail!: string;
 
    @Column({ nullable: true })
-   name: string;
+   name!: string;
 
    @Column({ nullable: true })
-   surname: string;
+   surname!: string;
 
    @Column({ nullable: true })
-   phone_number: string;
+   phone_number!: string;
 
 }
