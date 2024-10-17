@@ -4,7 +4,7 @@ import { File } from './src/entities/file.entitiy';
 import { Internship } from './src/entities/internship.entitiy';
 import { Mentor } from './src/entities/mentor.entitiy';
 import { Student } from './src/entities/student.entitiy';
-import { EUser } from './src/entities/euser.entity';
+import { User } from './src/entities/user.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres', // or your database type (e.g., 'postgres')
@@ -15,7 +15,7 @@ export const AppDataSource = new DataSource({
   database: 'interndb',
   synchronize: true,
   logging: false,
-  entities: [Company, File, Internship, Mentor, Student, EUser],
+  entities: [Company, File, Internship, Mentor, Student, User],
   migrations: [],
   subscribers: [],
 });
