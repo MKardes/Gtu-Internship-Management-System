@@ -16,6 +16,9 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
+    "mysql2": "^3.11.3",
+    "pg": "^8.13.0",
+    "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.20"
   }
 }

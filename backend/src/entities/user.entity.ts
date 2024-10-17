@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
 
-@Entity("user")
+@Entity("euser")
 @Unique(['id', 'mail'])
 export class User {
 
