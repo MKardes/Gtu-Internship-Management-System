@@ -5,15 +5,15 @@ import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
 export class Company {
 
    @PrimaryGeneratedColumn()
-   id!: number;
+   id: number;
 
    @Column({ nullable: false })
-   name!: string;
+   name: string;
 
    @Column({ nullable: false })
-   address!: string;
+   address: string;
 
    @Column({ nullable: false })
-   created_at!: Date;
+   created_at: Date;
 
 }

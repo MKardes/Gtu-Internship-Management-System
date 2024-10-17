@@ -9,33 +9,33 @@ import { File } from "./file.entitiy";
 export class Internship {
 
     @PrimaryGeneratedColumn()
-    id!: number;
+    id: number;
 
     @Column()
-    type!: string;
+    type: string;
     
     @ManyToOne(() => Company)
     @JoinColumn({ name: "company_id" })
-    company!: Company;
+    company: Company;
 
     @ManyToOne(() => Mentor)
     @JoinColumn({ name: "mentor_id" })
-    mentor!: Mentor;
+    mentor: Mentor;
 
     @OneToOne(() => File)
     @JoinColumn({ name: "file_id" })
-    name!: File;
+    name: File;
 
     @ManyToOne(() => Student, { nullable: false })
     @JoinColumn({ name: "student_id" })
-    student!: Student;
+    student: Student;
 
     @Column({ nullable: true })
-    begin_date!: Date;
+    begin_date: Date;
 
     @Column({ nullable: true })
-    end_date!: Date;
+    end_date: Date;
 
     @Column({ nullable: false })
-    created_at!: Date;
+    created_at: Date;
 }
