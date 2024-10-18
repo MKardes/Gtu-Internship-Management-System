@@ -2,6 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn
 import { Student } from "./student.entitiy";
 import { Company } from "./company.entitiy";
 import { Mentor } from "./mentor.entitiy";
+import { File } from "./file.entitiy";
 
 @Entity("internship")
 @Unique(['id'])
