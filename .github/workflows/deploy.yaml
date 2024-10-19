@@ -25,4 +25,4 @@ jobs:
             cd ${{ env.APP_PATH }}
             git pull
             cd -
-            docker compose up --build -d
+            docker compose up --build -d --force-recreate
