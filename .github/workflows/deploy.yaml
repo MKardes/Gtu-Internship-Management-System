@@ -25,4 +25,4 @@ jobs:
             cd ${{ env.APP_PATH }}
             git pull
             cd -
-            docker compose up --build
+            docker compose up --build -d
