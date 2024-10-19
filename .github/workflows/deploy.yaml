@@ -1,0 +1,28 @@
+name: 'deploy-production'
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Connect to ssh
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          APP_PATH: ${{ secrets.APP_PATH }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd ${{ env.APP_PATH }}
+            git pull
+            cd -
+            docker compose up --build
