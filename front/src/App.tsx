@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import Home from './pages/Home/Home';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
+import ConfirmCode from './pages/ConfirmCode/ConfirmCode';
+import NewPassword from './pages/NewPassword/NewPassword';
 // import ResetPassword from './pages/ResetPassword/ResetPassword';
 import Navigation from './components/Navbar/Navbar';
 
@@ -14,7 +16,8 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          { /* Mailden gelen kod için bir yönlendirme daha yapılacak */}
+          <Route path="/confirm-code" element={<ConfirmCode />} />
+          <Route path="/new-password" element={<NewPassword />} />
           {/* Diğer tüm hrefleri home yönlendir*/}
           <Route path="*" element={<Home />} />
         </Routes>
