@@ -7,7 +7,7 @@ const http_1 = __importDefault(require("http"));
 require("reflect-metadata");
 const ormconfig_1 = require("../ormconfig");
 const hostname = '0.0.0.0';
-const port = 5000;
+const port = 20000;
 ormconfig_1.AppDataSource.initialize()
     .then(() => {
     console.log('Data Source has been initialized!');
