@@ -1,0 +1,84 @@
+/* Genel container stili */
+.super_admin_container {
+    background-color: #f8f9fa; /* Açık gri arka plan rengi */
+    padding: 20px;
+    border-radius: 5px;
+}
+
+th {
+    text-align: center;        /* Yatayda ortalama */
+    vertical-align: middle;    /* Dikeyde ortalama */
+}
+
+.super_admin th {
+    text-align: center; /* Yatayda ortalama */
+    vertical-align: middle; /* Dikeyde ortalama */
+}
+
+.super_admin td {
+    text-align: center;        /* Yatayda ortalama */
+    vertical-align: middle;    /* Dikeyde ortalama */
+}
+
+/* Kart başlığı stili */
+.card-title {
+    font-size: 1.5rem; /* Kart başlığı boyutu */
+    font-weight: bold; /* Kalın yazı */
+    color: #343a40; /* Koyu gri renk */
+}
+
+/* Form grup etiketleri */
+.form-label {
+    font-weight: 500; /* Orta kalınlık */
+}
+
+/* Form kontrolleri */
+.form-control {
+    border: 1px solid #ced4da; /* Açık gri kenar */
+    border-radius: 4px; /* Yuvarlatılmış köşeler */
+}
+
+/* Button'lar */
+.super_admin_btn-success {
+    background-color: #28a745; /* Yeşil buton rengi */
+    border-color: #28a745; /* Yeşil kenar rengi */
+}
+
+.super_admin_btn-danger {
+    background-color: #dc3545; /* Kırmızı buton rengi */
+    border-color: #dc3545; /* Kırmızı kenar rengi */
+}
+
+.super_admin_btn-warning {
+    background-color: #ffc107; /* Sarı buton rengi */
+    border-color: #ffc107; /* Sarı kenar rengi */
+}
+
+/* Tablo stili */
+.table {
+    margin-top: 20px; /* Üstten boşluk */
+    background-color: white; /* Beyaz arka plan */
+}
+
+.table th {
+    background-color: #e9ecef; /* Açık gri arka plan */
+    color: #495057; /* Koyu gri başlık rengi */
+}
+
+/* Pagination */
+.pagination {
+    margin-top: 20px; /* Üstten boşluk */
+}
+
+/* Loading ve hata mesajı stilleri */
+.loading {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #007bff; /* Mavi yükleme rengi */
+}
+
+.error {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #dc3545; /* Kırmızı hata mesajı rengi */
+}
