@@ -17,7 +17,6 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     // const user = await AppDataSource.getRepository(User).findOneBy({ mail });
     const queryBuilder = AppDataSource.getRepository(User).createQueryBuilder("usr");
     const user: User = await queryBuilder.where("usr.mail = :body_mail", {body_mail: mail}).getOne();
-    log(user);
     
     if (!user) {
       res.status(401).json({ message: 'Geçersiz mail veya şifre' });
