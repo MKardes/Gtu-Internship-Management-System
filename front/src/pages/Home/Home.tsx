@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios"
 import "./Home.css";
 import Logo from "../../assets/logo.jpg";
 import ErrorAlert from "../../components/ErrorAlert/ErrorAlert";
@@ -11,6 +12,7 @@ const Home: React.FC = () => {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  console.log("navigate")
 
   useEffect(() => {
     // Eğer token varsa ve token geçerliyse dashboard sayfasına yönlendir
@@ -24,21 +26,23 @@ const Home: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
-    await delay(500);
+    console.log("Gönderilecek veri:", { mail: inputUsername, password: inputPassword });
 
-    // Şimdilik bu şekilde buradan backend'e istek atılacak
-    if (inputUsername !== "admin" || inputPassword !== "admin") {
-      setShow(true);
-    } else {
-      localStorage.setItem("token", "dummy-jwt-token");
+    try {
+      const response = await axios.post("http://localhost:5000/api/auth/login", {
+        mail: inputUsername,
+        password: inputPassword,
+      });
+      const { accessToken } = response.data;
+      localStorage.setItem("token", accessToken);
       navigate("/dashboard");
+    } catch (error) {
+      console.error("Hata:", error);
+      setShow(true);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
-
-  function delay(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
 
   return (
     <div className="sign-in__wrapper">

@@ -12,7 +12,10 @@
     "@types/react-dom": "^18.3.1",
     "@types/react-router-bootstrap": "^0.26.6",
     "axios": "^1.7.7",
+    "bcrypt": "^5.1.1",
     "bootstrap": "^5.3.3",
+    "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
     "mdb-react-ui-kit": "^9.0.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",
@@ -46,5 +49,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.7"
   }
 }

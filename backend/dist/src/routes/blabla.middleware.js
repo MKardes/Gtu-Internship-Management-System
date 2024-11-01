@@ -1,6 +1,7 @@
+"use strict";
 /**
- * 
- * 
+ *
+ *
  * // src/routes/userRoutes.ts
 import express from 'express';
 import * as UserController from '../controllers/userController';
@@ -12,4 +13,5 @@ router.post('/users', UserController.createUser);
 
 export default router;
 
- */
+ */ 
+//# sourceMappingURL=blabla.middleware.js.map
