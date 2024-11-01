@@ -29,7 +29,7 @@ const Home: React.FC = () => {
     console.log("Gönderilecek veri:", { mail: inputUsername, password: inputPassword });
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", {
+      const response = await axios.post("http://localhost:20000/api/auth/login", {
         mail: inputUsername,
         password: inputPassword,
       });
