@@ -1,45 +1,31 @@
-// src/app.ts
 import express from 'express';
+import cors from 'cors';
+import authRoutes from './routes/auth';
+import superAdminRoutes from './routes/superAdminRoutes';
+import { verifyToken } from './middlewares/verifyToken'; // Token doğrulama middleware'i
 import 'reflect-metadata';
 import { AppDataSource } from '../ormconfig';
-import superAdminRoutes from './routes/superAdminRoutes';
-import cors from 'cors';
-
-const app = express();
-const hostname = '0.0.0.0';
-const port = 5000;
-
-const corsOptions = {
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-};
-
-app.use(cors(corsOptions));
-// Middleware
-app.use(express.json());
-app.use(cors())
 
 
 AppDataSource.initialize()
-    .then(() => {
-        console.log('Data Source has been initialized!');
-    })
-    .catch((err: any) => {
-        console.error('Error during Data Source initialization:', err);
-    });
+  .then(() => {
+    console.log('Data Source has been initialized!');
+  })
+  .catch((err: any) => {
+    console.error('Error during Data Source initialization:', err);
+  });
 
+const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
-// Rotaları ekleyin
-app.use('/api', superAdminRoutes); // API rotaları için ön ek
+app.use('/api/auth', authRoutes);
+app.use('/api', superAdminRoutes);
 
-// Ana sayfa isteği
-app.get('/', (req, res) => {
-    res.status(200).send('Hello, TypeScript!');
-});
+const port = 5000;
 
-// Sunucuyu başlat
-app.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
 });
