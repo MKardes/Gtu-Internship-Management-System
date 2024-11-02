@@ -13,7 +13,7 @@
   .sign-in__backdrop {
     position: absolute;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(255, 255, 255, 0.8);
   }
   
   .sign-in__wrapper form {

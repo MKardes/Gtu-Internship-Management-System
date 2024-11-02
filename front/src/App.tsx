@@ -6,8 +6,10 @@ import SuperAdmin from './pages/SuperAdmin/SuperAdmin';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import ConfirmCode from './pages/ConfirmCode/ConfirmCode';
 import NewPassword from './pages/NewPassword/NewPassword';
+//import Login from "./pages/Login/Login";
 // import ResetPassword from './pages/ResetPassword/ResetPassword';
 import Navigation from './components/Navbar/Navbar';
+import Dashboard from './pages/Dashboard/Dashboard';
 
 const App: React.FC = () => {
   return (
@@ -20,6 +22,7 @@ const App: React.FC = () => {
           <Route path="/super-admin" element={<SuperAdmin />} />
           <Route path="/confirm-code" element={<ConfirmCode />} />
           <Route path="/new-password" element={<NewPassword />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           {/* Diğer tüm hrefleri home yönlendir*/}
           <Route path="*" element={<Home />} />
         </Routes>

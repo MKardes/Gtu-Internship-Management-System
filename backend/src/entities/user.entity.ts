@@ -26,9 +26,6 @@ export class User {
    @Column()
    role: Role;
 
-   @Column({ nullable: true })
-   department_id: string; 
-
    @ManyToOne(() => Department)
    @JoinColumn({ name: "department_id" })
    department: Department;
