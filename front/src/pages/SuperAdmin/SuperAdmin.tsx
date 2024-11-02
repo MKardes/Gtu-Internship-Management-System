@@ -12,7 +12,7 @@ const SuperAdminPage: React.FC = () => {
     const [admins, setAdmins] = useState<any[]>([]);
     const [departments, setDepartments] = useState<any[]>([]);
     const [activeAdminPage, setActiveAdminPage] = useState(1);
-    const adminsPerPage = 10;
+    const adminsPerPage = 5;
     const [inputDepartmentName, setInputDepartmentName] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -153,9 +153,9 @@ const SuperAdminPage: React.FC = () => {
                     <Card>
                         <Card.Body>
                             <Card.Title>Yönetici Bilgileri</Card.Title>
-                            <p><strong>Ad Soyad:</strong> Mehmet Yılmaz</p>
-                            <p><strong>Email:</strong> mehmet.yilmaz@company.com</p>
-                            <p><strong>Departman:</strong> Bilgi İşlem</p>
+                            <p><strong>Ad Soyad:</strong> Ömer Faruk Olkay</p>
+                            <p><strong>Email:</strong> omer@omer.com</p>
+                            <p><strong>Departman:</strong> Bilgisayar Mühendisliği</p>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -245,8 +245,8 @@ const SuperAdminPage: React.FC = () => {
 
             <Row className="mt-4">
                 <Col md={4}>
-                    <Card>
-                        <Card.Body>
+                    <Card className='department_card'>
+                    <Card.Body className='department_card_body'>
                             <Card.Title>Departmanlar</Card.Title>
                             <Table striped bordered hover size="sm">
                                 <thead>
@@ -266,7 +266,7 @@ const SuperAdminPage: React.FC = () => {
                                     ))}
                                 </tbody>
                             </Table>
-                            <Pagination>
+                            <Pagination className='super_admin_pagination'>
                                 {[...Array(totalDepartmentPages)].map((_, index) => (
                                     <Pagination.Item
                                         key={index}
@@ -282,8 +282,8 @@ const SuperAdminPage: React.FC = () => {
                 </Col>
 
                 <Col md={8}>
-                    <Card>
-                        <Card.Body>
+                    <Card className='department_card'>
+                        <Card.Body className='department_card_body'>
                             <Card.Title>Departman Yöneticileri</Card.Title>
                             <Table striped bordered hover size="sm">
                                 <thead>

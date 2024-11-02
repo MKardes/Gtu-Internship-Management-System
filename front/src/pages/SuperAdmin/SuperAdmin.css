@@ -2,9 +2,16 @@
 .super_admin_container {
     background-color: #f8f9fa; /* Açık gri arka plan rengi */
     padding: 20px;
+    height: 1000px;
     border-radius: 5px;
 }
 
+.super_admin_card {
+    background-color: #f8f9fa; /* Açık gri arka plan rengi */
+    padding: 20px;
+    height: 400px;
+    border-radius: 5px;
+}
 
 .department_container {
     background-color: #fff9fa;  
@@ -12,7 +19,22 @@
     border-radius: 5px;
 }
 
+.department_card
+{
+    background-color: #f8f9fa; /* Açık gri arka plan rengi */
+    height: 400px;
+    padding: 20px;
+    border-radius: 5px;
+}
 
+
+.department_card_body
+{
+    background-color: #f8f9fa; /* Açık gri arka plan rengi */
+    height: 400px;
+    padding: 20px;
+    border-radius: 5px;
+}
 
 .admin_container
 {
@@ -82,9 +104,13 @@ th {
 }
 
 /* Pagination */
+/* Pagination'ı kartın en altına sabitleme */
 .pagination {
-    margin-top: 20px; /* Üstten boşluk */
+    position: absolute; /* Sabit konumlandırma */
+    bottom: 20px; /* Kartın altından boşluk */
+    text-align: center; /* Ortaya hizalama */
 }
+
 
 /* Loading ve hata mesajı stilleri */
 .loading {
