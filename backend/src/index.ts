@@ -22,7 +22,7 @@ app.use(cors());
 
 app.use('/api/auth', authRoutes);
 
-const port = 20000
+const port = 5000;
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);

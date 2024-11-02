@@ -18,7 +18,6 @@ const Home: React.FC = () => {
     // Eğer token varsa ve token geçerliyse dashboard sayfasına yönlendir
     const token = localStorage.getItem("token");
     if (token) {
-      alert("Boş buradayım");
       navigate("/dashboard");
     }
   }, [navigate]);
@@ -29,7 +28,7 @@ const Home: React.FC = () => {
     console.log("Gönderilecek veri:", { mail: inputUsername, password: inputPassword });
 
     try {
-      const response = await axios.post("http://localhost:20000/api/auth/login", {
+      const response = await axios.post("/api/auth/login", {
         mail: inputUsername,
         password: inputPassword,
       });

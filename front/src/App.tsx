@@ -8,6 +8,7 @@ import NewPassword from './pages/NewPassword/NewPassword';
 //import Login from "./pages/Login/Login";
 // import ResetPassword from './pages/ResetPassword/ResetPassword';
 import Navigation from './components/Navbar/Navbar';
+import Dashboard from './pages/Dashboard/Dashboard';
 
 const App: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const App: React.FC = () => {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/confirm-code" element={<ConfirmCode />} />
           <Route path="/new-password" element={<NewPassword />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           {/* Diğer tüm hrefleri home yönlendir*/}
           <Route path="*" element={<Home />} />
         </Routes>
