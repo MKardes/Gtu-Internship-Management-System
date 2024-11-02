@@ -64,7 +64,6 @@ export class superAdminService {
         }
     }
 
-
     async createDepartmentAdmin(userData: any) {
         try {
             if (!userData.full_name || userData.full_name.length <= 0)
@@ -80,7 +79,7 @@ export class superAdminService {
             newUser.full_name = userData.full_name;
             newUser.mail = userData.mail;
             newUser.password = userData.password;
-            newUser.department_id = userData.department_id;
+            newUser.department = userData.department;
             newUser.role = userData.role;
             newUser.department = await this.findDepartmentById(userData.department_id);
             await userRepository.save(newUser);
@@ -90,10 +89,6 @@ export class superAdminService {
             return { status: 500, data: { message: 'Kullanıcı oluşturulamadı' } }; // Hata durumu
         }
     }
-    
-
-    
-    
 
     async createDepartment(departmentData: any) {
         const departmentRepository = AppDataSource.getRepository(Department);
@@ -111,7 +106,6 @@ export class superAdminService {
         }
     }
 
-
     async deleteDepartment(id: string) {
         const departmentRepository = AppDataSource.getRepository(Department);
         const userRepository = AppDataSource.getRepository(User);
@@ -121,7 +115,9 @@ export class superAdminService {
             if (!department)
                 return { status: 404, data: { message: 'Departman bulunamadı' } };
 
-            const users = await userRepository.findBy({ department_id: id });
+            const users = await userRepository.createQueryBuilder('user')
+                                    .where('user.department_id = :dptId', { dptId: department.id })
+                                    .getMany();
 
             if (users.length > 0)// Departmana ait kullanıcıları sil
                 await userRepository.remove(users);
