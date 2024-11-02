@@ -9,14 +9,14 @@ const router = express.Router();
     -CREATE-DEPARTMENT-ADMIN
     -CREATE-DEPARTMENT
 */
-router.post('/super-admin/create-department-admin', superAdminController.createUser);
+router.post('/super-admin/create-department-admin', superAdminController.createDepartmentAdmin);
 router.post('/super-admin/create-department', superAdminController.createDepartment);
 
 /*          DELETE
     -DELETE-DEPARTMENT-ADMIN
     -DELETE-DEPARTMENT
 */
-router.delete('/super-admin/delete-department-admin/:id', superAdminController.deleteUser);
+router.delete('/super-admin/delete-department-admin/:id', superAdminController.deleteDepartmentAdmin);
 router.delete('/super-admin/delete-department/:id', superAdminController.deleteDepartment);
 
 
@@ -24,7 +24,7 @@ router.delete('/super-admin/delete-department/:id', superAdminController.deleteD
     -GET-DEPARTMENT-ADMIN
     -GET-DEPARTMENT
 */
-router.get('/super-admin/department-admins', superAdminController.getAllUsers);
+router.get('/super-admin/department-admins', superAdminController.getAllDepartmentAdmins);
 //router.get('/super-admin/department-admins/:id', superAdminController.);
 router.get('/super-admin/departments', superAdminController.getAllDepartments);
 router.get('/super-admin/department/:id', superAdminController.getDepartment);

@@ -5,6 +5,22 @@
     border-radius: 5px;
 }
 
+
+.department_container {
+    background-color: #fff9fa;  
+    padding: 20px;
+    border-radius: 5px;
+}
+
+
+
+.admin_container
+{
+    background-color: #f8f9fa; /* Açık gri arka plan rengi */
+    padding: 20px;
+    border-radius: 5px;
+}
+
 th {
     text-align: center;        /* Yatayda ortalama */
     vertical-align: middle;    /* Dikeyde ortalama */
