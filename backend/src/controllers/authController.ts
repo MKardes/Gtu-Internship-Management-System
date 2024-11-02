@@ -9,7 +9,6 @@ const ACCESS_TOKEN_SECRET = 'your_access_token_secret';
 const REFRESH_TOKEN_SECRET = 'your_refresh_token_secret';
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
-  console.log(req.body)
   const { mail, password } = req.body;
 
   try {
