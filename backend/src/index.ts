@@ -1,9 +1,10 @@
-import http from 'http';
+import express from 'express';
+import cors from 'cors';
+import authRoutes from './routes/auth';
+import { verifyToken } from './middlewares/verifyToken'; // Token doğrulama middleware'i
 import 'reflect-metadata';
 import { AppDataSource } from '../ormconfig';
 
-const hostname = '0.0.0.0';
-const port = 5000;
 
 AppDataSource.initialize()
   .then(() => {
@@ -13,12 +14,16 @@ AppDataSource.initialize()
     console.error('Error during Data Source initialization:', err);
   });
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello, TypeScript!\n');
-});
+const app = express();
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+
+app.use('/api/auth', authRoutes);
+
+const port = 5000;
+
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
 });
