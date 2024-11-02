@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Department } from "./department.entity";
 
 export enum Role {
     SuperAdmin = "Super Admin",
@@ -25,7 +26,7 @@ export class User {
    @Column()
    role: Role;
 
-   @Column({ nullable: true })
-   department: string;
-
+   @ManyToOne(() => Department)
+   @JoinColumn({ name: "department_id" })
+   department: Department;
 }

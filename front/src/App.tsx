@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import Home from './pages/Home/Home';
+import SuperAdmin from './pages/SuperAdmin/SuperAdmin';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import ConfirmCode from './pages/ConfirmCode/ConfirmCode';
 import NewPassword from './pages/NewPassword/NewPassword';
@@ -18,6 +19,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/super-admin" element={<SuperAdmin />} />
           <Route path="/confirm-code" element={<ConfirmCode />} />
           <Route path="/new-password" element={<NewPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
