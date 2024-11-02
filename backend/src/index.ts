@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth';
+import superAdminRoutes from './routes/superAdminRoutes';
 import { verifyToken } from './middlewares/verifyToken'; // Token doğrulama middleware'i
 import 'reflect-metadata';
 import { AppDataSource } from '../ormconfig';
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use('/api/auth', authRoutes);
+app.use('/api', superAdminRoutes);
 
 const port = 5000;
 
