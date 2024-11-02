@@ -12,7 +12,6 @@ const Home: React.FC = () => {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  console.log("navigate")
 
   useEffect(() => {
     // Eğer token varsa ve token geçerliyse dashboard sayfasına yönlendir
@@ -25,7 +24,6 @@ const Home: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
-    console.log("Gönderilecek veri:", { mail: inputUsername, password: inputPassword });
 
     try {
       const response = await axios.post("/api/auth/login", {
