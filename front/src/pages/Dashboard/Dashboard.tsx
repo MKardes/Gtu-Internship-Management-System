@@ -2,7 +2,7 @@ import React from "react";
 const Dashboard: React.FC = () => {
 
   return (
-    <p>Hoşgeldiniz</p>
+    <p>Hoş geldiniz</p>
   );
 };
 
