@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Table, Button, Form, Pagination } from 'react-bootstrap';
+import axios from 'axios'; // axios'u içe aktarıyoruz
 import './SuperAdmin.css';
 
 const SuperAdminPage: React.FC = () => {
@@ -11,62 +12,43 @@ const SuperAdminPage: React.FC = () => {
     const [admins, setAdmins] = useState<any[]>([]);
     const [departments, setDepartments] = useState<any[]>([]);
     const [activeAdminPage, setActiveAdminPage] = useState(1);
-    const adminsPerPage = 2;
+    const adminsPerPage = 10;
     const [inputDepartmentName, setInputDepartmentName] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [activeDepartmentPage, setActiveDepartmentPage] = useState(1);
     const departmentsPerPage = 5;
 
-    //FETCH ADMINS FROM DB
-    useEffect(() => {
-        const fetchAdmins = async () => {
-            try {
-                const response = await fetch('http://localhost:5000/api/super-admin/department-admins', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Veri yüklenemedi');
-                }
-                const data = await response.json();
-                setAdmins(data);
-                setError(null);
-            } catch (error) {
-                if (error instanceof Error) {
-                    setError(error.message);
-                } else {
-                    setError('An unknown error occurred');
-                }
-            } finally {
-                setLoading(false);
+    const fetchAdmins = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/api/super-admin/department-admins');
+            setAdmins(response.data);
+            setError(null);
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                setError(error.response.data.message);
+            } else {
+                setError('Bilinmeyen bir hata oluştu');
             }
-        };
-
+        } finally {
+            setLoading(false);
+        }
+    };
+    // FETCH ADMINS FROM DB
+    useEffect(() => {
         fetchAdmins();
     }, []);
 
-    //FETCH DEPARTMENTS FROM DB
+    // FETCH DEPARTMENTS FROM DB
     useEffect(() => {
         const fetchDepartments = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/super-admin/departments', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Departman verileri yüklenemedi');
-                }
-                const data = await response.json();
-                setDepartments(data);
+                const response = await axios.get('http://localhost:5000/api/super-admin/departments');
+                setDepartments(response.data);
                 setError(null);
             } catch (error) {
-                if (error instanceof Error) {
-                    setError(error.message);
+                if (axios.isAxiosError(error) && error.response) {
+                    setError(error.response.data.message);
                 } else {
                     setError('Bilinmeyen bir hata oluştu');
                 }
@@ -75,9 +57,7 @@ const SuperAdminPage: React.FC = () => {
         fetchDepartments();
     }, []);
 
-
-
-    //CREATE NEW DEPARTMENT ADMIN
+    // CREATE NEW DEPARTMENT ADMIN
     const handleCreateDepartmentAdmin = async (e: React.FormEvent) => {
         e.preventDefault();
         const newAdmin = {
@@ -88,75 +68,43 @@ const SuperAdminPage: React.FC = () => {
             department_id: inputDepartment,
         };
         try {
-            const response = await fetch('http://localhost:5000/api/super-admin/create-department-admin', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newAdmin),
-            });
-
-            if (!response.ok) {
-                throw new Error('Kullanıcı eklenemedi');
-            }
-            const data = await response.json();
-            setAdmins([...admins, data]);
+            const response = await axios.post('http://localhost:5000/api/super-admin/create-department-admin', newAdmin);
+            console.log(response.data);
+            setAdmins([...admins, response.data]);
             setInputUsername("");
             setInputPassword("");
             setInputEmail("");
             setInputDepartment("");
         } catch (error) {
-            if (error instanceof Error) {
-                console.log(error.message);
+            if (axios.isAxiosError(error) && error.response) {
+                setError(error.response.data.message);
             } else {
-                console.log('An unknown error occurred');
+                setError('Yeni yönetici eklenirken hata oluştu.');
             }
-            setError('Yeni yönetici eklenirken hata oluştu.');
         }
     };
 
-
-    //CREATE NEW DEPARTMENT
+    // CREATE NEW DEPARTMENT
     const handleCreateDepartment = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const newDepartment = { department_name: inputDepartmentName };
-            const response = await fetch('http://localhost:5000/api/super-admin/create-department', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newDepartment),
-            });
-
-            if (!response.ok) {
-                throw new Error('Departman eklenemedi');
-            }
-            const data = await response.json();
-            setDepartments([...departments, data]);
+            const response = await axios.post('http://localhost:5000/api/super-admin/create-department', newDepartment);
+            setDepartments([...departments, response.data]);
             setInputDepartmentName("");
         } catch (error) {
-            if (error instanceof Error) {
-                console.log(error.message);
+            if (axios.isAxiosError(error) && error.response) {
+                setError(error.response.data.message);
             } else {
-                console.log('An unknown error occurred');
+                setError('Yeni departman eklenirken hata oluştu.');
             }
-            setError('Yeni departman eklenirken hata oluştu.');
         }
     };
 
     // DELETE DEPARTMENT ADMIN
     const handleDeleteDepartmentAdmin = async (adminId: number) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/super-admin/delete-department-admin/${adminId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (!response.ok) {
-                throw new Error('Yönetici silinemedi');
-            }
+            const response = await axios.delete(`http://localhost:5000/api/super-admin/delete-department-admin/${adminId}`);
             setAdmins(admins.filter(admin => admin.id !== adminId));
             setError(null);
         } catch (error) {
@@ -165,27 +113,20 @@ const SuperAdminPage: React.FC = () => {
         }
     };
 
-
     // DELETE DEPARTMENT
     const handleDeleteDepartment = async (departmentId: number) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/super-admin/delete-department/${departmentId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Departman silinemedi');
-            }
+            await axios.delete(`http://localhost:5000/api/super-admin/delete-department/${departmentId}`);
+            // Departmanı sildikten sonra departman listesini güncelle
             setDepartments(departments.filter(department => department.id !== departmentId));
+            // Bu departmana ait yöneticileri güncelle
+            setAdmins(admins.filter(admin => admin.department_id !== departmentId)); // Departman silindiği için bu departmana ait yöneticiler de silinir
             setError(null);
         } catch (error) {
             console.error('Departman silinirken hata:', error);
             setError('Departman silinirken bir hata oluştu.');
         }
-    }
+    };
 
     // ADMIN PAGINATION
     const indexOfLastAdmin = activeAdminPage * adminsPerPage;
@@ -196,7 +137,6 @@ const SuperAdminPage: React.FC = () => {
         setActiveAdminPage(pageNumber);
     };
 
-
     // DEPARTMENT PAGINATION
     const indexOfLastDepartment = activeDepartmentPage * departmentsPerPage;
     const indexOfFirstDepartment = indexOfLastDepartment - departmentsPerPage;
@@ -204,7 +144,7 @@ const SuperAdminPage: React.FC = () => {
     const totalDepartmentPages = Math.ceil(departments.length / departmentsPerPage);
     const handleDepartmentPageChange = (pageNumber: number) => {
         setActiveDepartmentPage(pageNumber);
-    }
+    };
 
     return (
         <Container fluid className="super_admin_container mt-4">
@@ -294,7 +234,6 @@ const SuperAdminPage: React.FC = () => {
                                             <option key={index} value={dept.id}>{dept.department_name}</option>
                                         ))}
                                     </Form.Control>
-
                                 </Form.Group>
 
                                 <Button variant="success" type="submit">Ekle</Button>
@@ -313,113 +252,78 @@ const SuperAdminPage: React.FC = () => {
                                 <thead>
                                     <tr>
                                         <th>Departman İsmi</th>
-                                        <th className="text-center">İşlemler</th>
+                                        <th>İşlemler</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {currentDepartments.map((dept, index) => (
+                                    {currentDepartments.map((department, index) => (
                                         <tr key={index}>
-                                            <td>{dept.department_name}</td>
-                                            <td className="d-flex justify-content-center">
-                                                <Button
-                                                    variant='danger'
-                                                    size="sm"
-                                                    className="super_admin_btn-danger me-2"
-                                                    onClick={() => handleDeleteDepartment(dept.id)}
-                                                >
-                                                    Sil
-                                                </Button>
-                                                <Button
-                                                    variant="warning"
-                                                    size="sm"
-                                                    className="super_admin_btn-warning"
-                                                >
-                                                    İsim Değiştir
-                                                </Button>
+                                            <td>{department.department_name}</td>
+                                            <td>
+                                                <Button variant="danger" onClick={() => handleDeleteDepartment(department.id)}>Sil</Button>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </Table>
-                            <Pagination className="justify-content-center">
-                                <Pagination.Prev
-                                    onClick={() => handleDepartmentPageChange(activeDepartmentPage - 1)}
-                                    disabled={activeDepartmentPage === 1}
-                                />
+                            <Pagination>
                                 {[...Array(totalDepartmentPages)].map((_, index) => (
                                     <Pagination.Item
-                                        key={index + 1}
+                                        key={index}
                                         active={index + 1 === activeDepartmentPage}
                                         onClick={() => handleDepartmentPageChange(index + 1)}
                                     >
                                         {index + 1}
                                     </Pagination.Item>
                                 ))}
-                                <Pagination.Next
-                                    onClick={() => handleDepartmentPageChange(activeDepartmentPage + 1)}
-                                    disabled={activeDepartmentPage === totalDepartmentPages}
-                                />
                             </Pagination>
                         </Card.Body>
                     </Card>
-
                 </Col>
 
                 <Col md={8}>
                     <Card>
                         <Card.Body>
-                            <Card.Title>Mevcut Yöneticiler</Card.Title>
+                            <Card.Title>Departman Yöneticileri</Card.Title>
                             <Table striped bordered hover size="sm">
                                 <thead>
                                     <tr>
-                                        <th>İsim</th>
+                                        <th>İsim Soyisim</th>
                                         <th>Email</th>
                                         <th>Departman</th>
                                         <th>İşlemler</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {currentAdmins.map((admin) => (
-                                        <tr key={admin.id}>
+                                    {currentAdmins.map((admin, index) => (
+                                        <tr key={index}>
                                             <td>{admin.full_name}</td>
                                             <td>{admin.mail}</td>
-                                            <td>{admin.department ? admin.department.department_name : ""}</td>
-                                            <td className="d-flex justify-content-center">
-                                                <Button
-                                                    variant="danger"
-                                                    size="sm"
-                                                    onClick={() => handleDeleteDepartmentAdmin(admin.id)}
-                                                >
-                                                    Sil
-                                                </Button>
+                                            <td>{admin.department ? admin.department.department_name : ''}</td>
+                                            <td>
+                                                <Button variant="danger" onClick={() => handleDeleteDepartmentAdmin(admin.id)}>Sil</Button>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </Table>
-                            <Pagination className="justify-content-center">
-                                <Pagination.Prev
-                                    onClick={() => handleAdminPageChange(activeAdminPage - 1)}
-                                    disabled={activeAdminPage === 1}
-                                />
+                            <Pagination>
                                 {[...Array(totalAdminPages)].map((_, index) => (
                                     <Pagination.Item
-                                        key={index + 1}
+                                        key={index}
                                         active={index + 1 === activeAdminPage}
                                         onClick={() => handleAdminPageChange(index + 1)}
                                     >
                                         {index + 1}
                                     </Pagination.Item>
                                 ))}
-                                <Pagination.Next
-                                    onClick={() => handleAdminPageChange(activeAdminPage + 1)}
-                                    disabled={activeAdminPage === totalAdminPages}
-                                />
                             </Pagination>
                         </Card.Body>
                     </Card>
                 </Col>
             </Row>
+
+            {error && <div className="alert alert-danger mt-4">{error}</div>}
         </Container>
     );
 };

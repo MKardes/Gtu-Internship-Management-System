@@ -10,17 +10,17 @@ const hostname = '0.0.0.0';
 const port = 5000;
 
 const corsOptions = {
-    origin: 'http://localhost:3000', // Front-end uygulamanızın URL'si
+    origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 };
 
 app.use(cors(corsOptions));
 // Middleware
-app.use(express.json()); // JSON isteklerini işlemek için
-app.use(cors()); // CORS hatalarını önlemek için
+app.use(express.json());
+app.use(cors())
 
-// Veritabanı bağlantısını başlat
+
 AppDataSource.initialize()
     .then(() => {
         console.log('Data Source has been initialized!');
