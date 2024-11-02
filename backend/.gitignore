@@ -2,3 +2,4 @@ node_modules
 dist
 src/migrations
 package-lock.json
+.env

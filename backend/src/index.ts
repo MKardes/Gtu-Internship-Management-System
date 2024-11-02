@@ -5,7 +5,7 @@ import superAdminRoutes from './routes/superAdminRoutes';
 import { verifyToken } from './middlewares/verifyToken'; // Token doğrulama middleware'i
 import 'reflect-metadata';
 import { AppDataSource } from '../ormconfig';
-
+import { API_PORT, API_URL } from './config';
 
 AppDataSource.initialize()
   .then(() => {
@@ -24,8 +24,6 @@ app.use(cors());
 app.use('/api/auth', authRoutes);
 app.use('/api', superAdminRoutes);
 
-const port = 5000;
-
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+app.listen(API_PORT, () => {
+  console.log(`Server is running at ${API_URL}:${API_PORT}`);
 });
