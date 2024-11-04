@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Department } from "./department.entity";
 
 export enum Role {
     SuperAdmin = "Super Admin",
@@ -17,7 +18,7 @@ export class User {
    mail: string;
 
    @Column()
-   username: string;
+   full_name: string;
 
    @Column()
    password: string;
@@ -25,4 +26,7 @@ export class User {
    @Column()
    role: Role;
 
+   @ManyToOne(() => Department)
+   @JoinColumn({ name: "department_id" })
+   department: Department;
 }
