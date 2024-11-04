@@ -3,17 +3,13 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { User } from '../entities/user.entity';
 import { AppDataSource } from '../../ormconfig';
-import { log } from 'console';
-
-const ACCESS_TOKEN_SECRET = 'your_access_token_secret';
-const REFRESH_TOKEN_SECRET = 'your_refresh_token_secret';
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../config';
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { mail, password } = req.body;
 
   try {
     // Kullanıcıyı veritabanından bulma
-    // const user = await AppDataSource.getRepository(User).findOneBy({ mail });
     const queryBuilder = AppDataSource.getRepository(User).createQueryBuilder("usr");
     const user: User = await queryBuilder.where("usr.mail = :body_mail", {body_mail: mail}).getOne();
     
@@ -38,7 +34,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       id: user.id,
       username: user.full_name,
       role: user.role
-    },REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+    }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
     console.log(accessToken);
     res.json({ accessToken, refreshToken });
     return;
