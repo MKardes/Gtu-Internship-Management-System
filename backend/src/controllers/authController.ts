@@ -17,7 +17,6 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       res.status(401).json({ message: 'Geçersiz mail veya şifre' });
       return;
     }
-    console.log(user.mail, user.password)
 
     const isPasswordValid = (password === user.password)
     // const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -36,7 +35,6 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       username: user.full_name,
       role: user.role
     }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-    console.log(accessToken);
     res.json({ accessToken, refreshToken });
     return;
   } catch (error) {
