@@ -21,7 +21,7 @@ const SuperAdminPage: React.FC = () => {
 
     const fetchAdmins = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/super-admin/department-admins');
+            const response = await axios.get('/api/super-admin/department-admins');
             setAdmins(response.data);
             setError(null);
         } catch (error) {
@@ -43,7 +43,7 @@ const SuperAdminPage: React.FC = () => {
     useEffect(() => {
         const fetchDepartments = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/super-admin/departments');
+                const response = await axios.get('/api/super-admin/departments');
                 setDepartments(response.data);
                 setError(null);
             } catch (error) {
@@ -68,7 +68,7 @@ const SuperAdminPage: React.FC = () => {
             department_id: inputDepartment,
         };
         try {
-            const response = await axios.post('http://localhost:5000/api/super-admin/create-department-admin', newAdmin);
+            const response = await axios.post('/api/super-admin/create-department-admin', newAdmin);
             console.log(response.data);
             setAdmins([...admins, response.data]);
             setInputUsername("");
@@ -89,7 +89,7 @@ const SuperAdminPage: React.FC = () => {
         e.preventDefault();
         try {
             const newDepartment = { department_name: inputDepartmentName };
-            const response = await axios.post('http://localhost:5000/api/super-admin/create-department', newDepartment);
+            const response = await axios.post('/api/super-admin/create-department', newDepartment);
             setDepartments([...departments, response.data]);
             setInputDepartmentName("");
         } catch (error) {
@@ -104,7 +104,7 @@ const SuperAdminPage: React.FC = () => {
     // DELETE DEPARTMENT ADMIN
     const handleDeleteDepartmentAdmin = async (adminId: number) => {
         try {
-            const response = await axios.delete(`http://localhost:5000/api/super-admin/delete-department-admin/${adminId}`);
+            const response = await axios.delete(`/api/super-admin/delete-department-admin/${adminId}`);
             setAdmins(admins.filter(admin => admin.id !== adminId));
             setError(null);
         } catch (error) {
@@ -116,7 +116,7 @@ const SuperAdminPage: React.FC = () => {
     // DELETE DEPARTMENT
     const handleDeleteDepartment = async (departmentId: number) => {
         try {
-            await axios.delete(`http://localhost:5000/api/super-admin/delete-department/${departmentId}`);
+            await axios.delete(`/api/super-admin/delete-department/${departmentId}`);
             // Departmanı sildikten sonra departman listesini güncelle
             setDepartments(departments.filter(department => department.id !== departmentId));
             // Bu departmana ait yöneticileri güncelle
