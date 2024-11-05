@@ -14,11 +14,27 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Eğer token varsa ve token geçerliyse dashboard sayfasına yönlendir
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/dashboard");
-    }
+    const checkToken = async () => {
+      const token = localStorage.getItem("token");
+  
+      if (token) {
+        try {
+          const response = await axios.get("/api/auth/me", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          
+          if (response.status === 200) {
+            navigate("/dashboard");
+          }
+        } catch (error) {
+          console.error("Token geçersiz veya süre aşımı:", error);
+          localStorage.removeItem("token");
+        }
+      }
+    };
+    checkToken();
   }, [navigate]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

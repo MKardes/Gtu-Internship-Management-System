@@ -17,6 +17,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       res.status(401).json({ message: 'Geçersiz mail veya şifre' });
       return;
     }
+    console.log(user.mail, user.password)
 
     const isPasswordValid = (password === user.password)
     // const isPasswordValid = await bcrypt.compare(password, user.password);
