@@ -35,7 +35,6 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       username: user.full_name,
       role: user.role
     }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-    console.log(accessToken);
     res.json({ accessToken, refreshToken });
     return;
   } catch (error) {
