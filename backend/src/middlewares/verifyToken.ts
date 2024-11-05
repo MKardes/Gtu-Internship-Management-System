@@ -2,6 +2,10 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
+interface MyRequest extends Request {
+  user: any;
+}
+
 const ACCESS_TOKEN_SECRET = 'your_access_token_secret';
 
 export const verifyToken = (req: Request, res: Response, next: NextFunction):Promise<void> => {
@@ -14,9 +18,8 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction):Pro
 
   try {
     const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
-    req.body = decoded;  // Kullanıcı bilgilerini isteğe ekleyin
-    console.log("body bulundu");
-    console.log(req.body);
+    let myRequest: MyRequest = req as MyRequest;
+    myRequest.user = decoded;  // Kullanıcı bilgilerini isteğe ekleyin
     next();  // İstek doğrulandı, bir sonraki middleware'e veya route'a geç
   } catch (error) {
     res.status(403).json({ message: 'Token geçersiz' });
