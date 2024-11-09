@@ -9,7 +9,7 @@ authRouter.post('/login', loginUser);
 
 // Token doğrulaması için /me endpointi
 authRouter.get('/me', verifyToken, (req: any, res) => {
-  res.status(200).json({ user: req.body });  // Kullanıcı bilgilerini döndür
+  res.status(200).json({ user: req.user });  // Kullanıcı bilgilerini döndür
 });
 
 export default authRouter;

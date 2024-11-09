@@ -1,12 +1,11 @@
 // middlewares/verifyToken.ts
 import { Request, Response, NextFunction } from 'express';
+import { ACCESS_TOKEN_SECRET } from '../config';
 import jwt from 'jsonwebtoken';
 
 interface MyRequest extends Request {
   user: any;
 }
-
-const ACCESS_TOKEN_SECRET = 'your_access_token_secret';
 
 export const verifyToken = (req: Request, res: Response, next: NextFunction):Promise<void> => {
   const token = req.headers['authorization']?.split(' ')[1]; // 'Bearer <token>' formatında token alınır

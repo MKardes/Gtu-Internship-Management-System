@@ -15,22 +15,35 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     const checkToken = async () => {
-      const token = localStorage.getItem("token");
-  
-      if (token) {
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (accessToken || refreshToken) {
         try {
           const response = await axios.get("/api/auth/me", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${accessToken}` },
           });
           
           if (response.status === 200) {
             navigate("/dashboard");
           }
+
         } catch (error) {
-          console.error("Token geçersiz veya süre aşımı:", error);
-          localStorage.removeItem("token");
+          // Access token geçersizse refresh token ile yenileme dene
+          if (refreshToken) {
+            try {
+              const refreshResponse = await axios.post("/api/auth/refresh-token", {
+                refreshToken,
+              });
+              const { accessToken: newAccessToken } = refreshResponse.data;
+              localStorage.setItem("accessToken", newAccessToken);
+              navigate("/dashboard");
+            } catch (refreshError) {
+              console.error("Refresh token hatası:", refreshError);
+              localStorage.removeItem("accessToken");
+              localStorage.removeItem("refreshToken");
+            }
+          }
         }
       }
     };
@@ -46,8 +59,10 @@ const Home: React.FC = () => {
         mail: inputUsername,
         password: inputPassword,
       });
-      const { accessToken } = response.data;
-      localStorage.setItem("token", accessToken);
+
+      const { accessToken, refreshToken } = response.data;
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
       navigate("/dashboard");
     } catch (error) {
       console.error("Hata:", error);
