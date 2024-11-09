@@ -7,7 +7,6 @@ import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../config';
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { mail, password } = req.body;
-
   try {
     // Kullanıcıyı veritabanından bulma
     const queryBuilder = AppDataSource.getRepository(User).createQueryBuilder("usr");
@@ -25,16 +24,20 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       return;
     }
     // Access ve Refresh Token oluşturma
-    const accessToken = jwt.sign({ 
-      id: user.id,
-      username: user.full_name,
-      role: user.role
-    }, ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
-    const refreshToken = jwt.sign({
-      id: user.id,
-      username: user.full_name,
-      role: user.role
-    }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+    const accessToken = jwt.sign(
+      { id: user.id, username: user.full_name, role: user.role },
+      ACCESS_TOKEN_SECRET,
+      { expiresIn: '15m' }
+    );
+    const refreshToken = jwt.sign(
+      {id: user.id, username: user.full_name, role: user.role },
+      REFRESH_TOKEN_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    // Refresh token'ı veritabanına kaydetme (isteğe bağlı)
+    await queryBuilder.update().set({ refreshToken }).where("id = :id", { id: user.id }).execute();
+
     res.json({ accessToken, refreshToken });
     return;
   } catch (error) {
