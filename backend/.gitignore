@@ -3,3 +3,4 @@ dist
 src/migrations
 package-lock.json
 .env
+.env.development

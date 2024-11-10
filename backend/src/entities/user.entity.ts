@@ -26,7 +26,11 @@ export class User {
    @Column()
    role: Role;
 
+   @Column({nullable: true})
+   refreshToken: string;
+   
    @ManyToOne(() => Department)
    @JoinColumn({ name: "department_id" })
    department: Department;
+
 }

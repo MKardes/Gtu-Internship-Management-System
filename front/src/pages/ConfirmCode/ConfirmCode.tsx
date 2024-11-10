@@ -13,7 +13,12 @@ const ConfirmCode: React.FC = () => {
 
   const handleVerifyCode = async () => {
     try {
+      const mail = localStorage.getItem('mail');
+      const response = await axios.post('/api/auth/verify-code', { mail, code });
+      
+      if (response.status === 200) {
         navigate('/new-password');
+      }
     } catch (err) {
       // Hata durumunda hata mesajını göster
       setError('Kod doğrulanırken bir hata oluştu. Lütfen tekrar deneyin.');
