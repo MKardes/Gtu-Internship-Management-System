@@ -9,17 +9,11 @@ const authRouter = express.Router();
 
 // Kullanıcı giriş işlemi
 authRouter.post('/login', loginUser);
-authRouter.post('/send-code', async (req: any, res) => {
-  sendCode(req, res);
-});
+authRouter.post('/send-code', sendCode);
 
-authRouter.post('/verify-code', (req, res) => {
-  verifyCode(req, res);
-});
+authRouter.post('/verify-code', verifyCode);
 
-authRouter.post('/change-password', (req, res) => {
-  changePassword(req, res);
-});
+authRouter.post('/change-password', changePassword);
 
 // Token doğrulaması için /me endpointi
 authRouter.get('/me', verifyToken, (req: any, res) => {
