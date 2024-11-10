@@ -13,10 +13,16 @@ const ForgotPassword: React.FC = () => {
 
   const handleSendCode = async () => {
     try {
-        // Başarılı ise, kullanıcıyı kod doğrulama sayfasına yönlendir
+      console.log(email);
+      // Call the API to send the verification code to the email
+      const response = await axios.post('/api/auth/send-code', { email });
+      localStorage.setItem('mail', email);
+      // If successful, navigate to the code confirmation page
+      if (response.status === 200) {
         navigate('/confirm-code');
+      }
     } catch (err) {
-      // Hata durumunda hata mesajını göster
+      // Handle error, show error message to user
       setError('Kod gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
       setShowError(true);
     }

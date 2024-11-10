@@ -20,11 +20,13 @@ const NewPassword: React.FC = () => {
     }
 
     try {
-      // Backend entegrasyonu ile şifre sıfırlama işlemi yapılabilir.
-      // const response = await axios.post('/api/reset-password', { password });
+      const mail = localStorage.getItem('mail');
+      localStorage.removeItem('mail');
+      const response = await axios.post('/api/auth/change-password', { password , mail});
 
-      // Başarılı ise, kullanıcıyı giriş sayfasına yönlendir.
-      navigate('/login');
+      if (response.status === 200) {
+        navigate('/login');
+      }
     } catch (err) {
       setError('Şifre sıfırlanırken bir hata oluştu. Lütfen tekrar deneyin.');
       setShowError(true);
