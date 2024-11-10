@@ -17,6 +17,12 @@ export const refreshTokenController = async (req: Request, res: Response): Promi
     // Refresh token doğrulama
     const decoded = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET) as jwt.JwtPayload;
     
+    // decoded.id kontrolü
+    if (!decoded.id) {
+      res.status(402).json({ message: 'Geçersiz token verisi' });
+      return;
+    }
+
     // Kullanıcıyı veritabanından bulma
     const queryBuilder = AppDataSource.getRepository(User).createQueryBuilder("usr");
     const user: User = await queryBuilder.where("usr.id = :id", { id: decoded.id })

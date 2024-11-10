@@ -14,41 +14,28 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkToken = async () => {
+  const checkToken = async () => {
       const accessToken = localStorage.getItem("accessToken");
       const refreshToken = localStorage.getItem("refreshToken");
 
       if (accessToken || refreshToken) {
-        try {
-          const response = await axios.get("/api/auth/me", {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          });
-          
-          if (response.status === 200) {
-            navigate("/dashboard");
-          }
-
-        } catch (error) {
-          // Access token geçersizse refresh token ile yenileme dene
-          if (refreshToken) {
-            try {
-              const refreshResponse = await axios.post("/api/auth/refresh-token", {
-                refreshToken,
-              });
-              const { accessToken: newAccessToken } = refreshResponse.data;
-              localStorage.setItem("accessToken", newAccessToken);
-              navigate("/dashboard");
-            } catch (refreshError) {
-              console.error("Refresh token hatası:", refreshError);
-              localStorage.removeItem("accessToken");
-              localStorage.removeItem("refreshToken");
-            }
-          }
+      try {
+        const response = await axios.get("/api/auth/me", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        
+        if (response.status === 200) {
+          navigate("/dashboard");
         }
+
+      } catch (error) {
+        console.error("Token geçersiz veya süresi dolmuş:", error);
+        // Burada herhangi bir /refresh-token işlemi yapmıyoruz, çünkü interceptor hallediyor
       }
-    };
-    checkToken();
-  }, [navigate]);
+    }
+  };
+  checkToken();
+}, [navigate]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
