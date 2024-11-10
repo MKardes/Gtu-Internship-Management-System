@@ -6,7 +6,6 @@ import { User } from '../entities/user.entity';
 import { AppDataSource } from '../../ormconfig';
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../config';
 import { VerifCode } from '../entities/verifcode.entity';
-import { LocalStorage } from 'node-localstorage';
 
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
