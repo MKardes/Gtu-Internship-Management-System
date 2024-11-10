@@ -14,28 +14,28 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkToken = async () => {
-      const token = localStorage.getItem("token");
-  
-      if (token) {
-        try {
-          const response = await axios.get("/api/auth/me", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          
-          if (response.status === 200) {
-            navigate("/dashboard");
-          }
-        } catch (error) {
-          console.error("Token geçersiz veya süre aşımı:", error);
-          localStorage.removeItem("token");
+  const checkToken = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (accessToken || refreshToken) {
+      try {
+        const response = await axios.get("/api/auth/me", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        
+        if (response.status === 200) {
+          navigate("/dashboard");
         }
+
+      } catch (error) {
+        console.error("Token geçersiz veya süresi dolmuş:", error);
+        // Burada herhangi bir /refresh-token işlemi yapmıyoruz, çünkü interceptor hallediyor
       }
-    };
-    checkToken();
-  }, [navigate]);
+    }
+  };
+  checkToken();
+}, [navigate]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -46,8 +46,10 @@ const Home: React.FC = () => {
         mail: inputUsername,
         password: inputPassword,
       });
-      const { accessToken } = response.data;
-      localStorage.setItem("token", accessToken);
+
+      const { accessToken, refreshToken } = response.data;
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
       navigate("/dashboard");
     } catch (error) {
       console.error("Hata:", error);

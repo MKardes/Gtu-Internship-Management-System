@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth';
+import refreshTokenRoutes from './routes/refreshToken';
 import superAdminRoutes from './routes/superAdminRoutes';
 import { verifyToken } from './middlewares/verifyToken'; // Token doğrulama middleware'i
 import 'reflect-metadata';
@@ -17,11 +18,14 @@ AppDataSource.initialize()
 
 const app = express();
 
+// Middleware'ler
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+//routes
 app.use('/api/auth', authRoutes);
+app.use('/api/auth', refreshTokenRoutes);
 app.use('/api', superAdminRoutes);
 
 app.listen(API_PORT, () => {
