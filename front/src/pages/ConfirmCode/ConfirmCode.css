@@ -1,9 +1,12 @@
 .confirm-code-container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background-color: #f0f2f5;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
   }
   
   .confirm-code-card {
@@ -40,4 +43,25 @@
   .verify-code-button:hover {
     background-color: #0056b3;
   }
+
+  /* Yeni Kod Gönder Linki */
+  .resend-code-link {
+    color: #007bff;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: underline;
+    margin-top: 10px;
+    margin-bottom: 0px;
+  }
+
+  .resend-code-link:hover {
+    color: #0056b3;
+  }
+
+  /* Kod Gönderildi Mesajı */
+  .resend-message {
+    color: #28a745;
+    font-size: 14px;
+  }
+
   
