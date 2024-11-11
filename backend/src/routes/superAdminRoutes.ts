@@ -1,34 +1,31 @@
-// src/routes/superAdminRoutes.ts
-import express from 'express';
-import superAdminController from '../controllers/superAdminController';
+    // src/routes/superAdminRoutes.ts
+    import express from 'express';
+    import superAdminController from '../controllers/superAdminController';
+    import {verifyToken} from '../middlewares/verifyToken';
 
-const router = express.Router();
+    const router = express.Router();
 
+    /*          POST 
+        -CREATE-DEPARTMENT-ADMIN
+        -CREATE-DEPARTMENT
+    */
+    router.post('/super-admin/create-department-admin', verifyToken, superAdminController.createDepartmentAdmin);
+    router.post('/super-admin/create-department', verifyToken, superAdminController.createDepartment);
 
-/*          POST 
-    -CREATE-DEPARTMENT-ADMIN
-    -CREATE-DEPARTMENT
-*/
-router.post('/super-admin/create-department-admin', superAdminController.createDepartmentAdmin);
-router.post('/super-admin/create-department', superAdminController.createDepartment);
+    /*          DELETE
+        -DELETE-DEPARTMENT-ADMIN
+        -DELETE-DEPARTMENT
+    */
+    router.delete('/super-admin/delete-department-admin/:id', verifyToken, superAdminController.deleteDepartmentAdmin);
+    router.delete('/super-admin/delete-department/:id', verifyToken, superAdminController.deleteDepartment);
 
-/*          DELETE
-    -DELETE-DEPARTMENT-ADMIN
-    -DELETE-DEPARTMENT
-*/
-router.delete('/super-admin/delete-department-admin/:id', superAdminController.deleteDepartmentAdmin);
-router.delete('/super-admin/delete-department/:id', superAdminController.deleteDepartment);
+    /*          GET
+        -GET-DEPARTMENT-ADMIN
+        -GET-DEPARTMENT
+    */
+    router.get('/super-admin/department-admins', verifyToken, superAdminController.getAllDepartmentAdmins);
+    router.get('/super-admin/departments', verifyToken, superAdminController.getAllDepartments);
+    router.get('/super-admin/department/:id', verifyToken, superAdminController.getDepartment);
+    router.get('/super-admin/super-admin', verifyToken, superAdminController.getSuperAdmin);
 
-
-/*          GET
-    -GET-DEPARTMENT-ADMIN
-    -GET-DEPARTMENT
-*/
-router.get('/super-admin/department-admins', superAdminController.getAllDepartmentAdmins);
-//router.get('/super-admin/department-admins/:id', superAdminController.);
-router.get('/super-admin/departments', superAdminController.getAllDepartments);
-router.get('/super-admin/department/:id', superAdminController.getDepartment);
-
-
-
-export default router;
+    export default router;

@@ -1,6 +1,7 @@
 import { AppDataSource } from '../../ormconfig';
 import { User } from '../entities/user.entity';
 import utilService from './utilService';
+import bcrypt from 'bcrypt';
 
 export class departmentAdminService {
     // takes Department Admin Info in order to get Users belongs to the admin's Department 
@@ -48,14 +49,26 @@ export class departmentAdminService {
             const newUser = new User();
             newUser.full_name = userData.full_name;
             newUser.mail = userData.mail;
-            newUser.password = userData.password;
+            newUser.password = await bcrypt.hash(userData.password, parseInt(process.env.SALT_ROUNDS));
             newUser.department = userData.department;
             newUser.role = userData.role;
             await userRepository.save(newUser);
             return { status: 201, data: newUser };
         } catch (error) {
-            console.error(error); // Hata mesajını konsola yazdır
+            console.error(error);
             return { status: 500, data: { message: 'Kullanıcı oluşturulamadı' } }; // Hata durumu
+        }
+    }
+
+    async deleteUser(id: string) {
+        const userRepository = AppDataSource.getRepository(User);
+        try {
+            const user = await userRepository.findOneBy({ id });
+            if (!user)
+                return { status: 404, data: { message: 'Kullanıcı bulunamadı' } };
+            return { status: 200, data: await userRepository.remove(user) };
+        } catch (error) {
+            return { status: 500, data: { message: 'Kullanıcı silinemedi' } };
         }
     }
 }
