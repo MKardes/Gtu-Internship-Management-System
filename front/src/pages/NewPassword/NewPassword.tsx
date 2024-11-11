@@ -21,10 +21,10 @@ const NewPassword: React.FC = () => {
 
     try {
       const mail = localStorage.getItem('mail');
-      localStorage.removeItem('mail');
       const response = await axios.post('/api/auth/change-password', { password , mail});
-
+      
       if (response.status === 200) {
+        localStorage.removeItem('mail');
         navigate('/login');
       }
     } catch (err) {

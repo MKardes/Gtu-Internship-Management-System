@@ -7,6 +7,7 @@ import { AppDataSource } from '../../ormconfig';
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../config';
 import { VerifCode } from '../entities/verifcode.entity';
 import bcrypt from 'bcrypt';
+import utilService from '../services/utilService';
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { mail, password } = req.body;
@@ -63,7 +64,7 @@ export const sendCode = async (req: Request, res: Response): Promise<void> => {
 
     // Generate a random 6-digit verification code
     const verificationCode = crypto.randomInt(100000, 999999).toString();
-    const expirationTime = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
+    const expirationTime = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
 
     // Set up nodemailer transporter with environment variables for security
     const transporter = nodemailer.createTransport({
@@ -83,13 +84,16 @@ export const sendCode = async (req: Request, res: Response): Promise<void> => {
     });
 
     // Save the code and expiration time in the database
+
     const queryBuilder2 = AppDataSource.getRepository(VerifCode).createQueryBuilder("verifcode");
-    await queryBuilder2.insert().values({
-      code: verificationCode,
-      mail: email,
-      isActive: true,
-      expire_date: expirationTime,
-    }).execute();
+    queryBuilder2.delete().where("verifcode.mail = :body_mail", { body_mail: email }).execute();
+
+    const verifcodeRepo = AppDataSource.getRepository(VerifCode)
+    const newVerifCode = new VerifCode();
+    newVerifCode.code = verificationCode;
+    newVerifCode.mail = email;
+    newVerifCode.expire_date = expirationTime;
+    await verifcodeRepo.save(newVerifCode);
 
     // Respond with a success message
     res.status(200).json({ message: 'Verification code sent successfully!' });
@@ -106,7 +110,9 @@ export const verifyCode = async (req: Request, res: Response) => {
   try {
     // Fetch the verification code from the database
     const queryBuilder = AppDataSource.getRepository(VerifCode).createQueryBuilder("verifcode");
-    const verificationCode: VerifCode = await queryBuilder.where("verifcode.mail = :body_mail", { body_mail: mail }).getOne();
+    const verificationCode: VerifCode = await queryBuilder
+    .where("verifcode.mail = :body_mail", { body_mail: mail })
+    .getOne();
 
     // If no code is found, return a 404 error
     if (!verificationCode) {
@@ -120,13 +126,11 @@ export const verifyCode = async (req: Request, res: Response) => {
     }
 
     // If the code is expired, return a 401 error
-    if (verificationCode.expire_date < new Date() || !verificationCode.isActive) {
+    if (verificationCode.expire_date < new Date()) {
       res.status(401).json({ message: 'Verification code has expired' });
       return;
     }
 
-
-    verificationCode.isActive = false;
     // If everything is correct, return a success message
     res.status(200).json({ message: 'Verification code is correct!' });
   } catch (error) {
@@ -148,8 +152,13 @@ export const changePassword = async (req: Request, res: Response) => {
       return;
     }
 
-    user.password = password;
-    await queryBuilder.update().set({ password: password }).where("id = :id", { id: user.id }).execute();
+    if (!utilService.checkPassword(password)) {
+      res.status(400).json({ message: 'Şifre en az 8 karakter, bir büyük harf ve bir rakam içermelidir' });
+      return;
+    }
+
+    const hashedpass = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS));
+    await queryBuilder.update().set({ password: hashedpass }).where("id = :id", { id: user.id }).execute();
 
     res.status(200).json({ message: 'Password changed successfully!' });
   } catch (error) {

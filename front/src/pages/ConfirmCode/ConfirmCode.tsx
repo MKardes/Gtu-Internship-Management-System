@@ -34,8 +34,8 @@ const ConfirmCode: React.FC = () => {
 
   const handleResendCode = async () => {
     try {
-      const mail = localStorage.getItem('mail');
-      await axios.post('/api/auth/send-code', { mail });
+      const email = localStorage.getItem('mail');
+      await axios.post('/api/auth/send-code', { email });
       setResendMessage('Yeni kod e-posta adresinize gönderildi.');
       setTimeout(() => setResendMessage(''), 5000); // Mesajı 5 saniye sonra temizle
     } catch (err) {
