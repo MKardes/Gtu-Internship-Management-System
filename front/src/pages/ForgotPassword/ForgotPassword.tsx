@@ -13,7 +13,6 @@ const ForgotPassword: React.FC = () => {
 
   const handleSendCode = async () => {
     try {
-      console.log(email);
       // Call the API to send the verification code to the email
       const response = await axios.post('/api/auth/send-code', { email });
       localStorage.setItem('mail', email);
@@ -41,7 +40,7 @@ const ForgotPassword: React.FC = () => {
   return (
     <div className="forgot-password-container">
       <div className="forgot-password-card">
-        <h2>Şifremi Unuttum</h2>
+        <div className="h4 mb-2 text-center">Şifremi Unuttum</div>
         {showError && (
           <ErrorAlert show={showError} onClose={handleCloseError} message={error} />
         )}

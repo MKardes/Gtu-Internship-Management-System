@@ -9,6 +9,7 @@ const ConfirmCode: React.FC = () => {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [showError, setShowError] = useState(false);
+  const [resendMessage, setResendMessage] = useState('');
   const navigate = useNavigate();
 
   const handleVerifyCode = async () => {
@@ -31,6 +32,18 @@ const ConfirmCode: React.FC = () => {
     handleVerifyCode();
   };
 
+  const handleResendCode = async () => {
+    try {
+      const mail = localStorage.getItem('mail');
+      await axios.post('/api/auth/send-code', { mail });
+      setResendMessage('Yeni kod e-posta adresinize gönderildi.');
+      setTimeout(() => setResendMessage(''), 5000); // Mesajı 5 saniye sonra temizle
+    } catch (err) {
+      setError('Kod gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
+      setShowError(true);
+    }
+  };
+
   const handleCloseError = () => {
     setShowError(false);
     setError('');
@@ -39,7 +52,7 @@ const ConfirmCode: React.FC = () => {
   return (
     <div className="confirm-code-container">
       <div className="confirm-code-card">
-        <h2>Kod Doğrulama</h2>
+        <div className="h4 mb-2 text-center">Kod Doğrulama</div>
         <p>Lütfen e-posta adresinize gönderilen doğrulama kodunu girin.</p>
         {showError && (
           <ErrorAlert show={showError} onClose={handleCloseError} message={error} />
@@ -53,6 +66,8 @@ const ConfirmCode: React.FC = () => {
           />
           <button type="submit" className="verify-code-button">Kodu Doğrula</button>
         </form>
+        <p className="resend-code-link" onClick={handleResendCode}>Yeni Kod Gönder</p>
+        {resendMessage && <p className="resend-message">{resendMessage}</p>}
       </div>
     </div>
   );
