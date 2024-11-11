@@ -69,7 +69,6 @@ const SuperAdminPage: React.FC = () => {
         };
         try {
             const response = await axios.post('/api/super-admin/create-department-admin', newAdmin);
-            console.log(response.data);
             setAdmins([...admins, response.data]);
             setInputUsername("");
             setInputPassword("");
@@ -120,7 +119,7 @@ const SuperAdminPage: React.FC = () => {
             // Departmanı sildikten sonra departman listesini güncelle
             setDepartments(departments.filter(department => department.id !== departmentId));
             // Bu departmana ait yöneticileri güncelle
-            setAdmins(admins.filter(admin => admin.department_id !== departmentId)); // Departman silindiği için bu departmana ait yöneticiler de silinir
+            setAdmins(admins.filter(admin => admin.department.id !== departmentId)); // Departman silindiği için bu departmana ait yöneticiler de silinir
             setError(null);
         } catch (error) {
             console.error('Departman silinirken hata:', error);

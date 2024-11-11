@@ -2,30 +2,15 @@
 import { AppDataSource } from '../../ormconfig';
 import { User } from '../entities/user.entity';
 import { Department } from '../entities/department.entity';
+import utilService from './utilService';
+import bcrypt from 'bcrypt';
 
 export class superAdminService {
-
-    checkPassword(password: string) {
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-        return passwordRegex.test(password);
-    }
-
-    checkMail(mail: string) {
-        const mailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return mailRegex.test(mail);
-    }
-
     findDepartmentById(department_id: string) {
         const departmentRepository = AppDataSource.getRepository(Department);
         return departmentRepository.findOne({ where: { id: department_id } });
     }
 
-    async checkUserByMail(mail: string): Promise<boolean> {
-        const userRepository = AppDataSource.getRepository(User);
-        const user = await userRepository.findOne({ where: { mail } });
-        return !!user; // Kullanıcı mevcutsa true, değilse false döner.
-    }
-    
     async checkDepartmentByName(department_name: string): Promise<boolean> {
         const departmentRepository = AppDataSource.getRepository(Department);
         const department = await departmentRepository.findOne({ where: { department_name: department_name } });
@@ -56,29 +41,31 @@ export class superAdminService {
         try {
             const users = await userRepository
                 .createQueryBuilder('user')
-                .leftJoinAndSelect('user.department', 'department') // Kullanıcıya ait departmanı getir
+                .leftJoinAndSelect('user.department', 'department') // Include the related department
+                .where('user.role = :role', { role: 'DepartmentAdmin' }) // Filter by role
                 .getMany();
             return { status: 200, data: users };
         } catch (error) {
-            return { status: 500, data: { message: 'Kullanıcılar alınamadı' } }; // Hata durumu
+            return { status: 500, data: { message: 'Kullanıcılar alınamadı' } }; // Error handling
         }
     }
+    
 
     async createDepartmentAdmin(userData: any) {
         try {
             if (!userData.full_name || userData.full_name.length <= 0)
                 return { status: 400, data: { message: 'Geçersiz isim' } };
-            if (!this.checkMail(userData.mail)) 
+            if (!utilService.checkMail(userData.mail)) 
                 return { status: 400, data: { message: 'Geçersiz mail' } };
-            if (!this.checkPassword(userData.password)) 
+            if (!utilService.checkPassword(userData.password)) 
                 return { status: 400, data: { message: 'Şifre en az 8 karakter, bir büyük harf ve bir rakam içermelidir' } };
-            if (await this.checkUserByMail(userData.mail)) 
+            if (await utilService.checkUserByMail(userData.mail)) 
                 return { status: 400, data: { message: 'Bu e-posta adresi zaten kullanımda' } };
             const userRepository = AppDataSource.getRepository(User);
             const newUser = new User();
             newUser.full_name = userData.full_name;
             newUser.mail = userData.mail;
-            newUser.password = userData.password;
+            newUser.password = await bcrypt.hash(userData.password, parseInt(process.env.SALT_ROUNDS));
             newUser.department = userData.department;
             newUser.role = userData.role;
             newUser.department = await this.findDepartmentById(userData.department_id);
@@ -162,6 +149,17 @@ export class superAdminService {
             return { status: 500, data: { message: 'Kullanıcı silinemedi' } };
         }
     }
+
+    async getSuperAdmin(id: string) {
+        const userRepository = AppDataSource.getRepository(User);
+        try {
+            const user = await userRepository.findOneBy({ id });
+            return { status: 200, data: user };
+        } catch (error) {
+            return { status: 500, data: { message: 'Kullanıcı alınamadı' } };
+        }
+    }
+
 }
 
 export default superAdminService;
