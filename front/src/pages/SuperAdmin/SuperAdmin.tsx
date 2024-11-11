@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Table, Button, Form, Pagination } from 'react-bootstrap';
-import axios from 'axios'; // axios'u içe aktarıyoruz
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 import './SuperAdmin.css';
 
 const SuperAdminPage: React.FC = () => {
+
     const [adminInfo, setAdminInfo] = useState<any>(null);
     const [inputUsername, setInputUsername] = useState("");
     const [inputPassword, setInputPassword] = useState("");
@@ -15,49 +18,47 @@ const SuperAdminPage: React.FC = () => {
     const adminsPerPage = 5;
     const [inputDepartmentName, setInputDepartmentName] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
     const [activeDepartmentPage, setActiveDepartmentPage] = useState(1);
     const departmentsPerPage = 5;
+    const navigate = useNavigate();
 
-    const fetchAdmins = async () => {
+    // Fetch Super Admin Info
+    const fetchSuperAdmin = async () => {
         try {
-            const response = await axios.get('/api/super-admin/department-admins');
-            setAdmins(response.data);
-            setError(null);
+            const response = await axios.get("/api/super-admin/super-admin", {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
+            setAdminInfo(response.data);
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                setError(error.response.data.message);
-            } else {
-                setError('Bilinmeyen bir hata oluştu');
-            }
-        } finally {
-            setLoading(false);
+            handleError(error);
         }
     };
-    // FETCH ADMINS FROM DB
-    useEffect(() => {
-        fetchAdmins();
-    }, []);
 
-    // FETCH DEPARTMENTS FROM DB
-    useEffect(() => {
-        const fetchDepartments = async () => {
-            try {
-                const response = await axios.get('/api/super-admin/departments');
-                setDepartments(response.data);
-                setError(null);
-            } catch (error) {
-                if (axios.isAxiosError(error) && error.response) {
-                    setError(error.response.data.message);
-                } else {
-                    setError('Bilinmeyen bir hata oluştu');
-                }
-            }
-        };
-        fetchDepartments();
-    }, []);
+    // Fetch Admins
+    const fetchAdmins = async () => {
+        try {
+            const response = await axios.get('/api/super-admin/department-admins', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
+            setAdmins(response.data);
+        } catch (error) {
+            handleError(error);
+        }
+    };
 
-    // CREATE NEW DEPARTMENT ADMIN
+    // Fetch Departments
+    const fetchDepartments = async () => {
+        try {
+            const response = await axios.get('/api/super-admin/departments', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
+            setDepartments(response.data);
+        } catch (error) {
+            handleError(error);
+        }
+    };
+
+    // Create New Department Admin
     const handleCreateDepartmentAdmin = async (e: React.FormEvent) => {
         e.preventDefault();
         const newAdmin = {
@@ -68,66 +69,60 @@ const SuperAdminPage: React.FC = () => {
             department_id: inputDepartment,
         };
         try {
-            const response = await axios.post('/api/super-admin/create-department-admin', newAdmin);
+            const response = await axios.post('/api/super-admin/create-department-admin', newAdmin, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
             setAdmins([...admins, response.data]);
             setInputUsername("");
             setInputPassword("");
             setInputEmail("");
             setInputDepartment("");
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                setError(error.response.data.message);
-            } else {
-                setError('Yeni yönetici eklenirken hata oluştu.');
-            }
+            handleError(error);
         }
     };
 
-    // CREATE NEW DEPARTMENT
+    // Create New Department
     const handleCreateDepartment = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const newDepartment = { department_name: inputDepartmentName };
-            const response = await axios.post('/api/super-admin/create-department', newDepartment);
+            const response = await axios.post('/api/super-admin/create-department', newDepartment, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
             setDepartments([...departments, response.data]);
             setInputDepartmentName("");
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                setError(error.response.data.message);
-            } else {
-                setError('Yeni departman eklenirken hata oluştu.');
-            }
+            handleError(error);
         }
     };
 
-    // DELETE DEPARTMENT ADMIN
+    // Delete Department Admin
     const handleDeleteDepartmentAdmin = async (adminId: number) => {
         try {
-            const response = await axios.delete(`/api/super-admin/delete-department-admin/${adminId}`);
+            await axios.delete(`/api/super-admin/delete-department-admin/${adminId}`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
             setAdmins(admins.filter(admin => admin.id !== adminId));
-            setError(null);
         } catch (error) {
-            console.error('Yönetici silinirken hata:', error);
-            setError('Yönetici silinirken bir hata oluştu.');
+            handleError(error);
         }
     };
 
-    // DELETE DEPARTMENT
+    // Delete Department
     const handleDeleteDepartment = async (departmentId: number) => {
         try {
-            await axios.delete(`/api/super-admin/delete-department/${departmentId}`);
-            // Departmanı sildikten sonra departman listesini güncelle
+            await axios.delete(`/api/super-admin/delete-department/${departmentId}`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
             setDepartments(departments.filter(department => department.id !== departmentId));
-            // Bu departmana ait yöneticileri güncelle
-            setAdmins(admins.filter(admin => admin.department.id !== departmentId)); // Departman silindiği için bu departmana ait yöneticiler de silinir
-            setError(null);
+            setAdmins(admins.filter(admin => admin.department.id !== departmentId));
         } catch (error) {
-            console.error('Departman silinirken hata:', error);
-            setError('Departman silinirken bir hata oluştu.');
+            handleError(error);
         }
     };
 
-    // ADMIN PAGINATION
+    // Admin Pagination
     const indexOfLastAdmin = activeAdminPage * adminsPerPage;
     const indexOfFirstAdmin = indexOfLastAdmin - adminsPerPage;
     const currentAdmins = admins.slice(indexOfFirstAdmin, indexOfLastAdmin);
@@ -136,7 +131,7 @@ const SuperAdminPage: React.FC = () => {
         setActiveAdminPage(pageNumber);
     };
 
-    // DEPARTMENT PAGINATION
+    // Department Pagination
     const indexOfLastDepartment = activeDepartmentPage * departmentsPerPage;
     const indexOfFirstDepartment = indexOfLastDepartment - departmentsPerPage;
     const currentDepartments = departments.slice(indexOfFirstDepartment, indexOfLastDepartment);
@@ -145,16 +140,36 @@ const SuperAdminPage: React.FC = () => {
         setActiveDepartmentPage(pageNumber);
     };
 
+    const handleError = (error: any) => {
+        if (axios.isAxiosError(error) && error.response) {
+            setError(error.response.data.message);
+        } else {
+            setError('Bilinmeyen bir hata oluştu');
+        }
+    };
+
+    useEffect(() => {
+        fetchSuperAdmin();
+        fetchAdmins();
+        fetchDepartments();
+    }, []);
+
+
     return (
         <Container fluid className="super_admin_container mt-4">
             <Row>
                 <Col md={4}>
                     <Card>
-                        <Card.Body>
+                    <Card.Body>
                             <Card.Title>Yönetici Bilgileri</Card.Title>
-                            <p><strong>Ad Soyad:</strong> Ömer Faruk Olkay</p>
-                            <p><strong>Email:</strong> omer@omer.com</p>
-                            <p><strong>Departman:</strong> Bilgisayar Mühendisliği</p>
+                            {adminInfo ? (
+                                <>
+                                    <p><strong>Ad Soyad:</strong> {adminInfo.full_name}</p>
+                                    <p><strong>Email:</strong> {adminInfo.mail}</p>
+                                </>
+                            ) : (
+                                <p>Yönetici bilgileri yükleniyor...</p>
+                            )}
                         </Card.Body>
                     </Card>
                 </Col>
