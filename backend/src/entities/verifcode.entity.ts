@@ -10,9 +10,6 @@ export class VerifCode {
     code: string;
 
     @Column()
-    isActive: boolean;
-
-    @Column()
     mail: string;
 
     @Column()
