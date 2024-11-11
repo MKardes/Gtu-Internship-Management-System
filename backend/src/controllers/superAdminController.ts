@@ -47,8 +47,14 @@ const getDepartment = async (req: Request, res: Response) => {
     const result = await service.getDepartment(req.params.id);
     res.status(result.status).json(result.data);
 }
+
+
+const getSuperAdmin = async (req: any, res: Response) => {
+    const result = await service.getSuperAdmin(req.user.id);
+    res.status(result.status).json(result.data);
+}
 //GET
 
 
 
-export default { getAllDepartmentAdmins, createDepartmentAdmin, deleteDepartmentAdmin, createDepartment, getAllDepartments, deleteDepartment, getDepartment };
+export default { getAllDepartmentAdmins, createDepartmentAdmin, deleteDepartmentAdmin, createDepartment, getAllDepartments, deleteDepartment, getDepartment, getSuperAdmin};

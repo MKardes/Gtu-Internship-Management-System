@@ -6,7 +6,7 @@ import { User } from '../entities/user.entity';
 import { AppDataSource } from '../../ormconfig';
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../config';
 import { VerifCode } from '../entities/verifcode.entity';
-
+import bcrypt from 'bcrypt';
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { mail, password } = req.body;
@@ -20,8 +20,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const isPasswordValid = (password === user.password)
-    // const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       res.status(401).json({ message: 'Geçersiz mail veya şifre' });
       return;
