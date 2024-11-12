@@ -28,11 +28,11 @@ const App: React.FC = () => {
             }
           />
           <Route
-          path="/department-admin"
-          element={
-            <PrivateRoute element={<DepartmentAdmin />} requiredRole="DepartmentAdmin" />
-          }
-        />
+            path = "/department-admin"
+            element = {
+              <PrivateRoute element = {<DepartmentAdmin />} requiredRole = "DepartmentAdmin" />
+            }
+          />
           <Route path="/confirm-code" element={<ConfirmCode />} />
           <Route path="/new-password" element={<NewPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
