@@ -18,4 +18,9 @@ const createUser = async (req: Request, res: Response) => {
     res.status(result.status).json(result.data);
 }
 
-export default { getAllUsers, getDepartmentAdmin, createUser};
+const deleteUser = async (req: Request, res: Response) => {
+    const result = await service.deleteUser(req.params.id);
+    res.status(result.status).json(result.data);
+}
+
+export default { getAllUsers, getDepartmentAdmin, createUser, deleteUser};

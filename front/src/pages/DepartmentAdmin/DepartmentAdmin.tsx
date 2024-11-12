@@ -5,17 +5,18 @@ import axios from 'axios';
 
 const DepartmentAdminPage: React.FC = () => {
     const [adminInfo, setAdminInfo] = useState<any>(null);
-    const [inputUsername, setInputUsername] = useState("");
+    const [inputFullName, setInputFullName] = useState("");
     const [inputEmail, setInputEmail] = useState("");
     const [users, setUsers] = useState<any[]>([]);
     const [activeUserPage, setActiveUserPage] = useState(1);
     const usersPerPage = 5;
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [inputPassword, setInputPassword] = useState("");
     const navigate = useNavigate();
 
     const getAuthHeader = () => {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("accessToken");
         if (!token) {
             navigate("/login");
         }
@@ -28,11 +29,11 @@ const DepartmentAdminPage: React.FC = () => {
         if (axios.isAxiosError(error) && error.response) {
             setError(error.response.data.message);
         } else {
-            setError('An unknown error occurred');
+            setError('Bilinmeyen bir hata oluştu');
         }
     };
 
-    // Fetch Department Admin Info
+    // Yönetici Bilgilerini Getir
     const fetchAdminInfo = async () => {
         try {
             const response = await axios.get("/api/department-admin/department-admin", {
@@ -44,12 +45,13 @@ const DepartmentAdminPage: React.FC = () => {
         }
     };
 
-    // Fetch Users in the Department
+    // Departmandaki Kullanıcıları Getir
     const fetchUsers = async () => {
         try {
             const response = await axios.get("/api/department-admin/users", {
                 headers: getAuthHeader(),
             });
+            console.log(response.data);
             setUsers(response.data);
         } catch (error) {
             handleError(error);
@@ -58,12 +60,13 @@ const DepartmentAdminPage: React.FC = () => {
         }
     };
 
-    // Add New User
+    // Yeni Kullanıcı Ekle
     const handleAddUser = async (e: React.FormEvent) => {
         e.preventDefault();
         const newUser = {
-            name: inputUsername,
-            email: inputEmail,
+            full_name: inputFullName,
+            mail: inputEmail,
+            password: inputPassword,
             role: "User",
             department: adminInfo.department
         };
@@ -72,14 +75,14 @@ const DepartmentAdminPage: React.FC = () => {
                 headers: getAuthHeader(),
             });
             setUsers([...users, response.data]);
-            setInputUsername("");
+            setInputFullName("");
             setInputEmail("");
         } catch (error) {
             handleError(error);
         }
     };
 
-    // Delete User
+    // Kullanıcıyı Sil
     const handleDeleteUser = async (userId: number) => {
         try {
             await axios.delete(`/api/department-admin/delete-user/${userId}`, {
@@ -91,7 +94,7 @@ const DepartmentAdminPage: React.FC = () => {
         }
     };
 
-    // Pagination for Users
+    // Kullanıcı Sayfalandırma
     const indexOfLastUser = activeUserPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
@@ -108,16 +111,16 @@ const DepartmentAdminPage: React.FC = () => {
             <Row>
                 <Col md={4}>
                     <Card>
-                        <Card.Header>Admin Info</Card.Header>
+                        <Card.Header>Yönetici Bilgileri</Card.Header>
                         <Card.Body>
                             {adminInfo ? (
                                 <>
-                                    <p><strong>Name:</strong> {adminInfo.full_name}</p>
+                                    <p><strong>İsim:</strong> {adminInfo.full_name}</p>
                                     <p><strong>Email:</strong> {adminInfo.mail}</p>
-                                    <p><strong>Department:</strong> {adminInfo.department.department_name}</p>
+                                    <p><strong>Departman:</strong> {adminInfo.department.department_name}</p>
                                 </>
                             ) : (
-                                <p>Loading admin info...</p>
+                                <p>Yönetici bilgileri yükleniyor...</p>
                             )}
                         </Card.Body>
                     </Card>
@@ -125,16 +128,16 @@ const DepartmentAdminPage: React.FC = () => {
 
                 <Col md={4}>
                     <Card>
-                        <Card.Header>Add New User</Card.Header>
+                        <Card.Header>Yeni Kullanıcı Ekle</Card.Header>
                         <Card.Body>
                             <Form onSubmit={handleAddUser}>
-                                <Form.Group className="mb-2" controlId="username">
-                                    <Form.Label>Username</Form.Label>
+                                <Form.Group className="mb-2" controlId="fullName">
+                                    <Form.Label>İsim Soyisim</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        placeholder="Enter username"
-                                        value={inputUsername}
-                                        onChange={(e) => setInputUsername(e.target.value)}
+                                        placeholder="İsim soyisim girin"
+                                        value={inputFullName}
+                                        onChange={(e) => setInputFullName(e.target.value)}
                                         required
                                     />
                                 </Form.Group>
@@ -142,13 +145,23 @@ const DepartmentAdminPage: React.FC = () => {
                                     <Form.Label>Email</Form.Label>
                                     <Form.Control
                                         type="email"
-                                        placeholder="Enter email"
+                                        placeholder="Email girin"
                                         value={inputEmail}
                                         onChange={(e) => setInputEmail(e.target.value)}
                                         required
                                     />
                                 </Form.Group>
-                                <Button variant="primary" type="submit">Add User</Button>
+                                <Form.Group className="mb-2" controlId="password">
+                                    <Form.Label>Şifre</Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        placeholder="Şifre girin"
+                                        value={inputPassword}
+                                        onChange={(e) => setInputPassword(e.target.value)}
+                                        required
+                                    />
+                                </Form.Group>
+                                <Button variant="primary" type="submit">Kullanıcı Ekle</Button>
                             </Form>
                         </Card.Body>
                     </Card>
@@ -156,14 +169,14 @@ const DepartmentAdminPage: React.FC = () => {
 
                 <Col md={8} className="mt-4">
                     <Card>
-                        <Card.Header>Users</Card.Header>
+                        <Card.Header>Kullanıcılar</Card.Header>
                         <Card.Body>
                             <Table striped bordered hover>
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
+                                        <th>İsim</th>
                                         <th>Email</th>
-                                        <th>Actions</th>
+                                        <th>İşlemler</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -173,7 +186,7 @@ const DepartmentAdminPage: React.FC = () => {
                                             <td>{user.mail}</td>
                                             <td>
                                                 <Button variant="danger" onClick={() => handleDeleteUser(user.id)}>
-                                                    Delete
+                                                    Sil
                                                 </Button>
                                             </td>
                                         </tr>
