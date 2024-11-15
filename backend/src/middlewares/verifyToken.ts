@@ -11,7 +11,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction):Pro
   const token = req.headers['authorization']?.split(' ')[1]; // 'Bearer <token>' formatında token alınır
 
   if (!token) {
-    res.status(401).json({ message: 'Yetkisiz erişim' });
+    res.status(401).json({ message: 'Yetkisiz erişimm' });
     return; 
   }
 
