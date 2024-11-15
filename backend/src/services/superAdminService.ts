@@ -3,6 +3,7 @@ import { AppDataSource } from '../../ormconfig';
 import { User } from '../entities/user.entity';
 import { Department } from '../entities/department.entity';
 import utilService from './utilService';
+import bcrypt from 'bcrypt';
 
 export class superAdminService {
     findDepartmentById(department_id: string) {
@@ -64,7 +65,7 @@ export class superAdminService {
             const newUser = new User();
             newUser.full_name = userData.full_name;
             newUser.mail = userData.mail;
-            newUser.password = userData.password;
+            newUser.password = await bcrypt.hash(userData.password, parseInt(process.env.SALT_ROUNDS));
             newUser.department = userData.department;
             newUser.role = userData.role;
             newUser.department = await this.findDepartmentById(userData.department_id);
