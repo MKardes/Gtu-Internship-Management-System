@@ -65,11 +65,21 @@ const Navigation: React.FC = () => {
     return (
         <Navbar bg="dark" variant="dark" expand="lg">
             <Container>
+                {/* Logo */}
                 <LinkContainer to="/">
                     <Navbar.Brand>
                         <Image src={logo} fluid style={{ width: '60px', height: '40px' }} />
                     </Navbar.Brand>
                 </LinkContainer>
+
+                {/* accessToken varsa Logout butonunu göster */}
+                {accessToken && (
+                    <Nav className="ml-auto">
+                        <Button variant="outline-light" onClick={handleLogout}>
+                            <FaSignOutAlt /> {/* Logout icon */}
+                        </Button>
+                    </Nav>
+                )}
             </Container>
             <div style={{ display: 'flex', alignItems: 'center', marginRight: 'auto' }}>
                 {user && (
