@@ -4,6 +4,7 @@ import authRoutes from './routes/auth';
 import refreshTokenRoutes from './routes/refreshToken';
 import superAdminRoutes from './routes/superAdminRoutes';
 import departmentAdminRoutes from './routes/departmentAdminRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
 import { verifyToken } from './middlewares/verifyToken'; // Token doğrulama middleware'i
 import 'reflect-metadata';
 import { AppDataSource } from '../ormconfig';
@@ -29,6 +30,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/auth', refreshTokenRoutes);
 app.use('/api', superAdminRoutes);
 app.use('/api', departmentAdminRoutes);
+app.use('/api', dashboardRoutes);
 
 app.listen(API_PORT, () => {
   console.log(`Server is running at ${API_URL}:${API_PORT}`);

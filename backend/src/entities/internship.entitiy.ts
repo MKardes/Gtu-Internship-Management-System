@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique, CreateDateColumn} from "typeorm";
 import { Student } from "./student.entitiy";
 import { Company } from "./company.entitiy";
 import { Mentor } from "./mentor.entitiy";
@@ -36,6 +36,6 @@ export class Internship {
     @Column({ nullable: true })
     end_date: Date;
 
-    @Column({ nullable: false })
+    @CreateDateColumn()
     created_at: Date;
 }

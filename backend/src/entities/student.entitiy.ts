@@ -1,7 +1,7 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, Unique, CreateDateColumn} from "typeorm";
 
 @Entity("student")
-@Unique(['id', 'school_id'])
+@Unique(['id', 'school_id', 'email', 'turkish_id'])
 export class Student {
 
     @PrimaryGeneratedColumn()
@@ -16,10 +16,12 @@ export class Student {
     @Column()
     surname: string;
 
+    @Column()
+    email: string;
+
     @Column({ nullable: true })
     turkish_id: string;
 
-    @Column()
+    @CreateDateColumn()
     created_at: Date;
-       
 }

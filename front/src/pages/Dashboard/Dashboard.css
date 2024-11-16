@@ -1,0 +1,46 @@
+.dashboard-container {
+  display: flex;
+  justify-content: flex-end; /* Align the content to the right */
+  width: 50%; /* Restrict the container to the right half of the page */
+  background-color: white;
+  height: 100vh; /* Ensure it covers the full height of the viewport */
+}
+
+.student-table-container {
+  width: 100%; /* This limits the content to fill the available space in the right half */
+  padding: 20px;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filters .dropdown {
+  display: inline-block;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
