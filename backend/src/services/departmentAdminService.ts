@@ -12,11 +12,17 @@ export class departmentAdminService {
             const departmentAdmin = await userRepository.findOne(
                 { where: { id: DepartmentAdminInfo.id }, relations: ['department'] }
             )
+            if (!departmentAdmin)
+                return { status: 500, data: { message: 'Bir hata oluştu' } };
             const departmentName = departmentAdmin.department.department_name;
+            if (!departmentName)
+                return { status: 500, data: { message: 'Bir hata oluştu' } };
             const users = await userRepository
                 .createQueryBuilder('user')
-                .andWhere('user.role = :role', { role: 'User' })
+                .where('department.department_name = :departmentName', { departmentName })
+                .where('user.role = :role', { role: 'User' })
                 .getMany();
+            /*HİÇ USER YOKSA 404 MÜ DÖNMELİ ? boş array mi ? */
             return { status: 200, data: users };
         } catch (error) {
             return { status: 500, data: { message: 'Kullanıcılar alınamadı' } }; // Error handling
@@ -37,12 +43,14 @@ export class departmentAdminService {
 
     async createUser(userData: any) {
         try {
-            if (!userData.full_name || userData.full_name.length <= 0)
+            if (!utilService.isValidName(userData.full_name))
                 return { status: 400, data: { message: 'Geçersiz isim' } };
-            if (!utilService.checkMail(userData.mail))
+            if (!utilService.isValidMail(userData.mail))
                 return { status: 400, data: { message: 'Geçersiz mail' } };
-            if (!utilService.checkPassword(userData.password))
+            if (!utilService.isValidPassword(userData.password))
                 return { status: 400, data: { message: 'Şifre en az 8 karakter, bir büyük harf ve bir rakam içermelidir' } };
+            if (!utilService.isValidRole(userData.role))
+                return { status: 400, data: { message: 'Geçersiz rol' } };
             if (await utilService.checkUserByMail(userData.mail))
                 return { status: 400, data: { message: 'Bu e-posta adresi zaten kullanımda' } };
             const userRepository = AppDataSource.getRepository(User);
