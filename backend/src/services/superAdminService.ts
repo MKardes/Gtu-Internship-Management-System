@@ -45,6 +45,7 @@ export class superAdminService {
                 .where('user.role = :role', { role: 'DepartmentAdmin' }) // Filter by role
                 .getMany();
             return { status: 200, data: users };
+            /*HİÇ USER YOKSA 404 MÜ DÖNMELİ ? boş array mi ? */
         } catch (error) {
             return { status: 500, data: { message: 'Kullanıcılar alınamadı' } }; // Error handling
         }
@@ -53,14 +54,20 @@ export class superAdminService {
 
     async createDepartmentAdmin(userData: any) {
         try {
-            if (!userData.full_name || userData.full_name.length <= 0)
+            if (!utilService.isValidName(userData.full_name))
                 return { status: 400, data: { message: 'Geçersiz isim' } };
-            if (!utilService.checkMail(userData.mail)) 
+            if (!utilService.isValidMail(userData.mail)) 
                 return { status: 400, data: { message: 'Geçersiz mail' } };
-            if (!utilService.checkPassword(userData.password)) 
+            if (!utilService.isValidPassword(userData.password)) 
                 return { status: 400, data: { message: 'Şifre en az 8 karakter, bir büyük harf ve bir rakam içermelidir' } };
+            if (!utilService.isValidRole(userData.role))
+                return { status: 400, data: { message: 'Geçersiz rol' } };
             if (await utilService.checkUserByMail(userData.mail)) 
-                return { status: 400, data: { message: 'Bu e-posta adresi zaten kullanımda' } };
+                return { status: 409, data: { message: 'Bu e-posta adresi zaten kullanımda' } };
+            if (!utilService.isValidDepartmentName(userData.department.department_name))
+                return { status: 400, data: { message: 'Geçersiz departman adı' } };
+            if (!await this.checkDepartmentByName(userData.department.department_name))
+                return { status: 400, data: { message: 'Departman bulunamadı' } };
             const userRepository = AppDataSource.getRepository(User);
             const newUser = new User();
             newUser.full_name = userData.full_name;
@@ -72,16 +79,16 @@ export class superAdminService {
             await userRepository.save(newUser);
             return { status: 201, data: newUser };
         } catch (error) {
-            console.error(error); // Hata mesajını konsola yazdır
-            return { status: 500, data: { message: 'Kullanıcı oluşturulamadı' } }; // Hata durumu
+            console.error(error);
+            return { status: 500, data: { message: 'Kullanıcı oluşturulamadı' } };
         }
     }
 
     async createDepartment(departmentData: any) {
         const departmentRepository = AppDataSource.getRepository(Department);
         try {
-            if (!departmentData.department_name) 
-                return { status: 400, data: { message: 'Departman adı boş olamaz' } };
+            if (!utilService.isValidDepartmentName(departmentData.department_name))
+                return { status: 400, data: { message: 'Geçersiz departman adı' } };
             if (await this.checkDepartmentByName(departmentData.department_name)) 
                 return { status : 409, data: { message: 'Departman zaten var' } };
             const newDepartment = new Department();
