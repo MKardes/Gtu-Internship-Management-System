@@ -89,7 +89,7 @@ export class resetPasswordService {
                 return { status: 404, data: { message: 'Geçersiz mail' } };
             }
         
-            if (!utilService.checkPassword(password)) {
+            if (!utilService.isValidPassword(password)) {
                 return { status: 400, data: { message: 'Şifre en az 8 karakter, bir büyük harf ve bir rakam içermelidir' } };
             }
         
