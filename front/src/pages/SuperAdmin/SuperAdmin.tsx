@@ -79,6 +79,7 @@ const SuperAdminPage: React.FC = () => {
             setInputPassword("");
             setInputEmail("");
             setInputDepartment("");
+            setError(null);
         } catch (error) {
             handleError(error);
         }
@@ -94,6 +95,7 @@ const SuperAdminPage: React.FC = () => {
             });
             setDepartments([...departments, response.data]);
             setInputDepartmentName("");
+            setError(null);
         } catch (error) {
             handleError(error);
         }
@@ -106,6 +108,7 @@ const SuperAdminPage: React.FC = () => {
                 headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
             });
             setAdmins(admins.filter(admin => admin.id !== adminId));
+            setError(null);
         } catch (error) {
             handleError(error);
         }
@@ -119,6 +122,7 @@ const SuperAdminPage: React.FC = () => {
             });
             setDepartments(departments.filter(department => department.id !== departmentId));
             setAdmins(admins.filter(admin => admin.department.id !== departmentId));
+            setError(null);
         } catch (error) {
             handleError(error);
         }
@@ -315,7 +319,6 @@ const SuperAdminPage: React.FC = () => {
                                                     onChange={(e) => setInputDepartment(e.target.value)}
                                                     required
                                                     className='custom-input justify-content-center align-items-center shadow-sm'
-                                                    id="select-department"
                                                 >
                                                     <option value="">Departman Seçin</option>
                                                     {departments.map((dept, index) => (

@@ -42,3 +42,32 @@
 .custom-input, .form-control {
     height: 38px; /* You can adjust this value to match your design */
 }
+
+.admin-info, .add-user {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%; /* Aynı yükseklik */
+}
+
+.deparment-admin-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* İçerik üstten hizalansın */
+}
+
+.elegant-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+
+.elegant-card{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
