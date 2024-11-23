@@ -5,6 +5,7 @@ import axios from "axios"
 import "./Home.css";
 import Logo from "../../assets/logo.jpg";
 import ErrorAlert from "../../components/ErrorAlert/ErrorAlert";
+import Input from "../../components/Input/Input";
 
 const Home: React.FC = () => {
   const [inputUsername, setInputUsername] = useState("");
@@ -75,23 +76,21 @@ const Home: React.FC = () => {
           message="Kullanıcı adı veya şifre hatalı!"
         />
         <Form.Group className="mb-2" controlId="username">
-          <Form.Label>Kullanıcı Adı</Form.Label>
-          <Form.Control
-            type="text"
+          <Form.Label className="d-flex justify-content-between text-left">Email</Form.Label>
+          <Input
+            type="email"
             value={inputUsername}
-            placeholder="Kullanıcı Adı"
+            placeholder="Email"
             onChange={(e) => setInputUsername(e.target.value)}
-            required
           />
         </Form.Group>
         <Form.Group className="mb-2" controlId="password">
-          <Form.Label>Şifre</Form.Label>
-          <Form.Control
+          <Form.Label className="d-flex justify-content-between text-left">Şifre</Form.Label>
+          <Input
             type="password"
             value={inputPassword}
             placeholder="Şifre"
             onChange={(e) => setInputPassword(e.target.value)}
-            required
           />
         </Form.Group>
         {!loading ? (

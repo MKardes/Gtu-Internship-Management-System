@@ -51,7 +51,6 @@ const DepartmentAdminPage: React.FC = () => {
             const response = await axios.get("/api/department-admin/users", {
                 headers: getAuthHeader(),
             });
-            console.log(response.data);
             setUsers(response.data);
         } catch (error) {
             handleError(error);
@@ -117,7 +116,7 @@ const DepartmentAdminPage: React.FC = () => {
                                 <>
                                     <p><strong>İsim:</strong> {adminInfo.full_name}</p>
                                     <p><strong>Email:</strong> {adminInfo.mail}</p>
-                                    <p><strong>Departman:</strong> {adminInfo.department.department_name}</p>
+                                    { /* <p><strong>Departman:</strong> {adminInfo.department.department_name}</p> */}
                                 </>
                             ) : (
                                 <p>Yönetici bilgileri yükleniyor...</p>

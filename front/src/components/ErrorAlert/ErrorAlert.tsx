@@ -1,6 +1,7 @@
 // ErrorAlert.tsx
 import React from "react";
 import { Alert } from "react-bootstrap";
+import "./ErrorAlert.css";
 
 interface ErrorAlertProps {
   show: boolean;
@@ -12,7 +13,7 @@ const ErrorAlert: React.FC<ErrorAlertProps> = ({ show, onClose, message }) => {
   if (!show) return null;
 
   return (
-    <Alert className="mb-2" variant="danger" onClose={onClose} dismissible>
+    <Alert className="mb-2 error-alert" variant="danger" onClose={onClose} dismissible>
       {message}
     </Alert>
   );
