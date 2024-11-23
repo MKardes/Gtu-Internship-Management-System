@@ -64,10 +64,10 @@ export class superAdminService {
                 return { status: 400, data: { message: 'Geçersiz rol' } };
             if (await utilService.checkUserByMail(userData.mail)) 
                 return { status: 409, data: { message: 'Bu e-posta adresi zaten kullanımda' } };
-            if (!utilService.isValidDepartmentName(userData.department.department_name))
-                return { status: 400, data: { message: 'Geçersiz departman adı' } };
-            if (!await this.checkDepartmentByName(userData.department.department_name))
-                return { status: 400, data: { message: 'Departman bulunamadı' } };
+            //if (!utilService.isValidDepartmentName(userData.department.department_name))
+            //    return { status: 400, data: { message: 'Geçersiz departman adı' } };
+            //if (!await this.checkDepartmentByName(userData.department.department_name))
+            //    return { status: 400, data: { message: 'Departman bulunamadı' } };
             const userRepository = AppDataSource.getRepository(User);
             const newUser = new User();
             newUser.full_name = userData.full_name;

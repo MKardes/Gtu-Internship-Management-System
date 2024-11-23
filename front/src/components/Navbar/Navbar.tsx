@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar, Container, Image, Button } from 'react-bootstrap';
+import { Navbar, Container, Image, Button, Nav } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { FaSignOutAlt, FaEdit } from 'react-icons/fa';
 import axios from 'axios';
+import "./Navbar.css"
 import logo from '../../assets/logo.jpg';
 
 const Navigation: React.FC = () => {
@@ -63,33 +63,64 @@ const Navigation: React.FC = () => {
     }
 
     return (
-        <Navbar bg="dark" variant="dark" expand="lg">
-            <Container>
-                {/* Logo */}
-                <LinkContainer to="/">
-                    <Navbar.Brand>
-                        <Image src={logo} fluid style={{ width: '60px', height: '40px' }} />
-                    </Navbar.Brand>
-                </LinkContainer>
-            </Container>
-            <div style={{ display: 'flex', alignItems: 'center', marginRight: 'auto' }}>
-                {user && (
-                    <Button variant="outline-light" style={{ marginRight: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-                    onClick={handleLogout}>
-                        <FaSignOutAlt style={{ fontSize: '1.5rem' }} />
-                        <span>Logout</span>
+        <Navbar bg="primary" variant="dark" expand="lg " className="navbar shadow">
+          <Container>
+            {/* Logo */}
+            <LinkContainer to="/">
+              <Navbar.Brand className="d-flex align-items-center">
+                <Image src={logo} fluid id="logo" />
+                <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>GTÜ Staj Takip Sistemi</span>
+              </Navbar.Brand>
+            </LinkContainer>
+    
+            {/* Navbar Toggle */}
+            {user ? (
+              <Navbar.Toggle aria-controls="basic-navbar-nav" className="custom-navbar-toggle">
+                <span className="toggle-icon">X</span> {/* Toggle metnini değiştir */}
+              </Navbar.Toggle>
+              ) : (<></>)
+            }
+    
+            {/* Navbar Collapse */}
+            <Navbar.Collapse id="basic-navbar-nav">
+              <Nav className="ms-auto d-flex align-items-center">
+                {user ? (
+                  <>
+                    {/* Welcome Message */}
+                    <span className="text-light me-3 mb-2">
+                      <strong>{user.username}</strong>
+                    </span>
+    
+                    {/* Admin Panel Button */}
+                    {(user.role === "SuperAdmin" || user.role === "DepartmentAdmin") && (
+                      <Button
+                        variant="outline-light"
+                        className="d-flex align-items-center me-3 justify-content-center mb-2"
+                        onClick={handlePanel}
+                        style={{ width: "150px" }}
+                      >
+                        Yönetim Paneli
+                      </Button>
+                    )}
+
+                    {/* Logout Button */}
+                    <Button
+                      variant="outline-light"
+                      className="d-flex align-items-center me-3 justify-content-center mb-2"
+                      style={{ width: "150px" }}
+                      onClick={handleLogout}
+                    >
+                     Güvenli Çıkış
                     </Button>
+                  </>
+                ) : (
+                    <></>
                 )}
-                {user && (user.role === 'SuperAdmin' || user.role === 'DepartmentAdmin') && (
-                    <Button variant="outline-light" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-                    onClick={handlePanel}>
-                        <FaEdit style={{ fontSize: '1.5rem' }} />
-                        <span>Panel</span>
-                    </Button>
-                )}
-            </div>
+              </Nav>
+            </Navbar.Collapse>
+          </Container>
         </Navbar>
-    );
+      );
 };
 
 export default Navigation;
