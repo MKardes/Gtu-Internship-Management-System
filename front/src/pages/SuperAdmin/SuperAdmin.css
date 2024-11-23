@@ -1,126 +1,73 @@
-/* Genel container stili */
-.super_admin_container {
-    background-color: #f8f9fa; /* Açık gri arka plan rengi */
-    padding: 20px;
-    height: 1000px;
-    border-radius: 5px;
+
+.super_admin_panel {
+    margin-top: 20px;
 }
 
-.super_admin_card {
-    background-color: #f8f9fa; /* Açık gri arka plan rengi */
-    padding: 20px;
-    height: 400px;
-    border-radius: 5px;
+.super_admin_panel .ant-card-head {
+    background-color: #f0f2f5;
 }
 
-.department_container {
-    background-color: #fff9fa;  
-    padding: 20px;
-    border-radius: 5px;
+.super_admin_panel .ant-card-head-title {
+    font-size: 20px;
+    font-weight: bold;
 }
 
-.department_card
-{
-    background-color: #f8f9fa; /* Açık gri arka plan rengi */
-    height: 400px;
-    padding: 20px;
-    border-radius: 5px;
+.super_admin_panel .ant-card-body {
+    padding: 0;
 }
 
-
-.department_card_body
-{
-    background-color: #f8f9fa; /* Açık gri arka plan rengi */
-    height: 400px;
-    padding: 20px;
-    border-radius: 5px;
+.super_admin_panel .ant-table {
+    border: 1px solid #f0f2f5;
 }
 
-.admin_container
-{
-    background-color: #f8f9fa; /* Açık gri arka plan rengi */
-    padding: 20px;
-    border-radius: 5px;
+.super_admin_panel .ant-table-thead > tr > th {
+    background-color: #f0f2f5;
+    font-weight: bold;
 }
 
-th {
-    text-align: center;        /* Yatayda ortalama */
-    vertical-align: middle;    /* Dikeyde ortalama */
+.super_admin_pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
 }
 
-.super_admin th {
-    text-align: center; /* Yatayda ortalama */
-    vertical-align: middle; /* Dikeyde ortalama */
+@media (max-width: 768px) {
+    .pagination {
+        font-size: 0.75rem;  /* Küçük cihazlarda font boyutunu küçült. */
+        flex-wrap: wrap;    /* İçerikleri yeni satıra taşı. */
+    }
 }
 
-.super_admin td {
-    text-align: center;        /* Yatayda ortalama */
-    vertical-align: middle;    /* Dikeyde ortalama */
+/* Ensure all inputs have the same height */
+.custom-input, .form-control {
+    height: 38px; /* You can adjust this value to match your design */
 }
 
-/* Kart başlığı stili */
-.card-title {
-    font-size: 1.5rem; /* Kart başlığı boyutu */
-    font-weight: bold; /* Kalın yazı */
-    color: #343a40; /* Koyu gri renk */
+.admin-info, .add-user {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%; /* Aynı yükseklik */
 }
 
-/* Form grup etiketleri */
-.form-label {
-    font-weight: 500; /* Orta kalınlık */
+.deparment-admin-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* İçerik üstten hizalansın */
 }
 
-/* Form kontrolleri */
-.form-control {
-    border: 1px solid #ced4da; /* Açık gri kenar */
-    border-radius: 4px; /* Yuvarlatılmış köşeler */
-}
-
-/* Button'lar */
-.super_admin_btn-success {
-    background-color: #28a745; /* Yeşil buton rengi */
-    border-color: #28a745; /* Yeşil kenar rengi */
-}
-
-.super_admin_btn-danger {
-    background-color: #dc3545; /* Kırmızı buton rengi */
-    border-color: #dc3545; /* Kırmızı kenar rengi */
-}
-
-.super_admin_btn-warning {
-    background-color: #ffc107; /* Sarı buton rengi */
-    border-color: #ffc107; /* Sarı kenar rengi */
-}
-
-/* Tablo stili */
-.table {
-    margin-top: 20px; /* Üstten boşluk */
-    background-color: white; /* Beyaz arka plan */
-}
-
-.table th {
-    background-color: #e9ecef; /* Açık gri arka plan */
-    color: #495057; /* Koyu gri başlık rengi */
-}
-
-/* Pagination */
-/* Pagination'ı kartın en altına sabitleme */
-.pagination {
-    position: absolute; /* Sabit konumlandırma */
-    bottom: 20px; /* Kartın altından boşluk */
-    text-align: center; /* Ortaya hizalama */
+.elegant-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
 
-/* Loading ve hata mesajı stilleri */
-.loading {
-    text-align: center;
-    font-size: 1.2rem;
-    color: #007bff; /* Mavi yükleme rengi */
-}
-
-.error {
-    text-align: center;
-    font-size: 1.2rem;
-    color: #dc3545; /* Kırmızı hata mesajı rengi */
+.elegant-card{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    flex: 1;
 }
