@@ -9,9 +9,10 @@ import NewPassword from './pages/NewPassword/NewPassword';
 //import Login from "./pages/Login/Login";
 // import ResetPassword from './pages/ResetPassword/ResetPassword';
 import Navigation from './components/Navbar/Navbar';
-import Dashboard from './pages/Dashboard/Dashboard';
+//import Dashboard from './pages/Dashboard/Dashboard';
 import PrivateRoute from './components/privateRoute';
 import DepartmentAdmin from './pages/DepartmentAdmin/DepartmentAdmin';
+import Dashboard from './pages/Dashboard/Dashboard';
 
 const App: React.FC = () => {
   return (
@@ -33,9 +34,14 @@ const App: React.FC = () => {
               <PrivateRoute element = {<DepartmentAdmin />} requiredRole = "DepartmentAdmin" />
             }
           />
+          <Route 
+            path = "/dashboard"
+            element = {
+              <PrivateRoute element = {<Dashboard />} />
+            }
+          />
           <Route path="/confirm-code" element={<ConfirmCode />} />
           <Route path="/new-password" element={<NewPassword />} />
-          <Route path="/dashboard" element={<Dashboard />} />
           {/* Diğer tüm hrefleri home yönlendir*/}
           <Route path="*" element={<Home />} />
         </Routes>
