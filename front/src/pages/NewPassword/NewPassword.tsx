@@ -21,10 +21,10 @@ const NewPassword: React.FC = () => {
 
     try {
       const mail = localStorage.getItem('mail');
-      localStorage.removeItem('mail');
       const response = await axios.post('/api/auth/change-password', { password , mail});
-
+      
       if (response.status === 200) {
+        localStorage.removeItem('mail');
         navigate('/login');
       }
     } catch (err) {
@@ -46,7 +46,7 @@ const NewPassword: React.FC = () => {
   return (
     <div className="new-password-container">
       <div className="new-password-card">
-        <h2>Yeni Şifre Belirle</h2>
+        <div className="h4 mb-2 text-center">Yeni Şifre Belirle</div>
         {showError && (
           <ErrorAlert show={showError} onClose={handleCloseError} message={error} />
         )}

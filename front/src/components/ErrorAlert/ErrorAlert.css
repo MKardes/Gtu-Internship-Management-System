@@ -1,0 +1,12 @@
+/* CSS for ErrorAlert */
+.error-alert {
+    position: fixed;
+    z-index: 9999; /* Ensure it's on top of other elements */
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+    color: white; /* Text color */
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Or set a fixed width like 300px */
+    text-align: center;
+}

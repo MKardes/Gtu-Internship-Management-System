@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Table, Button, Form, Pagination } from 'react-bootstrap';
-import axios from 'axios'; // axios'u içe aktarıyoruz
+import { Container, Row, Col, Card, Table, Button, Form, Pagination, ListGroup } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import Input from '../../components/Input/Input';
+import axios from 'axios';
+import ErrorAlert from '../../components/ErrorAlert/ErrorAlert';
+
 import './SuperAdmin.css';
 
 const SuperAdminPage: React.FC = () => {
+
     const [adminInfo, setAdminInfo] = useState<any>(null);
     const [inputUsername, setInputUsername] = useState("");
     const [inputPassword, setInputPassword] = useState("");
@@ -12,52 +17,50 @@ const SuperAdminPage: React.FC = () => {
     const [admins, setAdmins] = useState<any[]>([]);
     const [departments, setDepartments] = useState<any[]>([]);
     const [activeAdminPage, setActiveAdminPage] = useState(1);
-    const adminsPerPage = 5;
+    const adminsPerPage = 3;
     const [inputDepartmentName, setInputDepartmentName] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
     const [activeDepartmentPage, setActiveDepartmentPage] = useState(1);
-    const departmentsPerPage = 5;
+    const departmentsPerPage = 3;
+    const navigate = useNavigate();
 
-    const fetchAdmins = async () => {
+    // Fetch Super Admin Info
+    const fetchSuperAdmin = async () => {
         try {
-            const response = await axios.get('/api/super-admin/department-admins');
-            setAdmins(response.data);
-            setError(null);
+            const response = await axios.get("/api/super-admin/super-admin", {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
+            setAdminInfo(response.data);
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                setError(error.response.data.message);
-            } else {
-                setError('Bilinmeyen bir hata oluştu');
-            }
-        } finally {
-            setLoading(false);
+            handleError(error);
         }
     };
-    // FETCH ADMINS FROM DB
-    useEffect(() => {
-        fetchAdmins();
-    }, []);
 
-    // FETCH DEPARTMENTS FROM DB
-    useEffect(() => {
-        const fetchDepartments = async () => {
-            try {
-                const response = await axios.get('/api/super-admin/departments');
-                setDepartments(response.data);
-                setError(null);
-            } catch (error) {
-                if (axios.isAxiosError(error) && error.response) {
-                    setError(error.response.data.message);
-                } else {
-                    setError('Bilinmeyen bir hata oluştu');
-                }
-            }
-        };
-        fetchDepartments();
-    }, []);
+    // Fetch Admins
+    const fetchAdmins = async () => {
+        try {
+            const response = await axios.get('/api/super-admin/department-admins', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
+            setAdmins(response.data);
+        } catch (error) {
+            handleError(error);
+        }
+    };
 
-    // CREATE NEW DEPARTMENT ADMIN
+    // Fetch Departments
+    const fetchDepartments = async () => {
+        try {
+            const response = await axios.get('/api/super-admin/departments', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
+            setDepartments(response.data);
+        } catch (error) {
+            handleError(error);
+        }
+    };
+
+    // Create New Department Admin
     const handleCreateDepartmentAdmin = async (e: React.FormEvent) => {
         e.preventDefault();
         const newAdmin = {
@@ -68,67 +71,64 @@ const SuperAdminPage: React.FC = () => {
             department_id: inputDepartment,
         };
         try {
-            const response = await axios.post('/api/super-admin/create-department-admin', newAdmin);
-            console.log(response.data);
+            const response = await axios.post('/api/super-admin/create-department-admin', newAdmin, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
             setAdmins([...admins, response.data]);
             setInputUsername("");
             setInputPassword("");
             setInputEmail("");
             setInputDepartment("");
+            setError(null);
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                setError(error.response.data.message);
-            } else {
-                setError('Yeni yönetici eklenirken hata oluştu.');
-            }
+            handleError(error);
         }
     };
 
-    // CREATE NEW DEPARTMENT
+    // Create New Department
     const handleCreateDepartment = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const newDepartment = { department_name: inputDepartmentName };
-            const response = await axios.post('/api/super-admin/create-department', newDepartment);
+            const response = await axios.post('/api/super-admin/create-department', newDepartment, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
             setDepartments([...departments, response.data]);
             setInputDepartmentName("");
+            setError(null);
         } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-                setError(error.response.data.message);
-            } else {
-                setError('Yeni departman eklenirken hata oluştu.');
-            }
+            handleError(error);
         }
     };
 
-    // DELETE DEPARTMENT ADMIN
+    // Delete Department Admin
     const handleDeleteDepartmentAdmin = async (adminId: number) => {
         try {
-            const response = await axios.delete(`/api/super-admin/delete-department-admin/${adminId}`);
+            await axios.delete(`/api/super-admin/delete-department-admin/${adminId}`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
             setAdmins(admins.filter(admin => admin.id !== adminId));
             setError(null);
         } catch (error) {
-            console.error('Yönetici silinirken hata:', error);
-            setError('Yönetici silinirken bir hata oluştu.');
+            handleError(error);
         }
     };
 
-    // DELETE DEPARTMENT
+    // Delete Department
     const handleDeleteDepartment = async (departmentId: number) => {
         try {
-            await axios.delete(`/api/super-admin/delete-department/${departmentId}`);
-            // Departmanı sildikten sonra departman listesini güncelle
+            await axios.delete(`/api/super-admin/delete-department/${departmentId}`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+            });
             setDepartments(departments.filter(department => department.id !== departmentId));
-            // Bu departmana ait yöneticileri güncelle
-            setAdmins(admins.filter(admin => admin.department_id !== departmentId)); // Departman silindiği için bu departmana ait yöneticiler de silinir
+            setAdmins(admins.filter(admin => admin.department.id !== departmentId));
             setError(null);
         } catch (error) {
-            console.error('Departman silinirken hata:', error);
-            setError('Departman silinirken bir hata oluştu.');
+            handleError(error);
         }
     };
 
-    // ADMIN PAGINATION
+    // Admin Pagination
     const indexOfLastAdmin = activeAdminPage * adminsPerPage;
     const indexOfFirstAdmin = indexOfLastAdmin - adminsPerPage;
     const currentAdmins = admins.slice(indexOfFirstAdmin, indexOfLastAdmin);
@@ -137,7 +137,7 @@ const SuperAdminPage: React.FC = () => {
         setActiveAdminPage(pageNumber);
     };
 
-    // DEPARTMENT PAGINATION
+    // Department Pagination
     const indexOfLastDepartment = activeDepartmentPage * departmentsPerPage;
     const indexOfFirstDepartment = indexOfLastDepartment - departmentsPerPage;
     const currentDepartments = departments.slice(indexOfFirstDepartment, indexOfLastDepartment);
@@ -146,24 +146,53 @@ const SuperAdminPage: React.FC = () => {
         setActiveDepartmentPage(pageNumber);
     };
 
+    const handleError = (error: any) => {
+        if (axios.isAxiosError(error) && error.response) {
+            setError(error.response.data.message);
+        } else {
+            setError('Bilinmeyen bir hata oluştu');
+        }
+    };
+
+    useEffect(() => {
+        fetchSuperAdmin();
+        fetchAdmins();
+        fetchDepartments();
+    }, []);
+
+
     return (
-        <Container fluid className="super_admin_container mt-4">
-            <Row>
-                <Col md={4}>
-                    <Card>
+        <Container fluid>
+            <Row className="justify-content-center" style={{ position: 'relative' }}>
+                {error && <ErrorAlert 
+                            show={true} 
+                            onClose={() => setError(null)}
+                            message={error}
+                        />}
+            </Row>
+            <Row className='super-admin-container mb-4'>
+                { /* Sol tarafta Kullanıcı bilgileri */ }
+                <Col md={4} className='admin-info'>
+                    <Card className='mb-4 elegant-card shadow-sm rounded-lg'>
+                        <Card.Header className='elegant-card-header'>Yönetici Bilgileri</Card.Header>
                         <Card.Body>
-                            <Card.Title>Yönetici Bilgileri</Card.Title>
-                            <p><strong>Ad Soyad:</strong> Ömer Faruk Olkay</p>
-                            <p><strong>Email:</strong> omer@omer.com</p>
-                            <p><strong>Departman:</strong> Bilgisayar Mühendisliği</p>
+                            <ListGroup variant="flush">
+                                {adminInfo ? (
+                                    <>
+                                        <ListGroup.Item><strong>Ad Soyad:</strong> {adminInfo.full_name}</ListGroup.Item>
+                                        <ListGroup.Item><strong>Email:</strong> {adminInfo.mail}</ListGroup.Item>
+                                    </>
+                                ) : (
+                                    <ListGroup.Item>Yönetici bilgileri yükleniyor...</ListGroup.Item>
+                                )}
+                            </ListGroup>
                         </Card.Body>
                     </Card>
-                </Col>
 
-                <Col md={4} className="mt-4">
-                    <Card>
+                    { /* Yeni Departman Ekleme Formu */ }
+                    <Card className='elegant-card shadow-sm rounded-lg'>
+                        <Card.Header className='elegant-card-header'>Yeni Departman Ekle</Card.Header>
                         <Card.Body>
-                            <Card.Title>Yeni Departman Ekle</Card.Title>
                             <Form onSubmit={handleCreateDepartment}>
                                 <Form.Group className="mb-3" controlId="departmentName">
                                     <Form.Label>Departman İsmi</Form.Label>
@@ -181,149 +210,194 @@ const SuperAdminPage: React.FC = () => {
                             </Form>
                         </Card.Body>
                     </Card>
-                </Col>
-
-                <Col md={4}>
-                    <Card>
+                    {/*Departmanı listele*/}
+                    <Card className='elegant-card shadow-sm rounded-lg mt-4'>
+                        <Card.Header className='elegant-card-header'>Departmanlar</Card.Header>
                         <Card.Body>
-                            <Card.Title>Yeni Yönetici Ekle</Card.Title>
-                            <Form onSubmit={handleCreateDepartmentAdmin}>
-                                <Form.Group className="mb-2" controlId="name">
-                                    <Form.Label>İsim Soyisim</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="İsim"
-                                        value={inputUsername}
-                                        onChange={(e) => setInputUsername(e.target.value)}
-                                        required
-                                    />
-                                </Form.Group>
-
-                                <Form.Group className="mb-2" controlId="email">
-                                    <Form.Label>Email</Form.Label>
-                                    <Form.Control
-                                        type="email"
-                                        placeholder="Email"
-                                        value={inputEmail}
-                                        onChange={(e) => setInputEmail(e.target.value)}
-                                        required
-                                    />
-                                </Form.Group>
-
-                                <Form.Group className="mb-2" controlId="password">
-                                    <Form.Label>Şifre</Form.Label>
-                                    <Form.Control
-                                        type="password"
-                                        placeholder="Şifre"
-                                        value={inputPassword}
-                                        onChange={(e) => setInputPassword(e.target.value)}
-                                        required
-                                    />
-                                </Form.Group>
-
-                                <Form.Group className="mb-2" controlId="department">
-                                    <Form.Label>Departman</Form.Label>
-                                    <Form.Control
-                                        as="select"
-                                        value={inputDepartment}
-                                        onChange={(e) => setInputDepartment(e.target.value)}
-                                        required
-                                    >
-                                        <option value="">Departman Seçin</option>
-                                        {departments.map((dept, index) => (
-                                            <option key={index} value={dept.id}>{dept.department_name}</option>
+                            <Table striped bordered hover size="sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Departman İsmi</th>
+                                            <th>İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {currentDepartments.map((department, index) => (
+                                            <tr key={index}>
+                                                <td>{department.department_name}</td>
+                                                <td>
+                                                    <Button variant="danger" onClick={() => handleDeleteDepartment(department.id)}>Sil</Button>
+                                                </td>
+                                            </tr>
                                         ))}
-                                    </Form.Control>
-                                </Form.Group>
-
-                                <Button variant="success" type="submit">Ekle</Button>
-                            </Form>
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row>
-
-            <Row className="mt-4">
-                <Col md={4}>
-                    <Card className='department_card'>
-                    <Card.Body className='department_card_body'>
-                            <Card.Title>Departmanlar</Card.Title>
-                            <Table striped bordered hover size="sm">
-                                <thead>
-                                    <tr>
-                                        <th>Departman İsmi</th>
-                                        <th>İşlemler</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {currentDepartments.map((department, index) => (
-                                        <tr key={index}>
-                                            <td>{department.department_name}</td>
-                                            <td>
-                                                <Button variant="danger" onClick={() => handleDeleteDepartment(department.id)}>Sil</Button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
+                                    </tbody>
                             </Table>
-                            <Pagination className='super_admin_pagination'>
-                                {[...Array(totalDepartmentPages)].map((_, index) => (
-                                    <Pagination.Item
-                                        key={index}
-                                        active={index + 1 === activeDepartmentPage}
-                                        onClick={() => handleDepartmentPageChange(index + 1)}
-                                    >
-                                        {index + 1}
-                                    </Pagination.Item>
-                                ))}
+                           
+                            <Pagination className="super_admin_pagination">
+                                {/* Sol Ok */}
+                                <Pagination.Prev
+                                    onClick={() => handleDepartmentPageChange(activeDepartmentPage - 1)}
+                                    disabled={activeDepartmentPage === 1}
+                                />
+
+                                {Array.from({ length: Math.min(3, totalDepartmentPages) }).map((_, index) => {
+                                    const startPage = Math.max(1, activeDepartmentPage - 1); // Aktif sayfanın bir öncesi
+                                    const page = startPage + index; // Gösterilecek sayfaları dinamik olarak hesapla
+
+                                    if (page > totalDepartmentPages) return null; // Toplam sayfa sayısından büyükse render etme
+
+                                    return (
+                                        <Pagination.Item
+                                            key={page}
+                                            active={page === activeDepartmentPage} // Aktif sayfa ise stil uygula
+                                            onClick={() => handleDepartmentPageChange(page)}
+                                        >
+                                            {page}
+                                        </Pagination.Item>
+                                    );
+                                })}
+
+                                {/* Sağ Ok */}
+                                <Pagination.Next
+                                    onClick={() => handleDepartmentPageChange(activeDepartmentPage + 1)}
+                                    disabled={activeDepartmentPage === totalDepartmentPages}
+                                />
                             </Pagination>
+
+
                         </Card.Body>
                     </Card>
                 </Col>
+                { /* Sağ tarafta yeni yönetici ekleme formu */ }
+                <Col md={8} className='admin-management mt-4 mt-md-0'>
+                    <Card className='elegant-card shadow-sm rounded-lg'>
+                            <Card.Header className='elegant-card-header'>Yeni Yönetici Ekle</Card.Header>
+                            <Card.Body>
+                                <Form onSubmit={handleCreateDepartmentAdmin}>
+                                    <Row>
+                                        <Col md={6}>
+                                            <Form.Group className="mb-2" controlId="name">
+                                                <Form.Label>İsim Soyisim</Form.Label>
+                                                <Input
+                                                    type='text'
+                                                    placeholder='İsim Soyisim'
+                                                    value={inputUsername}
+                                                    onChange={(e) => setInputUsername(e.target.value)}             
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group className="mb-2" controlId="email">
+                                                <Form.Label>Email</Form.Label>
+                                                <Input
+                                                    type='email'
+                                                    placeholder='Email'
+                                                    value={inputEmail}
+                                                    onChange={(e) => setInputEmail(e.target.value)}
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={6}>
+                                            <Form.Group className="mb-2" controlId="password">
+                                                <Form.Label>Şifre</Form.Label>
+                                                <Input
+                                                    type='password'
+                                                    placeholder='Şifre'
+                                                    value={inputPassword}
+                                                    onChange={(e) => setInputPassword(e.target.value)}
+                                                />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={6}>
+                                            <Form.Group className="mb-2" controlId="department">
+                                                <Form.Label>Departman</Form.Label>
+                                                <Form.Control
+                                                    as="select"
+                                                    value={inputDepartment}
+                                                    onChange={(e) => setInputDepartment(e.target.value)}
+                                                    required
+                                                    className='custom-input justify-content-center align-items-center shadow-sm'
+                                                >
+                                                    <option value="">Departman Seçin</option>
+                                                    {departments.map((dept, index) => (
+                                                        <option key={index} value={dept.id}>{dept.department_name}</option>
+                                                    ))}
+                                                </Form.Control>
+                                            </Form.Group>
+                                        </Col>
+                                    </Row>
 
-                <Col md={8}>
-                    <Card className='department_card'>
-                        <Card.Body className='department_card_body'>
-                            <Card.Title>Departman Yöneticileri</Card.Title>
-                            <Table striped bordered hover size="sm">
-                                <thead>
-                                    <tr>
-                                        <th>İsim Soyisim</th>
-                                        <th>Email</th>
-                                        <th>Departman</th>
-                                        <th>İşlemler</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {currentAdmins.map((admin, index) => (
-                                        <tr key={index}>
-                                            <td>{admin.full_name}</td>
-                                            <td>{admin.mail}</td>
-                                            <td>{admin.department ? admin.department.department_name : ''}</td>
-                                            <td>
-                                                <Button variant="danger" onClick={() => handleDeleteDepartmentAdmin(admin.id)}>Sil</Button>
-                                            </td>
+
+                                    <Button variant="success" type="submit">Ekle</Button>
+                                </Form>
+                            </Card.Body>
+                    </Card>
+                    {/*Yöneticileri listele*/}
+                    <Card className='elegant-card shadow-sm rounded-lg mt-4'>
+                        <Card.Header className='elegant-card-header'>Departman Yöneticileri</Card.Header>
+                        <Card.Body>
+                            <div className="table-responsive">
+                                <Table striped bordered hover size="sm">
+                                    <thead>
+                                        <tr>
+                                            <th>İsim Soyisim</th>
+                                            <th>Email</th>
+                                            <th>Departman</th>
+                                            <th>İşlemler</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
+                                    </thead>
+                                    <tbody>
+                                        {currentAdmins.map((admin, index) => (
+                                            <tr key={index}>
+                                                <td>{admin.full_name}</td>
+                                                <td>{admin.mail}</td>
+                                                <td>{admin.department ? admin.department.department_name : ''}</td>
+                                                <td>
+                                                    <Button variant="danger" onClick={() => handleDeleteDepartmentAdmin(admin.id)}>Sil</Button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </Table>
+                            </div>
                             <Pagination>
-                                {[...Array(totalAdminPages)].map((_, index) => (
-                                    <Pagination.Item
-                                        key={index}
-                                        active={index + 1 === activeAdminPage}
-                                        onClick={() => handleAdminPageChange(index + 1)}
-                                    >
-                                        {index + 1}
-                                    </Pagination.Item>
-                                ))}
+                                {/* Sol Ok */}
+                                <Pagination.Prev
+                                    onClick={() => handleAdminPageChange(activeAdminPage - 1)}
+                                    disabled={activeAdminPage === 1}
+                                />
+
+                                {/* Sayfa Numaraları */}
+                                {Array.from({ length: Math.min(5, totalAdminPages) }).map((_, index) => {
+                                    // Sayfa hesaplaması
+                                    const startPage = Math.max(1, activeAdminPage - 2); // Aktif sayfanın 2 öncesinden başla
+                                    const page = startPage + index;
+
+                                    if (page > totalAdminPages) return null; // Toplam sayfa sayısını aşarsa gösterme
+
+                                    return (
+                                        <Pagination.Item
+                                            key={page}
+                                            active={page === activeAdminPage} // Aktif sayfa için renklendirme
+                                            onClick={() => handleAdminPageChange(page)}
+                                        >
+                                            {page}
+                                        </Pagination.Item>
+                                    );
+                                })}
+
+                                {/* Sağ Ok */}
+                                <Pagination.Next
+                                    onClick={() => handleAdminPageChange(activeAdminPage + 1)}
+                                    disabled={activeAdminPage === totalAdminPages}
+                                />
                             </Pagination>
                         </Card.Body>
                     </Card>
                 </Col>
             </Row>
-
-            {error && <div className="alert alert-danger mt-4">{error}</div>}
         </Container>
     );
 };
