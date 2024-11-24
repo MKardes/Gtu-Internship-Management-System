@@ -171,16 +171,40 @@ const SuperAdminPage: React.FC = () => {
                         />}
             </Row>
             <Row className='super-admin-container mb-4'>
+
                 { /* Sol tarafta Kullanıcı bilgileri */ }
                 <Col md={4} className='admin-info'>
-                    <Card className='mb-4 elegant-card shadow-sm rounded-lg'>
-                        <Card.Header className='elegant-card-header'>Yönetici Bilgileri</Card.Header>
-                        <Card.Body>
+                    <Card className='mb-4 elegant-card shadow-sm rounded-lg border-primary profile-card'>
+                        <Card.Header 
+                            className="text-center text-white profile-header" 
+                            style={{ 
+                                    fontWeight: "bold",
+                                    fontSize: "18px",
+                                    backgroundColor: "#007bff",
+                                    borderBottom: "3px solid #0056b3",
+                                }}>
+                                Yönetici Bilgileri
+                        </Card.Header>
+                        <Card.Body className='profile-body'
+                            style={{
+                                backgroundColor: "#f8f9fa",
+                                padding: "20px",
+                              }}
+                        >
                             <ListGroup variant="flush">
                                 {adminInfo ? (
                                     <>
-                                        <ListGroup.Item><strong>Ad Soyad:</strong> {adminInfo.full_name}</ListGroup.Item>
-                                        <ListGroup.Item><strong>Email:</strong> {adminInfo.mail}</ListGroup.Item>
+                                        <ListGroup.Item className="profile-info">
+                                            <Form.Group className="info-group mb-3">
+                                            <Form.Label className="form-label font-weight-bold">İsim Soyisim:</Form.Label>
+                                            <span className="d-block">{adminInfo.full_name}</span>
+                                            </Form.Group>
+
+                                            <Form.Group className="info-group">
+                                            <Form.Label className="form-label font-weight-bold">Email:</Form.Label>
+                                            <span className="d-block">{adminInfo.mail}</span>
+                                            </Form.Group>
+                                        </ListGroup.Item>
                                     </>
                                 ) : (
                                     <ListGroup.Item>Yönetici bilgileri yükleniyor...</ListGroup.Item>
@@ -190,50 +214,80 @@ const SuperAdminPage: React.FC = () => {
                     </Card>
 
                     { /* Yeni Departman Ekleme Formu */ }
-                    <Card className='elegant-card shadow-sm rounded-lg'>
-                        <Card.Header className='elegant-card-header'>Yeni Departman Ekle</Card.Header>
+                    <Card className='mb-4 elegant-card shadow-sm rounded-lg border-primary'>
+                        <Card.Header 
+                            className="text-center text-white profile-header" 
+                            style={{ 
+                                    fontWeight: "bold",
+                                    fontSize: "18px",
+                                    backgroundColor: "#007bff",
+                                    borderBottom: "3px solid #0056b3",
+                                }}>
+                                Yeni Departman Ekle
+                        </Card.Header>
                         <Card.Body>
-                            <Form onSubmit={handleCreateDepartment}>
+                            <Form onSubmit={handleCreateDepartment} className="form-wrapper">
+                                {/* Departman İsmi Girişi */}
                                 <Form.Group className="mb-3" controlId="departmentName">
-                                    <Form.Label>Departman İsmi</Form.Label>
                                     <Form.Control
+                                        className="custom-input shadow-sm"
                                         type="text"
-                                        placeholder="Departman ismi girin"
+                                        placeholder="Departman İsmi"
                                         value={inputDepartmentName}
                                         onChange={(e) => setInputDepartmentName(e.target.value)}
                                         required
                                     />
                                 </Form.Group>
-                                <Button variant="primary" type="submit">
+                                <Button 
+                                    type="submit"
+                                    className="submit-btn"
+                                >
                                     Ekle
                                 </Button>
                             </Form>
                         </Card.Body>
                     </Card>
                     {/*Departmanı listele*/}
-                    <Card className='elegant-card shadow-sm rounded-lg mt-4'>
-                        <Card.Header className='elegant-card-header'>Departmanlar</Card.Header>
+                    <Card className='elegant-card shadow-sm rounded-lg mb-4'>
+                        <Card.Header 
+                            className="text-center text-white profile-header" 
+                            style={{ 
+                                    fontWeight: "bold",
+                                    fontSize: "18px",
+                                    backgroundColor: "#007bff",
+                                    borderBottom: "3px solid #0056b3",
+                                }}>
+                                Departmanlar
+                        </Card.Header>
                         <Card.Body>
-                            <Table striped bordered hover size="sm">
+                            <Table striped bordered hover size="sm" className='fancy-table'>
                                     <thead>
                                         <tr>
-                                            <th>Departman İsmi</th>
-                                            <th>İşlemler</th>
+                                            <th className='department-name text-center'>Departman İsmi</th>
+                                            <th className='department-name text-center'>İşlemler</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {currentDepartments.map((department, index) => (
                                             <tr key={index}>
-                                                <td>{department.department_name}</td>
-                                                <td>
-                                                    <Button variant="danger" onClick={() => handleDeleteDepartment(department.id)}>Sil</Button>
+                                                <td className='department-name'>
+                                                    {department.department_name}
+                                                </td>
+                                                <td className='text-end'>
+                                                    <Button
+                                                        className='delete-btn'
+                                                        variant="danger" 
+                                                        onClick={() => handleDeleteDepartment(department.id)}
+                                                    >
+                                                        Sil
+                                                    </Button>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                             </Table>
                            
-                            <Pagination className="super_admin_pagination">
+                            <Pagination className="super_admin_pagination fancy-pagination justify-content-center mt-4">
                                 {/* Sol Ok */}
                                 <Pagination.Prev
                                     onClick={() => handleDepartmentPageChange(activeDepartmentPage - 1)}
@@ -269,31 +323,44 @@ const SuperAdminPage: React.FC = () => {
                     </Card>
                 </Col>
                 { /* Sağ tarafta yeni yönetici ekleme formu */ }
-                <Col md={8} className='admin-management mt-4 mt-md-0'>
+                <Col md={8} className='admin-management mb-4 mt-md-0'>
                     <Card className='elegant-card shadow-sm rounded-lg'>
-                            <Card.Header className='elegant-card-header'>Yeni Yönetici Ekle</Card.Header>
+                            <Card.Header 
+                                className="text-center text-white profile-header" 
+                                style={{ 
+                                        fontWeight: "bold",
+                                        fontSize: "18px",
+                                        backgroundColor: "#007bff",
+                                        borderBottom: "3px solid #0056b3",
+                                    }}>
+                                    Yeni Yönetici Ekle
+                            </Card.Header>
                             <Card.Body>
-                                <Form onSubmit={handleCreateDepartmentAdmin}>
+                                <Form className="form-super-admin" onSubmit={handleCreateDepartmentAdmin}>
                                     <Row>
                                         <Col md={6}>
                                             <Form.Group className="mb-2" controlId="name">
-                                                <Form.Label>İsim Soyisim</Form.Label>
-                                                <Input
+                                                <Form.Label className="form-label">İsim Soyisim</Form.Label>
+                                                <Form.Control
                                                     type='text'
                                                     placeholder='İsim Soyisim'
                                                     value={inputUsername}
-                                                    onChange={(e) => setInputUsername(e.target.value)}             
+                                                    onChange={(e) => setInputUsername(e.target.value)}
+                                                    required
+                                                    className='custom-input shadow-sm'
                                                 />
                                             </Form.Group>
                                         </Col>
                                         <Col md={6}>
                                             <Form.Group className="mb-2" controlId="email">
-                                                <Form.Label>Email</Form.Label>
-                                                <Input
+                                                <Form.Label className="form-label">Email</Form.Label>
+                                                <Form.Control
                                                     type='email'
                                                     placeholder='Email'
                                                     value={inputEmail}
                                                     onChange={(e) => setInputEmail(e.target.value)}
+                                                    required
+                                                    className='custom-input shadow-sm'
                                                 />
                                             </Form.Group>
                                         </Col>
@@ -301,8 +368,10 @@ const SuperAdminPage: React.FC = () => {
                                     <Row>
                                         <Col md={6}>
                                             <Form.Group className="mb-2" controlId="password">
-                                                <Form.Label>Şifre</Form.Label>
-                                                <Input
+                                                <Form.Label className="form-label">Şifre</Form.Label>
+                                                <Form.Control
+                                                    required
+                                                    className='custom-input shadow-sm'
                                                     type='password'
                                                     placeholder='Şifre'
                                                     value={inputPassword}
@@ -312,9 +381,8 @@ const SuperAdminPage: React.FC = () => {
                                         </Col>
                                         <Col md={6}>
                                             <Form.Group className="mb-2" controlId="department">
-                                                <Form.Label>Departman</Form.Label>
-                                                <Form.Control
-                                                    as="select"
+                                                <Form.Label className="form-label">Departman</Form.Label>
+                                                <Form.Select
                                                     value={inputDepartment}
                                                     onChange={(e) => setInputDepartment(e.target.value)}
                                                     required
@@ -324,45 +392,63 @@ const SuperAdminPage: React.FC = () => {
                                                     {departments.map((dept, index) => (
                                                         <option key={index} value={dept.id}>{dept.department_name}</option>
                                                     ))}
-                                                </Form.Control>
+                                                </Form.Select>
                                             </Form.Group>
                                         </Col>
                                     </Row>
-
-
-                                    <Button variant="success" type="submit">Ekle</Button>
+                                    <Button 
+                                        type="submit"
+                                        className="submit-btn"
+                                        >
+                                        Ekle
+                                    </Button>
                                 </Form>
                             </Card.Body>
                     </Card>
                     {/*Yöneticileri listele*/}
                     <Card className='elegant-card shadow-sm rounded-lg mt-4'>
-                        <Card.Header className='elegant-card-header'>Departman Yöneticileri</Card.Header>
+                        <Card.Header 
+                            className="text-center text-white profile-header" 
+                            style={{ 
+                                    fontWeight: "bold",
+                                    fontSize: "18px",
+                                    backgroundColor: "#007bff",
+                                    borderBottom: "3px solid #0056b3",
+                                }}>
+                                Departman Yöneticileri
+                        </Card.Header>
                         <Card.Body>
                             <div className="table-responsive">
-                                <Table striped bordered hover size="sm">
+                                <Table striped bordered hover size="sm" className='fancy-table'>
                                     <thead>
                                         <tr>
-                                            <th>İsim Soyisim</th>
-                                            <th>Email</th>
-                                            <th>Departman</th>
-                                            <th>İşlemler</th>
+                                            <th className='department-name text-center'>İsim</th>
+                                            <th className='department-name text-center'>Email</th>
+                                            <th className='department-name text-center'>Departman</th>
+                                            <th className='department-name text-center'>İşlemler</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {currentAdmins.map((admin, index) => (
                                             <tr key={index}>
-                                                <td>{admin.full_name}</td>
-                                                <td>{admin.mail}</td>
-                                                <td>{admin.department ? admin.department.department_name : ''}</td>
-                                                <td>
-                                                    <Button variant="danger" onClick={() => handleDeleteDepartmentAdmin(admin.id)}>Sil</Button>
+                                                <td className='department-name'>{admin.full_name}</td>
+                                                <td className='department-name'>{admin.mail}</td>
+                                                <td className='department-name'>{admin.department ? admin.department.department_name : ''}</td>
+                                                <td className='text-end'>
+                                                    <Button
+                                                        className='delete-btn'
+                                                        variant="danger" 
+                                                        onClick={() => handleDeleteDepartmentAdmin(admin.id)}
+                                                    >
+                                                        Sil
+                                                    </Button>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </Table>
                             </div>
-                            <Pagination>
+                            <Pagination className="super_admin_pagination fancy-pagination justify-content-center mt-4">
                                 {/* Sol Ok */}
                                 <Pagination.Prev
                                     onClick={() => handleAdminPageChange(activeAdminPage - 1)}
