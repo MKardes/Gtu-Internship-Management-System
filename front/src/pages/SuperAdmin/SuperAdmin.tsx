@@ -63,12 +63,14 @@ const SuperAdminPage: React.FC = () => {
     // Create New Department Admin
     const handleCreateDepartmentAdmin = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log("admins", admins);
         const newAdmin = {
             full_name: inputUsername,
             mail: inputEmail,
             password: inputPassword,
             role: "DepartmentAdmin",
             department_id: inputDepartment,
+            deparment_name: departments.find(dept => dept.id === inputDepartment)?.department_name
         };
         try {
             const response = await axios.post('/api/super-admin/create-department-admin', newAdmin, {
