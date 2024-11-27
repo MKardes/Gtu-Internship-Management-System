@@ -1,40 +1,23 @@
 .dashboard-container {
   display: flex;
-  justify-content: flex-end; /* Align the content to the right */
-  width: 50%; /* Restrict the container to the right half of the page */
+  justify-content: center; /* İçeriği ortala */
+  width: 90%; /* Genişliği artır ve responsive yap */
+  max-width: 1200px; /* Büyük ekranlar için sınır koy */
   background-color: white;
-  height: 100vh; /* Ensure it covers the full height of the viewport */
+  height: auto; /* İçerik boyutuna göre genişle */
+  min-height: 100vh; /* Minimum yüksekliği tam ekran yap */
+  margin: 0 auto; /* Ortalamayı sağlar */
+  border-radius: 8px; /* Köşeleri yuvarla */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+  padding: 20px; /* İçeriğe boşluk bırak */
+  box-sizing: border-box; /* Kenar taşmalarını engelle */
+  flex-direction: column;
 }
 
 .student-table-container {
-  width: 100%; /* This limits the content to fill the available space in the right half */
+  width: 100%; /* İçeriğin tam genişlikte olması */
   padding: 20px;
-}
-
-.filters {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.filters .dropdown {
-  display: inline-block;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-th, td {
-  padding: 10px;
-  text-align: left;
-  border: 1px solid #ddd;
-}
-
-th {
-  background-color: #f4f4f4;
+  overflow-x: auto;
 }
 
 input[type="text"] {
@@ -43,4 +26,95 @@ input[type="text"] {
   margin-bottom: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  box-sizing: border-box; /* Padding’in de kutuya dahil edilmesini sağlar */
 }
+
+.filters {
+  display: flex;
+  flex-wrap: wrap; /* Responsive olması için satır kırılmalarına izin ver */
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filters .dropdown {
+  display: inline-block;
+}
+
+/* table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  overflow-x: auto;
+} */
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+  word-wrap: break-word; /* Uzun kelimeler satırda kırılır */
+  word-break: break-all;
+}
+
+th {
+  background-color: #ffffff;
+}
+
+.modal-content {
+  background-color: #f8f9fa; /* Modal içeriği için arka plan rengi */
+  border-radius: 8px; /* Modal köşe yuvarlama */
+}
+
+.custom-button {
+  display: block;            /* Flex container */
+  justify-content: center;  /* Yatayda ortalama */
+  align-items: center;      /* Dikeyde ortalama */
+  background-color: #173778;
+  border: none;
+  padding: 5px 10px;
+  width: auto;              /* Genişliği içeriğe göre ayarla */
+  height: auto;             /* Yüksekliği içeriğe göre ayarla */
+  min-width: 30px;          /* Minimum genişlik */
+  min-height: 30px;         /* Minimum yükseklik */
+  border-radius: 5px;
+  color: white;
+  font-size: 10px;
+}
+
+.custom-button:hover {
+  background-color: #173778; /* Hover arka plan rengi */
+}
+
+.custom-button svg {
+  width: 15px;   /* İkonun genişliği */
+  height: 15px;  /* İkonun yüksekliği */
+}
+
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column; /* Filtreleri dikey yerleştir */
+  }
+
+  table {
+    font-size: 12px; /* Yazı boyutunu küçült */
+  }
+
+  th, td {
+    padding: 8px; /* Hücrelerdeki boşluğu azalt */
+  }
+
+  input[type="text"] {
+    width: 100%; /* Arama kutusunun genişliğini tam yap */
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .student-table-container {
+    padding: 10px; /* Küçük ekranlarda biraz daha az padding */
+  }
+
+  table {
+    font-size: 10px; /* Daha küçük yazılar için */
+  }
+}
+

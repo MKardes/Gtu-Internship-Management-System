@@ -39,6 +39,7 @@ class DashboardService {
         'internship.type',
         'internship.mentor',
         'internship.name',
+        'internship.state',
         'internship.begin_date',
         'internship.end_date',
         'internship.created_at',
