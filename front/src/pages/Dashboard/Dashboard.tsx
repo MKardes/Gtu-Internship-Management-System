@@ -1,15 +1,33 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Dropdown } from 'react-bootstrap';
+import { Dropdown, ToggleButton } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
+import { FaSearch } from 'react-icons/fa';
 import './Dashboard.css';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+enum InternshipStates {
+  Begin = "begin",
+  ReportReceived = "report_received",
+  ReportApproved = "report_approved",
+  Completed = "completed"
+}
+
+const StateConversions = {
+  "begin": "Staj Süreci Başladı",
+  "report_received": "Staj Raporu Alındı",
+  "report_approved": "Staj Rapor Onaylandı",
+  "completed": "Staj Tamamlandı",
+}
 
 const Dashboard: React.FC = () => {
   const [internships, setInternships] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredGrade, setFilteredGrade] = useState<number | null>(null);
+  const [showModal, setShowModal] = useState<boolean>(false); // Modal'ın gösterilme durumunu tutan state.
   const [filteredSemester, setFilteredSemester] = useState<string | null>(null);
+  const [selectedInternship, setSelectedInternship] = useState<any | null>(null);
   const navigate = useNavigate();
 
   const getAuthHeader = () => {
@@ -22,12 +40,14 @@ const Dashboard: React.FC = () => {
     };
 };
 
-const fiteredInternships = internships.filter(internship => {
+const filteredInternships = internships.filter(internship => {
   return (
     (internship.student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     internship.student.surname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    internship.student.school_id.includes(searchTerm)));
+    internship.student.school_id.includes(searchTerm))
+  );
 });
+
 
   useEffect(() => {
     fetchInternships();
@@ -54,11 +74,22 @@ const fiteredInternships = internships.filter(internship => {
   };
 
   const handleGradeFilter = (grade: number | null) => {
-    setFilteredGrade(null);
+    setFilteredGrade(grade);
   };
 
   const handleSemesterFilter = (semester: string | null) => {
     setFilteredSemester(semester);
+  };
+
+  // Modal'ı açma fonksiyonu
+  const handleShowModal = (internship: any) => {
+    setSelectedInternship(internship);
+    setShowModal(true);
+  };
+
+  // Modal'ı kapatma fonksiyonu
+  const handleCloseModal = () => {
+    setShowModal(false);
   };
 
   return (
@@ -70,7 +101,7 @@ const fiteredInternships = internships.filter(internship => {
         <div className="filters">
           <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-grade" size="sm">
-              Sınıf Filtrele
+              Sınıf
             </Dropdown.Toggle>
             <Dropdown.Menu>
               <Dropdown.Item onClick={() => setFilteredGrade(null)}>Hepsi</Dropdown.Item>
@@ -83,7 +114,7 @@ const fiteredInternships = internships.filter(internship => {
 
           <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-semester" size="sm">
-              Dönem Filtrele
+              Dönem
             </Dropdown.Toggle>
             <Dropdown.Menu>
               <Dropdown.Item onClick={() => setFilteredSemester(null)}>Hepsi</Dropdown.Item>
@@ -93,7 +124,7 @@ const fiteredInternships = internships.filter(internship => {
           </Dropdown>
         </div>
 
-        <table>
+        <table className="table table-bordered border-secondary-subtle">
           <thead>
             <tr>
               <th>İsim</th>
@@ -101,21 +132,70 @@ const fiteredInternships = internships.filter(internship => {
               <th>Öğrenci Numarası</th>
               <th>Email</th>
               <th>Şirket</th>
+              <th>Detaylar</th> {/* Modal açma butonu için başlık */}
             </tr>
           </thead>
           <tbody>
-          {fiteredInternships.map((internship) => (
+          {filteredInternships.map((internship) => (
             <tr key={internship.id}>
               <td>{internship.student.name}</td>
               <td>{internship.student.surname}</td>
-                <td>{internship.student.school_id}</td>
-                <td>{internship.student.email}</td>
-                <td>{internship.company.name}</td>
+              <td>{internship.student.school_id}</td>
+              <td>{internship.student.email}</td>
+              <td>{internship.company.name}</td>
+              <td>
+              <Button
+                className="custom-button"
+                onClick={() => handleShowModal(internship)}>
+                <FaSearch /> {/* Büyüteç simgesi */}
+              </Button>
+              </td>
             </tr>
           ))}
           </tbody>
         </table>
       </div>
+    {/* Modal component */}
+      <Modal size="lg" dialogClassName="modal-90w"
+        aria-labelledby="example-custom-modal-styling-title" show={showModal} onHide={handleCloseModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Öğrenci Detayları</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {selectedInternship && (
+              <>
+                <p><strong>İsim:</strong> {selectedInternship.student.name}</p>
+                <p><strong>Soyisim:</strong> {selectedInternship.student.surname}</p>
+                <p><strong>Öğrenci Numarası:</strong> {selectedInternship.student.school_id}</p>
+                <p><strong>Email:</strong> {selectedInternship.student.email}</p>
+                <p><strong>Şirket:</strong> {selectedInternship.company.name}</p>
+                <p><strong>Staj Durumu:</strong> {StateConversions[selectedInternship.state as InternshipStates]}</p>
+                <p>
+                  <div className='items-center justify-center'>
+                    <strong>SGK Raporu:</strong> 
+                    <ToggleButton
+                      className="px-2 items-center justify-center"
+                      id="toggle-check"
+                      type="checkbox"
+                      variant="outline-success"
+                      checked={true}
+                      size='lg'
+                      value="1"
+                      // onChange={(e) => setChecked(e.currentTarget.checked)}
+                    ></ToggleButton>
+                  </div>
+                </p>
+                
+                {/* Burada daha fazla öğrenci bilgisi ekleyebilirsiniz */}
+              </>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseModal}>
+              Kapat
+            </Button>
+          </Modal.Footer>
+        </Modal>
     </div>
   );
 };

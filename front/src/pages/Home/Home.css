@@ -41,4 +41,37 @@
       transform: translate(0, 0);
     }
   }
+
+  @media (max-width: 767px) {
+    .btn-primary, .btn-link {
+      width: 100%;
+    }
+  
+    .sign-in__wrapper form {
+      max-width: 100%;
+      width: 90%;
+    }
+  }
+  
+  /* Renk düzenlemeleri */
+  .btn-primary {
+    background-color: #173778 !important; /* Varsayılan Bootstrap renklerini geçersiz kılmak için */
+    border-color: #173778 !important;
+  }
+
+  .btn-primary:hover {
+    background-color: #11294f !important; /* Daha koyu hover rengi */
+    border-color: #11294f !important;
+  }
+
+  .btn-link {
+    color: #173778 !important;
+    text-decoration: none; /* Daha temiz görünüm */
+  }
+
+  .btn-link:hover {
+    color: #11294f !important; /* Hover sırasında renk değişimi */
+    text-decoration: underline; 
+  }
+  
   

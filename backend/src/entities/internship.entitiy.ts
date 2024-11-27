@@ -4,6 +4,13 @@ import { Company } from "./company.entitiy";
 import { Mentor } from "./mentor.entitiy";
 import { File } from "./file.entitiy";
 
+enum InternshipStates {
+    Begin = "begin",
+    ReportReceived = "report_received",
+    ReportApproved = "report_approved",
+    Completed = "completed"
+}
+
 @Entity("internship")
 @Unique(['id'])
 export class Internship {
@@ -29,6 +36,9 @@ export class Internship {
     @ManyToOne(() => Student, { nullable: false })
     @JoinColumn({ name: "student_id" })
     student: Student;
+
+    @Column({nullable: false, default: InternshipStates.Begin})
+    state: InternshipStates
 
     @Column({ nullable: true })
     begin_date: Date;
