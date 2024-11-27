@@ -1,0 +1,14 @@
+:root {
+    --primary-blue: #1e88e5;
+    --primary-green: #4caf50;
+    --light-blue: #e3f2fd;
+    --white: #ffffff;
+  }
+
+
+.form-department-admin .custom-input {
+    border: 2px solid var(--primary-blue);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
