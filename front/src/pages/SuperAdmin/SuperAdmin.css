@@ -1,47 +1,9 @@
-
-.super_admin_panel {
-    margin-top: 20px;
-}
-
-.super_admin_panel .ant-card-head {
-    background-color: #f0f2f5;
-}
-
-.super_admin_panel .ant-card-head-title {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.super_admin_panel .ant-card-body {
-    padding: 0;
-}
-
-.super_admin_panel .ant-table {
-    border: 1px solid #f0f2f5;
-}
-
-.super_admin_panel .ant-table-thead > tr > th {
-    background-color: #f0f2f5;
-    font-weight: bold;
-}
-
-.super_admin_pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-@media (max-width: 768px) {
-    .pagination {
-        font-size: 0.75rem;  /* Küçük cihazlarda font boyutunu küçült. */
-        flex-wrap: wrap;    /* İçerikleri yeni satıra taşı. */
-    }
-}
-
-/* Ensure all inputs have the same height */
-.custom-input, .form-control {
-    height: 38px; /* You can adjust this value to match your design */
-}
+:root {
+    --primary-blue: #1e88e5;
+    --primary-green: #4caf50;
+    --light-blue: #e3f2fd;
+    --white: #ffffff;
+  }
 
 .admin-info, .add-user {
     display: flex;
@@ -70,4 +32,207 @@
     height: 100%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     flex: 1;
+}
+
+.profile-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(30, 136, 229, 0.15);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+  
+  .profile-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .profile-header {
+    background: linear-gradient(135deg, var(--primary-blue), #64b5f6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  
+  .profile-body {
+    padding: 30px;
+    background-color: var(--primary-blue);
+  }
+  
+  .profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .info-group {
+    background-color: var(--light-blue);
+    padding: 15px 20px;
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+  }
+  
+  .info-group:hover {
+    transform: scale(1.02);
+  }
+  
+  .info-group label {
+    color: var(--primary-blue);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    display: block;
+  }
+  
+  .info-group h3 {
+    color: #2c3e50;
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 500;
+  }
+  
+  @media (max-width: 480px) {
+    .profile-card {
+      width: 100%;
+      margin: 0 auto;
+    }
+    
+    .profile-header {
+      height: 100px;
+    }
+    
+    .profile-avatar {
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+    }
+  }
+  /* Form Alanı */
+.form-wrapper {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  
+  /* Ensure all inputs have the same height */
+.custom-input, .form-control {
+  height: 38px; /* You can adjust this value to match your design */
+}
+
+
+  .form-wrapper .custom-input {
+    border: 2px solid var(--primary-blue);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .form-wrapper .submit-btn {
+    background: linear-gradient(135deg, var(--primary-green), #8bc34a);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 100%;
+    transition: all 0.3s ease;
+  }
+  
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+    background: linear-gradient(135deg, #4caf50, #8bc34a);
+  }
+  
+  .submit-btn:active {
+    transform: translateY(0);
+  }
+
+  .fancy-table {
+    margin-bottom: 0;
+  }
+  
+  .fancy-table thead th {
+    background-color: var(--gray-100);
+    border-bottom: 2px solid var(--primary-blue);
+    color: var(--primary-blue);
+    font-weight: 600;
+    padding: 1rem;
+  }
+  
+  .fancy-table tbody tr {
+    transition: all 0.3s ease;
+  }
+  
+  .fancy-table tbody tr:hover {
+    background-color: var(--light-blue) !important;
+  }
+
+  .delete-btn {
+    padding: 6px 16px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+  
+  .delete-btn:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+  }
+
+  .department-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-blue);
+  }
+
+  tbody > tr > td {
+    vertical-align: middle;
+  }
+
+  .fancy-pagination .page-item .page-link {
+    border: none;
+    color: var(--primary-blue);
+    margin: 0 2px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+  
+  .fancy-pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--primary-blue), #64b5f6);
+    color: var(--white);
+    box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
+  }
+  
+  .fancy-pagination .page-link:hover {
+    background-color: var(--light-blue);
+    transform: translateY(-1px);
+  }
+
+  .form-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-blue);
+    margin-bottom: 5px;
+    display: block;
+  }
+
+.form-super-admin .custom-input {
+  border: 2px solid var(--primary-blue);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-super-admin .submit-btn {
+  background: linear-gradient(135deg, var(--primary-green), #8bc34a);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  width: 100%;
+  transition: all 0.3s ease;
 }
