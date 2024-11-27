@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import ErrorAlert from '../../components/ErrorAlert/ErrorAlert';
 import axios from 'axios';
 import Input from '../../components/Input/Input';
-import '../SuperAdmin/SuperAdmin.css'
+import '../SuperAdmin/SuperAdmin.css';
+import './DepartmentAdmin.css'
 
 const DepartmentAdminPage: React.FC = () => {
     const [adminInfo, setAdminInfo] = useState<any>(null);
@@ -122,15 +123,42 @@ const DepartmentAdminPage: React.FC = () => {
             <Row className='deparment-admin-container mb-4 justify-content-center'>
                 { /* Sol tarafta Kullanıcı bilgileri */ }
                 <Col md={4} className="admin-info elegant-card-wrapper">
-                    <Card className='elegant-card shadow-sm rounded-lg mb-4'>
-                            <Card.Header className='elegant-card-header'>Yönetici Bilgileri</Card.Header>
-                            <Card.Body>
+                    <Card className='mb-4 elegant-card shadow-sm rounded-lg border-primary profile-card'>
+                            <Card.Header 
+                                className="text-center text-white profile-header" 
+                                style={{ 
+                                        fontWeight: "bold",
+                                        fontSize: "18px",
+                                        backgroundColor: "#007bff",
+                                        borderBottom: "3px solid #0056b3",
+                                    }}>
+                                    Yönetici Bilgileri
+                            </Card.Header>
+                            <Card.Body className='profile-body'
+                                style={{
+                                    backgroundColor: "#f8f9fa",
+                                    padding: "20px",
+                                }}
+                            >
                                 <ListGroup variant="flush">
                                     {adminInfo ? (
                                         <>
-                                            <ListGroup.Item><strong>Ad Soyad:</strong> {adminInfo.full_name}</ListGroup.Item>
-                                            <ListGroup.Item><strong>Email:</strong> {adminInfo.mail}</ListGroup.Item>
-                                            <ListGroup.Item><strong>Departman:</strong> {adminInfo.department.department_name}</ListGroup.Item>
+                                            <ListGroup.Item className="profile-info">
+                                                <Form.Group className="info-group mb-3">
+                                                <Form.Label className="form-label font-weight-bold">İsim Soyisim:</Form.Label>
+                                                <span className="d-block">{adminInfo.full_name}</span>
+                                                </Form.Group>
+
+                                                <Form.Group className="info-group mb-3">
+                                                <Form.Label className="form-label font-weight-bold">Email:</Form.Label>
+                                                <span className="d-block">{adminInfo.mail}</span>
+                                                </Form.Group>
+
+                                                <Form.Group className="info-group">
+                                                <Form.Label className="form-label font-weight-bold">Departman:</Form.Label>
+                                                <span className="d-block">{adminInfo.department.department_name}</span>
+                                                </Form.Group>
+                                            </ListGroup.Item>
                                         </>
                                     ) : (
                                         <ListGroup.Item>Yönetici bilgileri yükleniyor...</ListGroup.Item>
@@ -141,23 +169,34 @@ const DepartmentAdminPage: React.FC = () => {
                 </Col>
                 <Col md={4} className="add-user elegant-card-wrapper">
                     <Card>
-                        <Card.Header>Yeni Kullanıcı Ekle</Card.Header>
+                        <Card.Header 
+                            className="text-center text-white profile-header" 
+                            style={{ 
+                                    fontWeight: "bold",
+                                    fontSize: "18px",
+                                    backgroundColor: "#007bff",
+                                    borderBottom: "3px solid #0056b3",
+                                }}>
+                                Kullanıcı Ekle
+                        </Card.Header>
                         <Card.Body>
-                            <Form onSubmit={handleAddUser}>
+                            <Form className="form-department-admin form-wrapper" onSubmit={handleAddUser}>
                                 <Form.Group controlId="fullName">
-                                    <Form.Label>İsim Soyisim</Form.Label>
-                                    <Input 
+                                    <Form.Label className="form-label">İsim Soyisim</Form.Label>
+                                    <Form.Control
                                         type="text"
                                         placeholder="İsim Soyisim"
                                         value={inputFullName}
                                         onChange={(e) => setInputFullName(e.target.value)}
+                                        required
+                                        className='custom-input shadow-sm'
                                     />
                                 </Form.Group>
                                 
                                 <div className="d-flex align-items-center">
                                     {/* Email Alanı */}
                                     <Form.Group className="me-2" style={{ flex: 1 }} controlId="email">
-                                        <Form.Label>Email</Form.Label>
+                                        <Form.Label className="form-label">Email</Form.Label>
                                         <Input 
                                             type="email"
                                             placeholder="Email"
@@ -168,7 +207,7 @@ const DepartmentAdminPage: React.FC = () => {
 
                                     {/* Şifre Alanı */}
                                     <Form.Group style={{ flex: 1 }} controlId="password">
-                                        <Form.Label>Şifre</Form.Label>
+                                        <Form.Label className="form-label">Şifre</Form.Label>
                                         <Input 
                                             type="password"
                                             placeholder="Şifre"
@@ -177,8 +216,12 @@ const DepartmentAdminPage: React.FC = () => {
                                         />
                                     </Form.Group>
                                 </div>
-
-                                <Button variant="primary" type="submit">Kullanıcı Ekle</Button>
+                                <Button 
+                                        type="submit"
+                                        className="submit-btn"
+                                        >
+                                        Ekle
+                                </Button>
                             </Form>
                         </Card.Body>
 
@@ -188,24 +231,37 @@ const DepartmentAdminPage: React.FC = () => {
             <Row className='deparment-admin-container mb-4'>
                 <Col md={8} className='admin-users'>
                     <Card className='mb-4 elegant-card shadow-sm rounded-lg'>
-                        <Card.Header className='elegant-card-header'>Kullanıcılar</Card.Header>
+                        <Card.Header 
+                            className="text-center text-white profile-header" 
+                            style={{ 
+                                    fontWeight: "bold",
+                                    fontSize: "18px",
+                                    backgroundColor: "#007bff",
+                                    borderBottom: "3px solid #0056b3",
+                                }}>
+                                Kullanıcılar
+                        </Card.Header>
                         <Card.Body>
                             <div className='table-responsive'>
-                                <Table striped bordered hover className='mb-3'>
-                                    <thead>
+                            <Table striped bordered hover size="sm" className='fancy-table'>
+                                <thead>
                                         <tr>
-                                            <th>İsim</th>
-                                            <th>Email</th>
-                                            <th>İşlemler</th>
+                                            <th className='department-name text-center'>İsim</th>
+                                            <th className='department-name text-center'>Email</th>
+                                            <th className='department-name text-center'>İşlemler</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {currentUsers.map((user, index) => (
                                             <tr key={index}>
-                                                <td>{user.full_name}</td>
-                                                <td>{user.mail}</td>
-                                                <td>
-                                                    <Button variant="danger" onClick={() => handleDeleteUser(user.id)}>
+                                                <td className='department-name'>{user.full_name}</td>
+                                                <td className='department-name'>{user.mail}</td>
+                                                <td className='text-end'>
+                                                    <Button
+                                                        className='delete-btn'
+                                                        variant="danger" 
+                                                        onClick={() => handleDeleteUser(user.id)}
+                                                    >
                                                         Sil
                                                     </Button>
                                                 </td>
@@ -214,7 +270,7 @@ const DepartmentAdminPage: React.FC = () => {
                                     </tbody>
                                 </Table>
                             </div>
-                            <Pagination>
+                            <Pagination className="super_admin_pagination fancy-pagination justify-content-center mt-4">
                                 { /* Sol Ok */}
                                 <Pagination.Prev 
                                     onClick={() => handleUserPageChange(activeUserPage - 1)}

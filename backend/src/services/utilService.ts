@@ -26,7 +26,7 @@ export class utilService
     }
 
     static isValidDepartmentName(department_name: string) {
-        const departmentNameRegex = /^[a-zA-Z\s]{3,20}$/;
+        const departmentNameRegex = /^[a-zA-Z\s]{2,20}$/;
         return departmentNameRegex.test(department_name);
     }
 
