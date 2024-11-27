@@ -63,7 +63,7 @@ const Navigation: React.FC = () => {
     }
 
     return (
-        <Navbar bg="primary" variant="dark" expand="lg " className="navbar shadow">
+        <Navbar variant="dark" expand="lg " className="navbar shadow">
           <Container>
             {/* Logo */}
             <LinkContainer to="/">

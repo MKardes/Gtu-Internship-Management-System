@@ -20,7 +20,7 @@
   
   .confirm-code-card h2 {
     margin-bottom: 20px;
-    color: #007bff;
+    color: #173778;
   }
   
   .confirm-code-card p {
@@ -31,7 +31,7 @@
   .verify-code-button {
     width: 100%;
     padding: 12px 0;
-    background-color: #007bff;
+    background-color: #173778;
     color: #ffffff;
     border: none;
     border-radius: 4px;
@@ -41,12 +41,12 @@
   }
   
   .verify-code-button:hover {
-    background-color: #0056b3;
+    background-color: #173778;
   }
 
   /* Yeni Kod Gönder Linki */
   .resend-code-link {
-    color: #007bff;
+    color: #173778;
     cursor: pointer;
     font-size: 14px;
     text-decoration: underline;
@@ -55,7 +55,7 @@
   }
 
   .resend-code-link:hover {
-    color: #0056b3;
+    color: #173778;
   }
 
   /* Kod Gönderildi Mesajı */
