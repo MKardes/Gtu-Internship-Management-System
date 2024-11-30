@@ -1,0 +1,10 @@
+.chartFilter {
+    max-width: 10em;
+}
+
+@media (max-width: 768px) {
+    .chartFilter {
+        max-width: none;
+        width: 100%;
+    }
+}
