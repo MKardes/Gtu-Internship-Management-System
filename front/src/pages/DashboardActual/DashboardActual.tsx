@@ -3,72 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import './DashboardActual.css';
 import Chart from './Chart';
 import ChartFilter from './ChartFilter';
-import axios from 'axios';
 import { VscGraph } from "react-icons/vsc";
+import axios from 'axios';
 
 const passedColor = "#28b463";
 const failedColor = "#e74c3c";
 
-const staticData = {
-  "midterm_fall": {
-    "passed": 124,
-    "failed": 14,
-  },
-  "midterm_break": {
-    "passed": 204,
-    "failed": 4,
-  },
-  "midterm_spring": {
-    "passed": 124,
-    "failed": 10,
-  },
-  "summer": {
-    "passed": 304,
-    "failed": 40,
-  },
-}
-
-const staticCompanies: Option[] = [
-  {
-    name: "Aselsan",
-    value: 1,
-  },
-  {
-    name: "Havelsan",
-    value: 2,
-  },
-  {
-    name: "Türkcell",
-    value: 3,
-  },
-  {
-    name: "Türk Telekom",
-    value: 4,
-  },
-  {
-    name: "Türk Telekom aslfjh asıufd kjlasfdk asfkj",
-    value: 5,
-  },
-]
-
-const options: Option[] = [
-  {
-    name: "2013",
-    value: 1,
-  },
-  {
-    name: "2012",
-    value: 2,
-  },
-  {
-    name: "2011",
-    value: 3,
-  },
-  {
-    name: "2010",
-    value: 4,
-  },
-]
 
 const GraphXConversions = {
   "midterm_fall": "Dönem İçi 'Güz'",
@@ -80,6 +20,7 @@ const GraphXConversions = {
 type Option = {
   value: number;
   name: string;
+  id?: string;
 }
 
 const getOptions = (data: any) => {
@@ -198,38 +139,47 @@ const DashboardActual: React.FC = () => {
   
   const getYears = async () => {
     try {
-      const data = await axios.get(`/chart/years`);
-      //TODO: request
-      // get
-      
+      const res = await axios.get(`/api/chart/years`, {
+        headers: getAuthHeader()
+      });
+      setYears(res.data)
+      setFirstSelectedYear(res.data[0] ?? undefined);
+      setSecondSelectedYear(res.data[0] ?? undefined);
     } catch (e) {
-      setYears(options);
-      setFirstSelectedYear(options[0] ?? undefined);
-      setSecondSelectedYear(options[0] ?? undefined);
+      setYears([]);
+      setFirstSelectedYear(undefined);
+      setSecondSelectedYear(undefined);
     }
   }
 
   const getCompanies = async () => {
     try {
-      const data = await axios.get(`/chart/companies`);
-      //TODO: request
-      // get
+      const data = await axios.get(`/api/chart/companies`, {
+        headers: getAuthHeader()
+      });
+      setCompanies(data.data);
+      setSelectedCompany(data.data[0] ?? undefined);
       
     } catch (e) {
-      setCompanies(staticCompanies);
-      setSelectedCompany(staticCompanies[0] ?? undefined);
+      setCompanies([]);
+      setSelectedCompany(undefined);
     }
   }
 
-  const getInternships = async (year: string, setData: any) => {
+  const getInternships = async (year: string, setData: any, companyId?: any) => {
     try {
-      const data = await axios.get(`/chart/internships?year=${year}`);
-      //TODO: request
-      // get
-      // params: year
+      let url = `/api/chart/internships?year=${year}`;
 
+      if (companyId) {
+        url += `&company_id=${companyId}`;
+      }
+
+      const res = await axios.get(url, {
+        headers: getAuthHeader()
+      });
+      setData(res.data)
     } catch (e) {
-      setData(staticData)
+      setData([])
     }
   }
 
@@ -241,7 +191,7 @@ const DashboardActual: React.FC = () => {
   
   useEffect(() => {
     if (secondSelectedYear && selectedCompany) {
-      getInternships(secondSelectedYear.name, setSecondData);
+      getInternships(secondSelectedYear.name, setSecondData, selectedCompany.id);
     }
   }, [secondSelectedYear, selectedCompany])
 
