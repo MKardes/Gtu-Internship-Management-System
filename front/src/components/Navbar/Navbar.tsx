@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Container, Image, Button, Nav } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import { useNavbar } from "./NavbarContext";
 import axios from 'axios';
 import "./Navbar.css"
 import logo from '../../assets/logo.jpg';
 
 const Navigation: React.FC = () => {
-    const [user, setUser] = useState<any>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const { user, fetchUserData, loading } = useNavbar();
 
     const handleLogout = async () => {
         try {
@@ -17,7 +17,7 @@ const Navigation: React.FC = () => {
                     localStorage.removeItem('accessToken');
                 if(localStorage.getItem('refreshToken'))
                     localStorage.removeItem('refreshToken');
-                setUser(null);
+                fetchUserData();
                 window.location.href = '/login';
             }
         } catch (error) {
@@ -34,28 +34,7 @@ const Navigation: React.FC = () => {
     }
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            const accessToken = localStorage.getItem('accessToken');
-            try {
-                const response = await axios.get("/api/auth/me", {
-                    headers: {
-                      Authorization: `Bearer ${accessToken}`,
-                    },
-                  });
-                if (response.status === 200) {
-                    setUser(response.data.user);
-                } else {
-                    setUser(null);
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                setUser(null);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUserData();
+      fetchUserData();
     }, []);
 
     if (loading) {

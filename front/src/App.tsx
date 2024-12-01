@@ -8,7 +8,8 @@ import ConfirmCode from './pages/ConfirmCode/ConfirmCode';
 import NewPassword from './pages/NewPassword/NewPassword';
 //import Login from "./pages/Login/Login";
 // import ResetPassword from './pages/ResetPassword/ResetPassword';
-import Navigation from './components/Navbar/Navbar';
+import { NavbarProvider } from "./components/Navbar/NavbarContext";
+import Navigation from "./components/Navbar/Navbar";
 //import Dashboard from './pages/Dashboard/Dashboard';
 import PrivateRoute from './components/privateRoute';
 import DepartmentAdmin from './pages/DepartmentAdmin/DepartmentAdmin';
@@ -18,7 +19,8 @@ import DashboardActual from './pages/DashboardActual/DashboardActual';
 const App: React.FC = () => {
   return (
     <Router>
-      <Navigation /> {/* Her sayfada gösterilecek navbar */}
+      <NavbarProvider> {/* Her sayfada gösterilecek navbar */}
+        <Navigation />
       <Container className="mt-4">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -28,31 +30,32 @@ const App: React.FC = () => {
             element={
               <PrivateRoute element={<SuperAdmin />} requiredRole="SuperAdmin" />
             }
-          />
+            />
           <Route
             path = "/department-admin"
             element = {
               <PrivateRoute element = {<DepartmentAdmin />} requiredRole = "DepartmentAdmin" />
             }
-          />
+            />
           <Route 
             path = "/dashboard"
             element = {
               <PrivateRoute element = {<Dashboard />} />
             }
-          />
+            />
           <Route 
             path = "/dashboard-actual"
             element = {
               <PrivateRoute element = {<DashboardActual />} />
             }
-          />
+            />
           <Route path="/confirm-code" element={<ConfirmCode />} />
           <Route path="/new-password" element={<NewPassword />} />
           {/* Diğer tüm hrefleri home yönlendir*/}
           <Route path="*" element={<Home />} />
         </Routes>
       </Container>
+      </NavbarProvider>
     </Router>
   );
 }
