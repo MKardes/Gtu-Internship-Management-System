@@ -8,7 +8,8 @@ enum InternshipStates {
     Begin = "begin",
     ReportReceived = "report_received",
     ReportApproved = "report_approved",
-    Completed = "completed"
+    Completed = "completed",
+    Failed = "failed",
 }
 
 @Entity("internship")
