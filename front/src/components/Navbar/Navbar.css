@@ -1,5 +1,6 @@
 .navbar
 {
+  background-color: #173778;
     padding: 10px 20px;
 }
 
@@ -16,7 +17,7 @@
 
 @media (max-width: 768px) {
   .navbar-collapse {
-    background-color: #007bff;  /* Primary color için */
+    background-color: #173778;  /* Primary color için */
     padding: 1rem 0;  /* Üst ve alt kenarlara padding */
   }
 
@@ -31,7 +32,7 @@
   padding: 15px 30px; /* Yeterli alan */
   font-size: 1.5rem; /* Büyük yazı tipi */
   color: white; /* Beyaz yazı */
-  background-color: #007bff; /* Mavi arka plan */
+  background-color: #173778; /* Mavi arka plan */
   border: none; /* Kenarlık kaldırma */
   border-radius: 8px; /* Yuvarlak köşeler */
 }

@@ -13,6 +13,7 @@ import Navigation from './components/Navbar/Navbar';
 import PrivateRoute from './components/privateRoute';
 import DepartmentAdmin from './pages/DepartmentAdmin/DepartmentAdmin';
 import Dashboard from './pages/Dashboard/Dashboard';
+import DashboardActual from './pages/DashboardActual/DashboardActual';
 
 const App: React.FC = () => {
   return (
@@ -38,6 +39,12 @@ const App: React.FC = () => {
             path = "/dashboard"
             element = {
               <PrivateRoute element = {<Dashboard />} />
+            }
+          />
+          <Route 
+            path = "/dashboard-actual"
+            element = {
+              <PrivateRoute element = {<DashboardActual />} />
             }
           />
           <Route path="/confirm-code" element={<ConfirmCode />} />
