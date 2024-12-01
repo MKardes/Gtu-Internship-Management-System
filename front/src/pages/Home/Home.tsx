@@ -5,6 +5,7 @@ import axios from "axios"
 import "./Home.css";
 import Logo from "../../assets/logo.jpg";
 import ErrorAlert from "../../components/ErrorAlert/ErrorAlert";
+import { useNavbar } from "../../components/Navbar/NavbarContext";
 import Input from "../../components/Input/Input";
 
 const Home: React.FC = () => {
@@ -12,6 +13,7 @@ const Home: React.FC = () => {
   const [inputPassword, setInputPassword] = useState("");
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { fetchUserData } = useNavbar();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,6 +53,7 @@ const Home: React.FC = () => {
       const { accessToken, refreshToken } = response.data;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
+      fetchUserData();
       navigate("/dashboard");
     } catch (error) {
       console.error("Hata:", error);
