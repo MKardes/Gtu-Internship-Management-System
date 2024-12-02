@@ -262,33 +262,34 @@ const SuperAdminPage: React.FC = () => {
                                 Departmanlar
                         </Card.Header>
                         <Card.Body>
-                            <Table striped bordered hover size="sm" className='fancy-table'>
-                                    <thead>
-                                        <tr>
-                                            <th className='department-name text-center'>Departman İsmi</th>
-                                            <th className='department-name text-center'>İşlemler</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {currentDepartments.map((department, index) => (
-                                            <tr key={index}>
-                                                <td className='department-name'>
-                                                    {department.department_name}
-                                                </td>
-                                                <td className='text-end'>
-                                                    <Button
-                                                        className='delete-btn'
-                                                        variant="danger" 
-                                                        onClick={() => handleDeleteDepartment(department.id)}
-                                                    >
-                                                        Sil
-                                                    </Button>
-                                                </td>
+                            <div className="table-responsive">
+                                <Table striped bordered hover size="sm" className='fancy-table'>
+                                        <thead>
+                                            <tr>
+                                                <th className='department-name text-center'>Departman İsmi</th>
+                                                <th className='department-name text-center'>İşlemler</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                            </Table>
-                           
+                                        </thead>
+                                        <tbody>
+                                            {currentDepartments.map((department, index) => (
+                                                <tr key={index}>
+                                                    <td className='department-name'>
+                                                        {department.department_name}
+                                                    </td>
+                                                    <td className='text-end'>
+                                                        <Button
+                                                            className='delete-btn'
+                                                            variant="danger" 
+                                                            onClick={() => handleDeleteDepartment(department.id)}
+                                                        >
+                                                            Sil
+                                                        </Button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                </Table>
+                            </div>
                             <Pagination className="super_admin_pagination fancy-pagination justify-content-center mt-4">
                                 {/* Sol Ok */}
                                 <Pagination.Prev
