@@ -149,10 +149,6 @@
   .submit-btn:active {
     transform: translateY(0);
   }
-
-  .fancy-table {
-    margin-bottom: 0;
-  }
   
   .fancy-table thead th {
     background-color: var(--gray-100);
@@ -235,4 +231,21 @@
   letter-spacing: 1px;
   width: 100%;
   transition: all 0.3s ease;
+}
+
+.table-responsive {
+  overflow-x: auto; /* Yatay kaydırma ekle */
+  -webkit-overflow-scrolling: touch; /* Mobil cihazlarda yumuşak kaydırma */
+}
+
+.fancy-table {
+  min-width: 200px; /* Tablo genişliğini minimum bir değere ayarlayın ki küçük ekranlarda scroll etkili olsun */
+  margin-bottom: 0;
+
+}
+
+@media (max-width: 768px) {
+  .fancy-table th, .fancy-table td {
+      white-space: nowrap; /* Hücrelerin taşmasını engelle ve kaydırılabilir yap */
+  }
 }
