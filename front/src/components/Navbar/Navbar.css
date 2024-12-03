@@ -15,6 +15,11 @@
     filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2)); /* Logoya hafif bir gölge */
 }
 
+.navbar-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
 @media (max-width: 768px) {
   .navbar-collapse {
     background-color: #173778;  /* Primary color için */
@@ -24,6 +29,9 @@
   .button_navbar {
     width: 100%;  /* Buttonu genişlet */
     margin: 0.5rem 0; /* Düğmeler arası boşluk */
+  }
+  .navbar-name {
+    font-size: 0.8rem;
   }
 }
 
@@ -35,6 +43,7 @@
   background-color: #173778; /* Mavi arka plan */
   border: none; /* Kenarlık kaldırma */
   border-radius: 8px; /* Yuvarlak köşeler */
+  width: auto;
 }
 
 .custom-navbar-toggle:hover,
@@ -42,14 +51,68 @@
   background-color: #0056b3; /* Koyu mavi arka plan hover ve focus için */
 }
 
-.toggle-icon {
-  display: block; /* İkonu düzgün yerleştir */
-  text-align: center; /* İkonu ortala */
+
+.custom-navbar-toggle {
+  display: none;
 }
 
-/* Mobil cihazlarda tam genişlik kazansın */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .custom-navbar-toggle {
-    width: 100%; /* Tam genişlik */
+    display: block;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    z-index: 1000;
+  }
+
+  .navbar-collapse {
+    display: none;
+  }
+
+  .overlay {
+    display: flex;
+  }
+}
+
+.overlay-content {
+  display: flex;
+  flex-direction: column; /* Butonları dikey hizalar */
+  align-items: center; /* Butonları merkeze hizalar */
+  gap: 10px; /* Butonlar arasında boşluk ekler */
+}
+
+/* Butonların görünümü */
+.overlay-button {
+  width: 100%; /* Butonlar tam genişlikte olsun */
+  font-size: 1rem;
+  padding: 10px; /* Butonun iç boşluğu */
+  margin: 5px 0; /* Butonlar arasındaki boşluk */
+  text-align: center;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8); /* Siyah ekran opaklığı */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Üst tarafa hizalar */
+  z-index: 9999; /* Üstte gösterir */
+}
+
+.overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20%; /* Üstten biraz boşluk bırakır */
+}
+
+@media (max-width: 768px) {
+  .overlay {
+      height: 100vh; /* Mobilde tam ekran kaplar */
   }
 }
