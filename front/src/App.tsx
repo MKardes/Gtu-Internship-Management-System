@@ -15,6 +15,10 @@ import PrivateRoute from './components/privateRoute';
 import DepartmentAdmin from './pages/DepartmentAdmin/DepartmentAdmin';
 import Dashboard from './pages/Dashboard/Dashboard';
 import DashboardActual from './pages/DashboardActual/DashboardActual';
+import MyReports from './pages/MyReports/MyReports';
+import Report from './pages/Report/Report';
+import StudentGrade from './pages/StudentGrade/StudentGrade';
+import InternshipSearch from './pages/InternshipSearch/InternshipSearch';
 
 const App: React.FC = () => {
   return (
@@ -49,6 +53,32 @@ const App: React.FC = () => {
               <PrivateRoute element = {<DashboardActual />} />
             }
             />
+          <Route 
+            path="/my-reports"
+            element={
+              <PrivateRoute element={<MyReports />} />
+            }
+          />
+          <Route 
+            path="/report"
+            element={
+              <PrivateRoute element={<Report />} />
+            }
+          />
+          
+          <Route
+            path='student-grade'
+            element={
+              <PrivateRoute element={<StudentGrade />} />
+            }
+          />
+          <Route
+            path='internship-search'
+            element={
+              <PrivateRoute element={<InternshipSearch />} />
+            }
+          />
+
           <Route path="/confirm-code" element={<ConfirmCode />} />
           <Route path="/new-password" element={<NewPassword />} />
           {/* Diğer tüm hrefleri home yönlendir*/}
