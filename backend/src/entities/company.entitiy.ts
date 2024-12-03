@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity("company")
 @Unique(['id', 'name'])
@@ -13,7 +13,7 @@ export class Company {
    @Column({ nullable: false })
    address: string;
 
-   @Column({ nullable: false })
+   @CreateDateColumn()
    created_at: Date;
 
 }
