@@ -11,7 +11,8 @@ enum InternshipStates {
   Begin = "begin",
   ReportReceived = "report_received",
   ReportApproved = "report_approved",
-  Completed = "completed"
+  Completed = "completed",
+  Failed = "failed"
 }
 
 const StateConversions = {
@@ -19,7 +20,10 @@ const StateConversions = {
   "report_received": "Staj Raporu Alındı",
   "report_approved": "Staj Rapor Onaylandı",
   "completed": "Staj Tamamlandı",
+  "failed": "Staj Başarısız",
 }
+
+const nums = [1, 2, 3, 4]
 
 const Dashboard: React.FC = () => {
   const [internships, setInternships] = useState<any[]>([]);
@@ -28,11 +32,10 @@ const Dashboard: React.FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false); // Modal'ın gösterilme durumunu tutan state.
   const [filteredSemester, setFilteredSemester] = useState<string | null>(null);
   const [selectedInternship, setSelectedInternship] = useState<any | null>(null);
-  const [selectedInternshipState, setSelectedInternshipState] = useState<any | null>(null);
-  const [checked, setChecked] = useState<any | null>(null);
   const [showConfirmMessage, setShowConfirmMessage] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [isSGKUploaded, setIsSGKUploaded] = useState(false); // SGK yüklenme durumu
+  const [refetch, setRefetch] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const getAuthHeader = () => {
@@ -56,7 +59,7 @@ const filteredInternships = internships.filter(internship => {
 
   useEffect(() => {
     fetchInternships();
-  }, [filteredGrade, filteredSemester]);
+  }, [filteredGrade, filteredSemester, refetch]);
 
   const fetchInternships = async () => {
     try {
@@ -95,22 +98,37 @@ const filteredInternships = internships.filter(internship => {
   // Modal'ı kapatma fonksiyonu
   const handleCloseModal = () => {
     setShowModal(false);
-    setSelectedInternshipState(null);
   };
 
-  const handleToggle = () => {
-    if (!isSGKUploaded) {
-      // Eğer SGK yüklü değilse, direkt "Yüklendi" olarak işaretle
-      setIsSGKUploaded(true);
-    } else if (showConfirmMessage) {
-      // Eğer onay mesajı gösterilmişse ve tekrar tıklanırsa "Yüklenmedi" durumuna geç
-      setIsSGKUploaded(false);
-      setShowConfirmMessage(false); // Onay mesajını sıfırla
-    } else {
-      // İlk tıklamada onay mesajını göster
-      setShowConfirmMessage(true);
-      setTimeout(() => setShowConfirmMessage(false), 3000); // 3 saniye sonra otomatik gizle
-      handleConfirmModalOpen(); // Onay modal'ını aç
+  const handleToggle = async () => {
+    try {
+      if (!isSGKUploaded) {
+        // Eğer SGK yüklü değilse, direkt "Yüklendi" olarak işaretle
+        await axios.put(`/api/internships/${selectedInternship.id}/state`, {
+          is_sgk_uploaded: true
+        }, {
+          headers: getAuthHeader(),
+        })
+        setRefetch(!refetch);
+        setIsSGKUploaded(true);
+      } else if (showConfirmMessage) {
+        // Eğer onay mesajı gösterilmişse ve tekrar tıklanırsa "Yüklenmedi" durumuna geç
+        await axios.put(`/api/internships/${selectedInternship.id}/state`, {
+          is_sgk_uploaded: false
+        }, {
+          headers: getAuthHeader(),
+        })
+        setRefetch(!refetch);
+        setIsSGKUploaded(false);
+        setShowConfirmMessage(false); // Onay mesajını sıfırla
+      } else {
+        // İlk tıklamada onay mesajını göster
+        setShowConfirmMessage(true);
+        setTimeout(() => setShowConfirmMessage(false), 3000); // 3 saniye sonra otomatik gizle
+        handleConfirmModalOpen(); // Onay modal'ını aç
+      }
+    } catch (e) {
+      console.error(e)
     }
   };
 
@@ -122,7 +140,13 @@ const filteredInternships = internships.filter(internship => {
     setShowConfirmModal(false); // Confirmation modal'ını kapat
   };
   
-  const handleConfirmRemove = () => {
+  const handleConfirmRemove = async () => {
+    await axios.put(`/api/internships/${selectedInternship.id}/state`, {
+      is_sgk_uploaded: false
+    }, {
+      headers: getAuthHeader(),
+    })
+    setRefetch(!refetch);
     setIsSGKUploaded(false); // SGK yüklemesini kaldır
     setShowConfirmModal(false); // Confirmation modal'ını kapat
   };
@@ -154,20 +178,40 @@ const filteredInternships = internships.filter(internship => {
     }
   };
 
-  const getInternshipState = async () => {
-    try{
-      const res = await axios.get(`/api/internship/${selectedInternship.ID}/state`);
-      setSelectedInternshipState(res.data);
-    } catch (e) {
-      setSelectedInternshipState(null);
+  const isStateDone = (state: InternshipStates, deg: number) => {
+    switch (deg) {
+      case 1:
+        return "Tamamlandı";
+      case 2:
+        if (state === InternshipStates.Begin){
+          return '-'
+        }
+        return "Tamamlandı";
+      case 3:
+        if (state === InternshipStates.Begin || state === InternshipStates.ReportReceived){
+          return '-'
+        }
+        return "Tamamlandı";
+      case 4:
+        if (state === InternshipStates.Failed){
+          return 'Başarısız'
+        }
+        if (state === InternshipStates.Completed){
+          return 'Tamamlandı'
+        }
+        return "-";
     }
   }
 
   useEffect(() => {
-    if (selectedInternship){
-      getInternshipState();
+    if(selectedInternship){
+      setIsSGKUploaded(selectedInternship.is_sgk_uploaded);
     }
   }, [selectedInternship])
+
+  useEffect(() => {
+
+  }, [])
 
   return (
     <div className="dashboard-container">
@@ -257,29 +301,30 @@ const filteredInternships = internships.filter(internship => {
                 {/* Staj Aşamaları Kutusu */}
             <Card className="mb-4">
               <Card.Body>
-                <Card.Title className="text-center">Tech Solutions</Card.Title>
+                <Card.Title className="text-center">{selectedInternship.company.name}</Card.Title>
                 <p className="text-center">
-                  <strong>İletişim:</strong> John Doe (Supervisor), Tel: 555-1234
+                  <strong>İletişim:</strong> {selectedInternship.mentor.name} {selectedInternship.mentor.surname} (Supervisor), Tel: {selectedInternship.mentor.phone_number}
                 </p>
                   <Card className="mb-4">
                     <Card.Header style={{ backgroundColor: "#cce5ff"}}>Staj Aşamaları</Card.Header>
                     <ListGroup>
-                      <ListGroup.Item>
-                        <strong>Durum 1 - </strong>{isStateDone(selectedInternshipState.state, )}
-                        <FaCheckCircle className="ms-2 text-success" />
-                      </ListGroup.Item> 
-                      <ListGroup.Item>
-                        <strong>Durum 2 - </strong> Tamamlandı: 2023-02-15
-                        <FaCheckCircle className="ms-2 text-success" />
-                      </ListGroup.Item>
-                      <ListGroup.Item>
-                        <strong>Durum 3 - </strong>
-                        <span className="text-warning">Tamamlanmadı</span>
-                      </ListGroup.Item>
-                      <ListGroup.Item>
-                        <strong>Durum 4 - </strong>
-                        <span className="text-warning">Tamamlanmadı</span>
-                      </ListGroup.Item>
+                      {nums.map((e: any) => (
+                        <ListGroup.Item>
+                          <div style={{display: "flex"}}>
+                            <strong>Durum {e} - </strong>
+                            <p>{isStateDone(selectedInternship.state, e)}</p>
+                            <div className='flex'>
+                              {isStateDone(selectedInternship.state, e) === 'Tamamlandı' ?
+                                <FaCheckCircle className="ms-2 text-success" />
+                              : isStateDone(selectedInternship.state, e) === 'Başarısız' ?
+                                <FaTimesCircle className="ms-2 text-red-600" />
+                              : null
+                              }
+                            </div>
+                          </div>
+                        </ListGroup.Item>
+                        ))
+                      }
                     </ListGroup>
                   </Card>
                 <p>
@@ -319,15 +364,8 @@ const filteredInternships = internships.filter(internship => {
                   </div>
                   <div className="d-flex align-items-center mb-3">
                     <strong className="me-3">Durum:</strong>
-                    <span>Onay Bekliyor</span>
+                    <span>{StateConversions[selectedInternship.state as keyof typeof StateConversions]}</span>
                   </div>
-
-                  <Button
-                    variant="primary"
-                    onClick={() => handleNextStep(selectedInternship.ID)} // İlgili staj ID'sini gönder
-                  >
-                    Bir Sonraki Aşamaya Geç
-                  </Button>
                 </p>
                 </Card.Body>
                 </Card>
