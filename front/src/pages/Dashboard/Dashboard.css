@@ -63,6 +63,16 @@ th {
   background-color: #f8f9fa; /* Modal içeriği için arka plan rengi */
   border-radius: 8px; /* Modal köşe yuvarlama */
 }
+.modal-backdrop.show {
+  backdrop-filter: blur(5px); /* Bulanıklık efekti */
+  opacity: 0.5; /* Opaklık */
+}
+
+.modal-backdrop.confirm-modal-show {
+  backdrop-filter: blur(5px); /* Bulanıklık efekti */
+  opacity: 0.7; /* Opaklık */
+}
+
 
 .custom-button {
   display: block;            /* Flex container */

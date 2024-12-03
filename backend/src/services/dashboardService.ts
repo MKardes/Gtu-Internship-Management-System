@@ -7,6 +7,7 @@ class DashboardService {
       const queryBuilder = AppDataSource.getRepository(Internship)
         .createQueryBuilder('internship')
         .leftJoinAndSelect('internship.student', 'student', 'student.id = internship.student_id')
+        .leftJoinAndSelect('internship.mentor', 'mentor', 'mentor.id = internship.mentor_id')
         .leftJoinAndSelect('internship.company', 'company', 'company.id = internship.company_id');
 
       if (grade) {
@@ -45,6 +46,10 @@ class DashboardService {
         'internship.created_at',
         'company.name',
         'company.address',
+        'mentor.name',
+        'mentor.surname',
+        'mentor.mail',
+        'mentor.phone_number',
       ]).getMany();
 
       return { status: 200, data: students };

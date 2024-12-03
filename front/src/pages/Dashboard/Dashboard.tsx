@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Dropdown, ToggleButton } from 'react-bootstrap';
-import { Button, Modal } from 'react-bootstrap';
-import { FaSearch } from 'react-icons/fa';
+import { Card, Dropdown, OverlayTrigger, ToggleButton, Tooltip } from 'react-bootstrap';
+import { Button, Modal, ListGroup} from 'react-bootstrap';
+import { FaCheckCircle, FaSearch, FaTimesCircle } from 'react-icons/fa';
 import './Dashboard.css';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -28,6 +28,11 @@ const Dashboard: React.FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false); // Modal'ın gösterilme durumunu tutan state.
   const [filteredSemester, setFilteredSemester] = useState<string | null>(null);
   const [selectedInternship, setSelectedInternship] = useState<any | null>(null);
+  const [selectedInternshipState, setSelectedInternshipState] = useState<any | null>(null);
+  const [checked, setChecked] = useState<any | null>(null);
+  const [showConfirmMessage, setShowConfirmMessage] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  const [isSGKUploaded, setIsSGKUploaded] = useState(false); // SGK yüklenme durumu
   const navigate = useNavigate();
 
   const getAuthHeader = () => {
@@ -90,7 +95,79 @@ const filteredInternships = internships.filter(internship => {
   // Modal'ı kapatma fonksiyonu
   const handleCloseModal = () => {
     setShowModal(false);
+    setSelectedInternshipState(null);
   };
+
+  const handleToggle = () => {
+    if (!isSGKUploaded) {
+      // Eğer SGK yüklü değilse, direkt "Yüklendi" olarak işaretle
+      setIsSGKUploaded(true);
+    } else if (showConfirmMessage) {
+      // Eğer onay mesajı gösterilmişse ve tekrar tıklanırsa "Yüklenmedi" durumuna geç
+      setIsSGKUploaded(false);
+      setShowConfirmMessage(false); // Onay mesajını sıfırla
+    } else {
+      // İlk tıklamada onay mesajını göster
+      setShowConfirmMessage(true);
+      setTimeout(() => setShowConfirmMessage(false), 3000); // 3 saniye sonra otomatik gizle
+      handleConfirmModalOpen(); // Onay modal'ını aç
+    }
+  };
+
+  const handleConfirmModalOpen = () => {
+    setShowConfirmModal(true); // Confirmation modal'ını aç
+  };
+  
+  const handleConfirmModalClose = () => {
+    setShowConfirmModal(false); // Confirmation modal'ını kapat
+  };
+  
+  const handleConfirmRemove = () => {
+    setIsSGKUploaded(false); // SGK yüklemesini kaldır
+    setShowConfirmModal(false); // Confirmation modal'ını kapat
+  };
+
+  const handleNextStep = (internshipId: number) => {
+    setInternships((prevInternships) =>
+      prevInternships.map((internship) => {
+        if (internship.id === internshipId) {
+          // Sıradaki aşamayı belirle
+          const currentState = internship.state;
+          const nextState = getNextState(currentState);
+          return { ...internship, state: nextState }; // Durumu güncelle
+        }
+        return internship;
+      })
+    );
+  };
+  // Bir sonraki durumu döndüren yardımcı fonksiyon
+  const getNextState = (currentState: InternshipStates): InternshipStates => {
+    switch (currentState) {
+      case InternshipStates.Begin:
+        return InternshipStates.ReportReceived;
+      case InternshipStates.ReportReceived:
+        return InternshipStates.ReportApproved;
+      case InternshipStates.ReportApproved:
+        return InternshipStates.Completed;
+      default:
+        return currentState; // Eğer son durumdaysa değişiklik yapma
+    }
+  };
+
+  const getInternshipState = async () => {
+    try{
+      const res = await axios.get(`/api/internship/${selectedInternship.ID}/state`);
+      setSelectedInternshipState(res.data);
+    } catch (e) {
+      setSelectedInternshipState(null);
+    }
+  }
+
+  useEffect(() => {
+    if (selectedInternship){
+      getInternshipState();
+    }
+  }, [selectedInternship])
 
   return (
     <div className="dashboard-container">
@@ -132,6 +209,7 @@ const filteredInternships = internships.filter(internship => {
               <th>Öğrenci Numarası</th>
               <th>Email</th>
               <th>Şirket</th>
+              <th>Staj Türü</th>
               <th>Detaylar</th> {/* Modal açma butonu için başlık */}
             </tr>
           </thead>
@@ -143,6 +221,7 @@ const filteredInternships = internships.filter(internship => {
               <td>{internship.student.school_id}</td>
               <td>{internship.student.email}</td>
               <td>{internship.company.name}</td>
+              <td>{internship.type}</td>
               <td>
               <Button
                 className="custom-button"
@@ -159,33 +238,99 @@ const filteredInternships = internships.filter(internship => {
       <Modal size="lg" dialogClassName="modal-90w"
         aria-labelledby="example-custom-modal-styling-title" show={showModal} onHide={handleCloseModal}>
           <Modal.Header closeButton>
-            <Modal.Title>Öğrenci Detayları</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {selectedInternship && (
               <>
-                <p><strong>İsim:</strong> {selectedInternship.student.name}</p>
-                <p><strong>Soyisim:</strong> {selectedInternship.student.surname}</p>
-                <p><strong>Öğrenci Numarası:</strong> {selectedInternship.student.school_id}</p>
-                <p><strong>Email:</strong> {selectedInternship.student.email}</p>
-                <p><strong>Şirket:</strong> {selectedInternship.company.name}</p>
-                <p><strong>Staj Durumu:</strong> {StateConversions[selectedInternship.state as InternshipStates]}</p>
-                <p>
-                  <div className='items-center justify-center'>
-                    <strong>SGK Raporu:</strong> 
-                    <ToggleButton
-                      className="px-2 items-center justify-center"
-                      id="toggle-check"
-                      type="checkbox"
-                      variant="outline-success"
-                      checked={true}
-                      size='lg'
-                      value="1"
-                      // onChange={(e) => setChecked(e.currentTarget.checked)}
-                    ></ToggleButton>
-                  </div>
+                {/* Öğrenci Bilgileri Kutusu */}
+                <Card className="mb-4">
+                <Card.Header>Öğrenci Bilgileri</Card.Header>
+                    <Card.Body>
+                        <p><strong>İsim:</strong> {selectedInternship.student.name}</p>
+                        <p><strong>Soyisim:</strong> {selectedInternship.student.surname}</p>
+                        <p><strong>Öğrenci Numarası:</strong> {selectedInternship.student.school_id}</p>
+                        <p><strong>Email:</strong> {selectedInternship.student.email}</p>
+                        <p><strong>Staj Türü:</strong> {selectedInternship.type}</p>
+                    </Card.Body>
+                </Card>
+
+                {/* Staj Aşamaları Kutusu */}
+            <Card className="mb-4">
+              <Card.Body>
+                <Card.Title className="text-center">Tech Solutions</Card.Title>
+                <p className="text-center">
+                  <strong>İletişim:</strong> John Doe (Supervisor), Tel: 555-1234
                 </p>
-                
+                  <Card className="mb-4">
+                    <Card.Header style={{ backgroundColor: "#cce5ff"}}>Staj Aşamaları</Card.Header>
+                    <ListGroup>
+                      <ListGroup.Item>
+                        <strong>Durum 1 - </strong>{isStateDone(selectedInternshipState.state, )}
+                        <FaCheckCircle className="ms-2 text-success" />
+                      </ListGroup.Item> 
+                      <ListGroup.Item>
+                        <strong>Durum 2 - </strong> Tamamlandı: 2023-02-15
+                        <FaCheckCircle className="ms-2 text-success" />
+                      </ListGroup.Item>
+                      <ListGroup.Item>
+                        <strong>Durum 3 - </strong>
+                        <span className="text-warning">Tamamlanmadı</span>
+                      </ListGroup.Item>
+                      <ListGroup.Item>
+                        <strong>Durum 4 - </strong>
+                        <span className="text-warning">Tamamlanmadı</span>
+                      </ListGroup.Item>
+                    </ListGroup>
+                  </Card>
+                <p>
+                  <div className="d-flex align-items-center">
+                    <strong className="me-3">SGK Raporu:</strong> {/* Sağ tarafa boşluk ekledik */}
+                    <div style={{ position: "relative", display: "inline-block" }}></div>
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={
+                        <Tooltip id="button-tooltip">
+                          {isSGKUploaded 
+                            ? "SGK yüklendi. Kaldırmak için tıklayın."
+                            : "SGK yüklenmedi. Yüklemek için tıklayın."}
+                        </Tooltip>
+                      }
+                    >
+                      <ToggleButton
+                        className="px-2 items-center justify-center"
+                        id="toggle-check"
+                        type="checkbox"
+                        variant={isSGKUploaded ? "outline-success" : "outline-danger"}
+                        checked={isSGKUploaded}
+                        size='sm'
+                        value="1"
+                        onClick={handleToggle}
+                      >
+                        {isSGKUploaded ? (
+                          <FaCheckCircle className="me-1" style={{ fontSize: "0.9rem" }} />
+                        ) : (
+                          <FaTimesCircle className="me-1" style={{ fontSize: "0.9rem" }} />
+                        )}
+                        <span style={{ fontSize: "0.85rem" }}>
+                          {isSGKUploaded ? "Yüklendi" : "Yüklenmedi"}
+                        </span>
+                      </ToggleButton>
+                    </OverlayTrigger>
+                  </div>
+                  <div className="d-flex align-items-center mb-3">
+                    <strong className="me-3">Durum:</strong>
+                    <span>Onay Bekliyor</span>
+                  </div>
+
+                  <Button
+                    variant="primary"
+                    onClick={() => handleNextStep(selectedInternship.ID)} // İlgili staj ID'sini gönder
+                  >
+                    Bir Sonraki Aşamaya Geç
+                  </Button>
+                </p>
+                </Card.Body>
+                </Card>
                 {/* Burada daha fazla öğrenci bilgisi ekleyebilirsiniz */}
               </>
             )}
@@ -195,6 +340,24 @@ const filteredInternships = internships.filter(internship => {
               Kapat
             </Button>
           </Modal.Footer>
+        </Modal>
+
+        {/* SGK kaldırma onay modali */}
+        <Modal show={showConfirmModal} onHide={handleConfirmModalClose}>
+        <Modal.Header closeButton>
+            <Modal.Title>Onay Gerekli</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>SGK yüklemesini kaldırmak istediğinizden emin misiniz?</Modal.Body>
+        <Modal.Footer >
+            <div style={{  display: "flex", gap: "10px" }}>
+                <Button variant="secondary" onClick={handleConfirmModalClose}>
+                Vazgeç
+                </Button>
+                <Button variant="danger" onClick={handleConfirmRemove}>
+                Kaldır
+                </Button>
+            </div>
+        </Modal.Footer>
         </Modal>
     </div>
   );
