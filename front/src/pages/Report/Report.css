@@ -1,1 +1,56 @@
-/*Temp*/
+/* Report Form Styles */
+.report-container {
+    background-color: #f4faff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #0056b3;
+    font-size: 2.5rem;
+}
+
+label {
+    font-weight: bold;
+    color: #004c99;
+}
+
+select {
+    border-radius: 5px;
+    border: 1px solid #007bff;
+    background-color: #f1f8ff;
+    color: #0056b3;
+    padding: 0.5rem;
+}
+
+select:focus {
+    outline: none;
+    border-color: #0056b3;
+    box-shadow: 0 0 5px rgba(0, 91, 158, 0.5);
+}
+
+button.btn-submit {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.8rem 1.5rem;
+    width: 100%;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+}
+
+button.btn-submit:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .report-container {
+        padding: 1rem;
+    }
+
+    button.btn-submit {
+        width: 100%;
+    }
+}

@@ -24,4 +24,7 @@ export class Student {
 
     @CreateDateColumn()
     created_at: Date;
+
+    @Column({ nullable: true }) // şimdilik
+    grade: number;
 }

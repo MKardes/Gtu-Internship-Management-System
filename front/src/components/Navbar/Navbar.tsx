@@ -74,12 +74,16 @@ const Navigation: React.FC = () => {
                     <LinkContainer to="/student-grade">
                         <Button variant="outline-light" className="overlay-button" onClick={handleStudentEvoluation}>Öğrenci Notlandırma</Button>
                     </LinkContainer>
-                    <LinkContainer to="/report">
-                        <Button variant="outline-light" className="overlay-button" onClick={handleReport}>Rapor Al</Button>
-                    </LinkContainer>
-                    <LinkContainer to="/my-reports">
-                        <Button variant="outline-light" className="overlay-button" onClick={handleMyReports}>Raporlarım</Button>
-                    </LinkContainer>
+                    {(user.role !== "SuperAdmin") && (
+                      <LinkContainer to="/report">
+                          <Button variant="outline-light" className="overlay-button" onClick={handleReport}>Rapor Al</Button>
+                      </LinkContainer>
+                    )}
+                    {(user.role !== "SuperAdmin") && (
+                      <LinkContainer to="/my-reports">
+                          <Button variant="outline-light" className="overlay-button" onClick={handleMyReports}>Raporlarım</Button>
+                      </LinkContainer>
+                    )}
                     {(user.role === "SuperAdmin" || user.role === "DepartmentAdmin") && (
                         <LinkContainer to={user.role === "SuperAdmin" ? "/super-admin" : "/department-admin"}>
                             <Button variant="outline-light" className="overlay-button" onClick={handlePanel}>Yönetim Paneli</Button>
