@@ -40,6 +40,9 @@ export class Internship {
 
     @Column({nullable: false, default: InternshipStates.Begin})
     state: InternshipStates
+    
+    @Column({nullable: false, default: false})
+    is_sgk_uploaded: boolean
 
     @Column({ nullable: true })
     begin_date: Date;

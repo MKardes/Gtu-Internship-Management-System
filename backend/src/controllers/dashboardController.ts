@@ -8,4 +8,9 @@ const getStudents = async (req: Request, res: Response) => {
     res.status(result.status).json(result.data);
 }
 
-export default { getStudents };
+const putInternshipState = async (req: Request, res: Response) => {
+    const result = await service.putInternshipState(Number(req.params.id), req.body.state, req.body.is_sgk_uploaded);
+    res.status(result.status).json(result.data);
+}
+
+export default { getStudents, putInternshipState };

@@ -7,6 +7,7 @@ class DashboardService {
       const queryBuilder = AppDataSource.getRepository(Internship)
         .createQueryBuilder('internship')
         .leftJoinAndSelect('internship.student', 'student', 'student.id = internship.student_id')
+        .leftJoinAndSelect('internship.mentor', 'mentor', 'mentor.id = internship.mentor_id')
         .leftJoinAndSelect('internship.company', 'company', 'company.id = internship.company_id');
 
       if (grade) {
@@ -29,7 +30,6 @@ class DashboardService {
 
       // Fetch both student and internship columns
       const students = await queryBuilder.select([
-        'student.id',
         'student.school_id',
         'student.name',
         'student.surname',
@@ -40,14 +40,48 @@ class DashboardService {
         'internship.mentor',
         'internship.name',
         'internship.state',
+        'internship.is_sgk_uploaded',
         'internship.begin_date',
         'internship.end_date',
         'internship.created_at',
         'company.name',
         'company.address',
+        'mentor.name',
+        'mentor.surname',
+        'mentor.mail',
+        'mentor.phone_number',
       ]).getMany();
 
       return { status: 200, data: students };
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      return { status: 500, data: [] };
+    }
+  }
+
+  async putInternshipState(internshipId: number, state: string, isSgkUploaded: any): Promise<{ status: number; data: any[] }> {
+    let payload = {}
+
+    if (state) {
+      payload = {
+        state: state
+      }
+    }
+
+    if (isSgkUploaded !== undefined) {
+      payload = {
+        ...payload,
+        is_sgk_uploaded: isSgkUploaded
+      }
+    }
+
+    try {
+      await AppDataSource.createQueryBuilder()
+        .update(Internship)
+        .set(payload)
+        .where("id = :paramIntId", { paramIntId: internshipId })
+        .execute()
+      return { status: 200, data: [] };
     } catch (error) {
       console.error('Error fetching students:', error);
       return { status: 500, data: [] };
