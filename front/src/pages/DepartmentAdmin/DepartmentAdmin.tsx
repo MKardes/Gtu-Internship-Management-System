@@ -80,6 +80,7 @@ const DepartmentAdminPage: React.FC = () => {
             setUsers([...users, response.data]);
             setInputFullName("");
             setInputEmail("");
+            setInputPassword("");
             setError(null);
         } catch (error) {
             handleError(error);
