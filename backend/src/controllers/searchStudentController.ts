@@ -1,4 +1,4 @@
-import dashboardService from '../services/dashboardService';
+import dashboardService from '../services/searchStudentService';
 import { Request, Response } from 'express';
 
 const service = new dashboardService();

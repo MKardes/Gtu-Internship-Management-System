@@ -80,7 +80,7 @@ const Home: React.FC = () => {
         />
         <Form.Group className="mb-2" controlId="username">
           <Form.Label className="d-flex justify-content-between text-left">Email</Form.Label>
-          <Input
+          <Form.Control
             type="email"
             value={inputUsername}
             placeholder="Email"
@@ -89,7 +89,7 @@ const Home: React.FC = () => {
         </Form.Group>
         <Form.Group className="mb-2" controlId="password">
           <Form.Label className="d-flex justify-content-between text-left">Şifre</Form.Label>
-          <Input
+          <Form.Control 
             type="password"
             value={inputPassword}
             placeholder="Şifre"

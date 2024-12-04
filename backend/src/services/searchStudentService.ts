@@ -2,6 +2,45 @@ import { AppDataSource } from "../../ormconfig";
 import { Internship } from "../entities/internship.entitiy";
 
 class DashboardService {
+
+  async getStudentInternshipState(studentId: number): Promise<{ status: number; data: any }> {
+    try {
+      const internship = await AppDataSource.getRepository(Internship)
+        .createQueryBuilder('internship')
+        .leftJoinAndSelect('internship.student', 'student', 'student.id = internship.student_id')
+        .leftJoinAndSelect('internship.mentor', 'mentor', 'mentor.id = internship.mentor_id')
+        .leftJoinAndSelect('internship.company', 'company', 'company.id = internship.company_id')
+        .where('internship.student_id = :studentId', { studentId })
+        .select([
+          'student.school_id',
+          'student.name',
+          'student.surname',
+          'student.email',
+          'student.turkish_id',
+          'internship.id',
+          'internship.type',
+          'internship.mentor',
+          'internship.name',
+          'internship.state',
+          'internship.is_sgk_uploaded',
+          'internship.begin_date',
+          'internship.end_date',
+          'internship.created_at',
+          'company.name',
+          'company.address',
+          'mentor.name',
+          'mentor.surname',
+          'mentor.mail',
+          'mentor.phone_number',
+        ]).getOne();
+
+      return { status: 200, data: internship.state };
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      return { status: 500, data: [] };
+    }
+  }
+
   async getStudents(grade?: any, semester?: any): Promise<{ status: number; data: any[] }> {
     try {
       const queryBuilder = AppDataSource.getRepository(Internship)
