@@ -14,7 +14,6 @@ import Navigation from "./components/Navbar/Navbar";
 import PrivateRoute from './components/privateRoute';
 import DepartmentAdmin from './pages/DepartmentAdmin/DepartmentAdmin';
 import Dashboard from './pages/Dashboard/Dashboard';
-import DashboardActual from './pages/DashboardActual/DashboardActual';
 import MyReports from './pages/MyReports/MyReports';
 import Report from './pages/Report/Report';
 import StudentGrade from './pages/StudentGrade/StudentGrade';
@@ -45,12 +44,6 @@ const App: React.FC = () => {
             path = "/dashboard"
             element = {
               <PrivateRoute element = {<Dashboard />} />
-            }
-            />
-          <Route 
-            path = "/dashboard-actual"
-            element = {
-              <PrivateRoute element = {<DashboardActual />} />
             }
             />
           <Route 

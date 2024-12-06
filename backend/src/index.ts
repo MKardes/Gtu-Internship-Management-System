@@ -4,7 +4,7 @@ import authRoutes from './routes/auth';
 import refreshTokenRoutes from './routes/refreshToken';
 import superAdminRoutes from './routes/superAdminRoutes';
 import departmentAdminRoutes from './routes/departmentAdminRoutes';
-import dashboardRoutes from './routes/dashboardRoutes';
+import searchStudentRoutes from './routes/searchStudentRoutes';
 import chartRoutes from './routes/chartRoutes';
 import { verifyToken } from './middlewares/verifyToken'; // Token doğrulama middleware'i
 import 'reflect-metadata';
@@ -31,7 +31,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/auth', refreshTokenRoutes);
 app.use('/api', superAdminRoutes);
 app.use('/api', departmentAdminRoutes);
-app.use('/api', dashboardRoutes);
+app.use('/api', searchStudentRoutes);
 app.use('/api', chartRoutes);
 
 app.listen(API_PORT, () => {

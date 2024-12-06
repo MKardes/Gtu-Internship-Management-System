@@ -2,6 +2,7 @@ import { AppDataSource } from "../../ormconfig";
 import { Internship } from "../entities/internship.entitiy";
 
 class DashboardService {
+
   async getStudents(grade?: any, semester?: any): Promise<{ status: number; data: any[] }> {
     try {
       const queryBuilder = AppDataSource.getRepository(Internship)
