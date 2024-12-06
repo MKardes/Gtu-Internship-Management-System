@@ -241,7 +241,6 @@
 .fancy-table {
   min-width: 200px; /* Tablo genişliğini minimum bir değere ayarlayın ki küçük ekranlarda scroll etkili olsun */
   margin-bottom: 0;
-
 }
 
 @media (max-width: 768px) {
