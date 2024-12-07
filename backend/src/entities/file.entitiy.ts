@@ -11,6 +11,6 @@ export class File {
    name: string;
 
    @Column({ nullable: true })
-   drive_link: number;
+   drive_link: string;
 
 }
