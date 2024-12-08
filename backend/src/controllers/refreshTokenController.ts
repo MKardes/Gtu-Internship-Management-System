@@ -11,7 +11,7 @@ export const refreshTokenController = async (req: Request, res: Response): Promi
   const { refreshToken } = req.body;
 
   if (!refreshToken) {
-    logRequest(res, { status: 402, data: { message: 'Refresh token gerekli' } }, 'POST /refresh-token');
+    logRequest(res, { status: 402, data: { message: 'Refresh token gerekli' } }, 'POST /refresh-token', req);
     return;
   }
 
@@ -21,7 +21,7 @@ export const refreshTokenController = async (req: Request, res: Response): Promi
     
     // decoded.id kontrolü
     if (!decoded.id) {
-      logRequest(res, { status: 402, data: { message: 'Geçersiz token verisi' } }, 'POST /refresh-token');
+      logRequest(res, { status: 402, data: { message: 'Geçersiz token verisi' } }, 'POST /refresh-token', req);
       return;
     }
 
@@ -32,7 +32,7 @@ export const refreshTokenController = async (req: Request, res: Response): Promi
                                           .getOne();
 
     if (!user) {
-      logRequest(res, { status: 402, data: { message: 'Geçersiz refresh token' } }, 'POST /refresh-token');
+      logRequest(res, { status: 402, data: { message: 'Geçersiz refresh token' } }, 'POST /refresh-token', req);
       return;
     }
 
@@ -43,8 +43,8 @@ export const refreshTokenController = async (req: Request, res: Response): Promi
       { expiresIn: '15m' }
     );
 
-    logRequest(res, { status: 200, data: { accessToken: newAccessToken } }, 'POST /refresh-token');
+    logRequest(res, { status: 200, data: { accessToken: newAccessToken } }, 'POST /refresh-token', req);
   } catch (error) {
-    logRequest(res, { status: 402, data: { message: 'Token geçersiz veya süresi dolmuş', error } }, 'POST /refresh-token');
+    logRequest(res, { status: 402, data: { message: 'Token geçersiz veya süresi dolmuş', error } }, 'POST /refresh-token', req);
   }
 };
