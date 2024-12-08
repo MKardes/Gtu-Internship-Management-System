@@ -1,0 +1,27 @@
+[2024-12-08T18:10:40.210Z] Login attempt: admin@gtu.edu.tr
+[2024-12-08T18:10:40.437Z] Login successful: admin@gtu.edu.tr
+[2024-12-08T18:10:40.437Z] POST /login - Success: Returned 1 items.
+[2024-12-08T18:10:40.559Z] GET /years - Success: Returned 7 items.
+[2024-12-08T18:10:40.596Z] GET /companies - Success: Returned 13 items.
+[2024-12-08T18:10:40.670Z] GET /internships - Success: Returned 1 items.
+[2024-12-08T18:10:40.806Z] GET /internships - Success: Returned 1 items.
+[2024-12-08T18:10:43.468Z] GET /students - Success: Returned 70 items.
+[2024-12-08T18:10:44.457Z] GET /students - Success: Returned 70 items.
+[2024-12-08T18:10:47.188Z] GET /students - Success: Returned 0 items.
+[2024-12-08T18:10:48.550Z] GET /students - Success: Returned 0 items.
+[2024-12-08T18:10:52.781Z] GET /students - Success: Returned 0 items.
+[2024-12-08T18:10:58.117Z] GET /students - Success: Returned 70 items.
+[2024-12-08T18:10:59.283Z] GET /students - Success: Returned 70 items.
+[2024-12-08T18:11:01.355Z] PUT /students/83/internship-state - Success: Returned 0 items.
+[2024-12-08T18:11:01.477Z] GET /students - Success: Returned 70 items.
+[2024-12-08T18:11:04.040Z] GET /super-admin/6188dd91-7c4e-40be-b28a-8ee512eeb59d - Success: Returned 1 items.
+[2024-12-08T18:11:04.214Z] GET /departments - Success: Returned 2 items.
+[2024-12-08T18:11:04.215Z] GET /department-admins - Success: Returned 4 items.
+[2024-12-08T18:11:04.720Z] GET /super-admin/6188dd91-7c4e-40be-b28a-8ee512eeb59d - Success: Returned 1 items.
+[2024-12-08T18:11:04.725Z] GET /departments - Success: Returned 2 items.
+[2024-12-08T18:11:04.728Z] GET /department-admins - Success: Returned 4 items.
+[2024-12-08T18:11:06.560Z] Logout attempt: User ID undefined
+[2024-12-08T18:11:06.648Z] Logout successful: User ID undefined
+[2024-12-08T18:11:06.649Z] POST /logout - Success: Returned 1 items.
+[2024-12-08T18:11:06.692Z] GET /companies - Success: Returned 13 items.
+[2024-12-08T18:11:06.699Z] GET /years - Success: Returned 7 items.

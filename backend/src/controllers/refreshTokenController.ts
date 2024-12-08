@@ -4,16 +4,14 @@ import jwt from 'jsonwebtoken';
 import { User } from '../entities/user.entity';
 import { AppDataSource } from '../../ormconfig';
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../config';
-import Logger from '../utils/Logger';
+import { logRequest } from '../utils/ResponseHandler';
 
-const logger = new Logger('auth.log'); // Log dosyası
 
 export const refreshTokenController = async (req: Request, res: Response): Promise<void> => {
   const { refreshToken } = req.body;
 
   if (!refreshToken) {
-    logger.log('Refresh token is missing in the request body');
-    res.status(402).json({ message: 'Refresh token gerekli' });
+    logRequest(res, { status: 402, data: { message: 'Refresh token gerekli' } }, 'POST /refresh-token');
     return;
   }
 
@@ -23,8 +21,7 @@ export const refreshTokenController = async (req: Request, res: Response): Promi
     
     // decoded.id kontrolü
     if (!decoded.id) {
-      logger.log('Invalid token data: Missing user ID');
-      res.status(402).json({ message: 'Geçersiz token verisi' });
+      logRequest(res, { status: 402, data: { message: 'Geçersiz token verisi' } }, 'POST /refresh-token');
       return;
     }
 
@@ -35,8 +32,7 @@ export const refreshTokenController = async (req: Request, res: Response): Promi
                                           .getOne();
 
     if (!user) {
-      logger.log('Refresh token validation failed: User not found or token mismatch');
-      res.status(402).json({ message: 'Geçersiz refresh token' });
+      logRequest(res, { status: 402, data: { message: 'Geçersiz refresh token' } }, 'POST /refresh-token');
       return;
     }
 
@@ -47,10 +43,8 @@ export const refreshTokenController = async (req: Request, res: Response): Promi
       { expiresIn: '15m' }
     );
 
-    logger.log(`New access token generated for user ID ${user.id}`);
-    res.json({ accessToken: newAccessToken });
+    logRequest(res, { status: 200, data: { accessToken: newAccessToken } }, 'POST /refresh-token');
   } catch (error) {
-    logger.log(`Token validation error: ${error}`);
-    res.status(402).json({ message: 'Token geçersiz veya süresi dolmuş' });
+    logRequest(res, { status: 402, data: { message: 'Token geçersiz veya süresi dolmuş', error } }, 'POST /refresh-token');
   }
 };
