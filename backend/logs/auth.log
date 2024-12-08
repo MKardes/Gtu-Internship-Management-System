@@ -1,0 +1,31 @@
+[2024-12-08T07:32:43.315Z] Logout attempt: User ID undefined
+[2024-12-08T07:32:43.505Z] Logout successful: User ID undefined
+[2024-12-08T07:32:48.819Z] Login attempt: admin@gtu.edu.tr
+[2024-12-08T07:32:49.069Z] Login successful: admin@gtu.edu.tr
+[2024-12-08T07:49:42.197Z] Logout attempt: User ID undefined
+[2024-12-08T07:49:42.342Z] Logout successful: User ID undefined
+[2024-12-08T07:49:47.092Z] Login attempt: admin@gtu.edu.tr
+[2024-12-08T07:49:49.027Z] Login successful: admin@gtu.edu.tr
+[2024-12-08T08:31:28.019Z] New access token generated for user ID 6188dd91-7c4e-40be-b28a-8ee512eeb59d
+[2024-12-08T08:31:28.039Z] New access token generated for user ID 6188dd91-7c4e-40be-b28a-8ee512eeb59d
+[2024-12-08T08:47:08.700Z] New access token generated for user ID 6188dd91-7c4e-40be-b28a-8ee512eeb59d
+[2024-12-08T09:02:38.285Z] New access token generated for user ID 6188dd91-7c4e-40be-b28a-8ee512eeb59d
+[2024-12-08T09:09:38.135Z] Logout attempt: User ID undefined
+[2024-12-08T09:09:42.122Z] Logout attempt: User ID undefined
+[2024-12-08T09:09:44.555Z] Logout attempt: User ID undefined
+[2024-12-08T09:10:16.276Z] Logout attempt: User ID undefined
+[2024-12-08T09:21:32.938Z] New access token generated for user ID 6188dd91-7c4e-40be-b28a-8ee512eeb59d
+[2024-12-08T09:21:32.961Z] New access token generated for user ID 6188dd91-7c4e-40be-b28a-8ee512eeb59d
+[2024-12-08T09:39:54.812Z] New access token generated for user ID 6188dd91-7c4e-40be-b28a-8ee512eeb59d
+[2024-12-08T10:01:13.441Z] New access token generated for user ID 6188dd91-7c4e-40be-b28a-8ee512eeb59d
+[2024-12-08T10:19:22.567Z] Refresh token validation failed: User not found or token mismatch
+[2024-12-08T10:20:10.017Z] Login attempt: admin@gtu.edu.tr
+[2024-12-08T10:20:10.414Z] Login successful: admin@gtu.edu.tr
+[2024-12-08T10:35:18.203Z] New access token generated for user ID 6188dd91-7c4e-40be-b28a-8ee512eeb59d
+[2024-12-08T10:50:21.043Z] Refresh token validation failed: User not found or token mismatch
+[2024-12-08T10:50:21.074Z] Refresh token validation failed: User not found or token mismatch
+[2024-12-08T10:50:24.768Z] Login attempt: admin@gtu.edu.tr
+[2024-12-08T10:50:25.079Z] Login successful: admin@gtu.edu.tr
+[2024-12-08T11:14:06.206Z] Refresh token validation failed: User not found or token mismatch
+[2024-12-08T11:14:17.238Z] Login attempt: admin@gtu.edu.tr
+[2024-12-08T11:14:17.699Z] Login successful: admin@gtu.edu.tr

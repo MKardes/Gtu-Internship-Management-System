@@ -29,6 +29,8 @@ class DashboardService {
         }
       }
 
+      queryBuilder.orderBy('internship.id', 'DESC')
+
       // Fetch both student and internship columns
       const students = await queryBuilder.select([
         'student.school_id',
