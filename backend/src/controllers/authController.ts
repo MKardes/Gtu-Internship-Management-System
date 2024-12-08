@@ -20,14 +20,14 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     
     if (!user) {
       logger.log(`Login failed: ${mail} - User not found`);
-      logRequest(res, { status: 401, data: { message: 'Geçersiz mail veya şifre' } }, `POST /login`); // logRequest ile loglama ve response
+      logRequest(res, { status: 401, data: { message: 'Geçersiz mail veya şifre' } }, `POST /login`, req); // logRequest ile loglama ve response
       return;
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       logger.log(`Login failed: ${mail} - Invalid password`);
-      logRequest(res, { status: 401, data: { message: 'Geçersiz mail veya şifre' } }, `POST /login`); // logRequest ile loglama ve response
+      logRequest(res, { status: 401, data: { message: 'Geçersiz mail veya şifre' } }, `POST /login`, req); // logRequest ile loglama ve response
       return;
     }
     // Access ve Refresh Token oluşturma
@@ -46,11 +46,11 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     await queryBuilder.update().set({ refreshToken }).where("id = :id", { id: user.id }).execute();
 
     logger.log(`Login successful: ${mail}`);
-    logRequest(res, { status: 200, data: { accessToken, refreshToken } }, `POST /login`); // logRequest ile loglama ve response
+    logRequest(res, { status: 200, data: { accessToken, refreshToken } }, `POST /login`, req); // logRequest ile loglama ve response
     return;
   } catch (error) {
     logger.log(`Login error: ${mail} - ${error}`);
-    logRequest(res, { status: 500, data: { message: 'Sunucu hatası', error } }, `POST /login`); // logRequest ile loglama ve response
+    logRequest(res, { status: 500, data: { message: 'Sunucu hatası', error } }, `POST /login`, req); // logRequest ile loglama ve response
   }
 };
 
@@ -62,9 +62,9 @@ export const logoutUser = async (req: Request, res: Response): Promise<void> => 
     const queryBuilder = AppDataSource.getRepository(User).createQueryBuilder("usr");
     await queryBuilder.update().set({ refreshToken: null }).where("id = :id", { id }).execute();
     logger.log(`Logout successful: User ID ${id}`);
-    logRequest(res, { status: 200, data: { message: 'Çıkış yapıldı' } }, `POST /logout`); // logRequest ile loglama ve response
+    logRequest(res, { status: 200, data: { message: 'Çıkış yapıldı' } }, `POST /logout`, req); // logRequest ile loglama ve response
   } catch (error) {
     logger.log(`Logout error: User ID ${id} - ${error}`);
-    logRequest(res, { status: 500, data: { message: 'Sunucu hatası', error } }, `POST /logout`); // logRequest ile loglama ve response
+    logRequest(res, { status: 500, data: { message: 'Sunucu hatası', error } }, `POST /logout`, req); // logRequest ile loglama ve response
   }
 }
