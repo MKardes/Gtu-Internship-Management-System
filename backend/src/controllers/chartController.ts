@@ -1,7 +1,9 @@
 import chartService from '../services/chartService';
 import { Request, Response } from 'express';
+import Logger from '../utils/Logger';
 
 const service = new chartService();
+const logger = new Logger('auth.log');
 
 const getInternships = async (req: Request, res: Response) => {
     const result = await service.getInternships(req.query.year as string, req.query.company_id as string);
