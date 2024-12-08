@@ -1,16 +1,17 @@
 import dashboardService from '../services/searchStudentService';
 import { Request, Response } from 'express';
+import { logRequest } from '../utils/ResponseHandler';
 
 const service = new dashboardService();
 
 const getStudents = async (req: Request, res: Response) => {
     const result = await service.getStudents(req.query.grade, req.query.semester);
-    res.status(result.status).json(result.data);
+    logRequest(res, result, 'GET /students');
 }
 
 const putInternshipState = async (req: Request, res: Response) => {
     const result = await service.putInternshipState(Number(req.params.id), req.body.state, req.body.is_sgk_uploaded);
-    res.status(result.status).json(result.data);
+    logRequest(res, result, `PUT /students/${req.params.id}/internship-state`);
 }
 
 export default { getStudents, putInternshipState };
