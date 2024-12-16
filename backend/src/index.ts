@@ -6,6 +6,7 @@ import superAdminRoutes from './routes/superAdminRoutes';
 import departmentAdminRoutes from './routes/departmentAdminRoutes';
 import searchStudentRoutes from './routes/searchStudentRoutes';
 import chartRoutes from './routes/chartRoutes';
+import termRoutes from './routes/termRoutes';
 import { verifyToken } from './middlewares/verifyToken'; // Token doğrulama middleware'i
 import 'reflect-metadata';
 import { AppDataSource } from '../ormconfig';
@@ -33,6 +34,7 @@ app.use('/api', superAdminRoutes);
 app.use('/api', departmentAdminRoutes);
 app.use('/api', searchStudentRoutes);
 app.use('/api', chartRoutes);
+app.use('/api', termRoutes);
 
 app.listen(API_PORT, () => {
   console.log(`Server is running at ${API_URL}:${API_PORT}`);
