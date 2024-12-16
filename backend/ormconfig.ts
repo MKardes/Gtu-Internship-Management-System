@@ -7,6 +7,7 @@ import { Student } from './src/entities/student.entitiy';
 import { User } from './src/entities/user.entity';
 import { Department } from './src/entities/department.entity';
 import { VerifCode } from './src/entities/verifcode.entity';
+import { Term } from './src/entities/term.entity';
 
 import { 
   MIGRATE_DB,
@@ -26,7 +27,7 @@ export const AppDataSource = new DataSource({
   database: POSTGRESQL_DB,
   synchronize: MIGRATE_DB,
   logging: false,
-  entities: [Company, File, Internship, Mentor, Student, User, Department, VerifCode],
+  entities: [Company, File, Internship, Mentor, Student, User, Department, VerifCode, Term],
   migrations: [],
   subscribers: [],
 });

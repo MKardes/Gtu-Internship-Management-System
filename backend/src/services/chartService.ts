@@ -98,8 +98,8 @@ class chartService {
             const endYear = getMonth(new Date()) >= 8 ? getYear(new Date()) : getYear(new Date()) - 1;
 
             const years: {
-            name: string
-            value: number
+                name: string
+                value: number
             }[] = [];
 
             for (let i = endYear, val = 1; i >= beginYear; i--, val++){
