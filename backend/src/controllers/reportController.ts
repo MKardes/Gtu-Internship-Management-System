@@ -4,8 +4,8 @@ import { logRequest } from '../utils/ResponseHandler';
 
 const service = new reportService(); 
 
-const createReport = async (req: Request, res: Response) => {
-    const result = await service.createReport(req.body);
+const createReport = async (req: any, res: Response) => {
+    const result = await service.createReport(req.body, req.user);
     logRequest(res, result, 'POST /report', req);
 }
 
