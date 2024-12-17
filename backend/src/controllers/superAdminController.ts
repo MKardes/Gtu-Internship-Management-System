@@ -1,19 +1,20 @@
 // src/controllers/superAdminController.ts
 import superAdminService from '../services/superAdminService';
 import { Request, Response } from 'express';
+import { logRequest } from '../utils/ResponseHandler';
 
 const service = new superAdminService(); 
 
 //CREATE
 const createDepartmentAdmin = async (req: Request, res: Response) => {
     const result = await service.createDepartmentAdmin(req.body);
-    res.status(result.status).json(result.data);
+    logRequest(res, result, 'POST /department-admin', req);
 };
 
 
 const createDepartment = async (req: Request, res: Response) => {
     const result = await service.createDepartment(req.body);
-    res.status(result.status).json(result.data);
+    logRequest(res, result, 'POST /department', req);
 };
 //CREATE
 
@@ -21,12 +22,12 @@ const createDepartment = async (req: Request, res: Response) => {
 //DELETE
 const deleteDepartmentAdmin = async (req: Request, res: Response) => {
     const result = await service.deleteDepartmentAdmin(req.params.id);
-    res.status(result.status).json(result.data);
+    logRequest(res, result, `DELETE /department-admin/${req.params.id}`, req);
 }
 
 const deleteDepartment = async (req: Request, res: Response) => {
     const result = await service.deleteDepartment(req.params.id);
-    res.status(result.status).json(result.data);
+    logRequest(res, result, `DELETE /department/${req.params.id}`, req);
 }
 //DELETE
 
@@ -35,23 +36,23 @@ const deleteDepartment = async (req: Request, res: Response) => {
 //GET
 const getAllDepartmentAdmins = async (req: Request, res: Response) => {
     const result = await service.getAllDepartmentAdmins();
-    res.status(result.status).json(result.data);
+    logRequest(res, result, 'GET /department-admins', req);
 };
 
 const getAllDepartments = async (req: Request, res: Response) => {
     const result = await service.getAllDepartments();
-    res.status(result.status).json(result.data);
+    logRequest(res, result, 'GET /departments', req);
 }
 
 const getDepartment = async (req: Request, res: Response) => {
     const result = await service.getDepartment(req.params.id);
-    res.status(result.status).json(result.data);
+    logRequest(res, result, `GET /department/${req.params.id}`, req);
 }
 
 
 const getSuperAdmin = async (req: any, res: Response) => {
     const result = await service.getSuperAdmin(req.user.id);
-    res.status(result.status).json(result.data);
+    logRequest(res, result, `GET /super-admin/${req.user.id}`, req);
 }
 //GET
 

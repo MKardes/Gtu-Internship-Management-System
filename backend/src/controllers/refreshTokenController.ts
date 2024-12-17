@@ -4,12 +4,14 @@ import jwt from 'jsonwebtoken';
 import { User } from '../entities/user.entity';
 import { AppDataSource } from '../../ormconfig';
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../config';
+import { logRequest } from '../utils/ResponseHandler';
+
 
 export const refreshTokenController = async (req: Request, res: Response): Promise<void> => {
   const { refreshToken } = req.body;
 
   if (!refreshToken) {
-    res.status(402).json({ message: 'Refresh token gerekli' });
+    logRequest(res, { status: 402, data: { message: 'Refresh token gerekli' } }, 'POST /refresh-token', req);
     return;
   }
 
@@ -19,7 +21,7 @@ export const refreshTokenController = async (req: Request, res: Response): Promi
     
     // decoded.id kontrolü
     if (!decoded.id) {
-      res.status(402).json({ message: 'Geçersiz token verisi' });
+      logRequest(res, { status: 402, data: { message: 'Geçersiz token verisi' } }, 'POST /refresh-token', req);
       return;
     }
 
@@ -30,7 +32,7 @@ export const refreshTokenController = async (req: Request, res: Response): Promi
                                           .getOne();
 
     if (!user) {
-      res.status(402).json({ message: 'Geçersiz refresh token' });
+      logRequest(res, { status: 402, data: { message: 'Geçersiz refresh token' } }, 'POST /refresh-token', req);
       return;
     }
 
@@ -41,8 +43,8 @@ export const refreshTokenController = async (req: Request, res: Response): Promi
       { expiresIn: '15m' }
     );
 
-    res.json({ accessToken: newAccessToken });
+    logRequest(res, { status: 200, data: { accessToken: newAccessToken } }, 'POST /refresh-token', req);
   } catch (error) {
-    res.status(402).json({ message: 'Token geçersiz veya süresi dolmuş' });
+    logRequest(res, { status: 402, data: { message: 'Token geçersiz veya süresi dolmuş', error } }, 'POST /refresh-token', req);
   }
 };

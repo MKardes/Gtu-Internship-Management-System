@@ -68,12 +68,16 @@ const Navigation: React.FC = () => {
           {showOverlay && (
             <div className="overlay" onClick={toggleOverlay}>
                <div className="overlay-content" onClick={e => e.stopPropagation()}>
-                    <LinkContainer to="/internship-search">
-                        <Button variant="outline-light" className="overlay-button" onClick={handleInternshipSearch}>Öğrenci Ara</Button>
-                    </LinkContainer>
-                    <LinkContainer to="/student-grade">
-                        <Button variant="outline-light" className="overlay-button" onClick={handleStudentEvoluation}>Öğrenci Notlandırma</Button>
-                    </LinkContainer>
+                    {user.role !== 'SuperAdmin' &&
+                      <LinkContainer to="/internship-search">
+                        <Button variant="outline-light" className="me-3" onClick={handleInternshipSearch}>Öğrenci Ara</Button>
+                      </LinkContainer>
+                    }
+                    {user.role !== 'SuperAdmin' &&
+                      <LinkContainer to="/student-grade">
+                        <Button variant="outline-light" className="me-3" onClick={handleStudentEvoluation}>Öğrenci Notlandır</Button>
+                      </LinkContainer>
+                    }
                     {(user.role !== "SuperAdmin") && (
                       <LinkContainer to="/report">
                           <Button variant="outline-light" className="overlay-button" onClick={handleReport}>Rapor Al</Button>
@@ -123,18 +127,26 @@ const Navigation: React.FC = () => {
                   {user ? (
                     <>
                       {/* Buttons and Links */}
-                      <LinkContainer to="/internship-search">
-                        <Button variant="outline-light" className="me-3" onClick={handleInternshipSearch}>Öğrenci Ara</Button>
-                      </LinkContainer>
-                      <LinkContainer to="/student-grade">
-                        <Button variant="outline-light" className="me-3" onClick={handleStudentEvoluation}>Öğrenci Notlandırma</Button>
-                      </LinkContainer>
-                      <LinkContainer to="/report">
-                        <Button variant="outline-light" className="me-3" onClick={handleReport}>Rapor Al</Button>
-                      </LinkContainer>
-                      <LinkContainer to="/my-reports">
-                        <Button variant="outline-light" className="me-3" onClick={handleMyReports}>Raporlarım</Button>
-                      </LinkContainer>
+                      {user.role !== 'SuperAdmin' &&
+                        <LinkContainer to="/internship-search">
+                          <Button variant="outline-light" className="me-3" onClick={handleInternshipSearch}>Öğrenci Ara</Button>
+                        </LinkContainer>
+                      }
+                      {user.role !== 'SuperAdmin' &&
+                        <LinkContainer to="/student-grade">
+                          <Button variant="outline-light" className="me-3" onClick={handleStudentEvoluation}>Öğrenci Notlandır</Button>
+                        </LinkContainer>
+                      }
+                      {(user.role !== "SuperAdmin") &&
+                        <LinkContainer to="/report">
+                          <Button variant="outline-light" className="me-3" onClick={handleReport}>Rapor Al</Button>
+                        </LinkContainer>
+                      }
+                      {(user.role !== "SuperAdmin") &&
+                        <LinkContainer to="/my-reports">
+                          <Button variant="outline-light" className="me-3" onClick={handleMyReports}>Raporlarım</Button>
+                        </LinkContainer>
+                      }
                     </>
                   ) : null}
 
