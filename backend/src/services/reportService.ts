@@ -1,16 +1,37 @@
-import { TableColumn } from "typeorm";
+import { report } from "process";
 import { AppDataSource } from "../../ormconfig";
 import { Internship } from "../entities/internship.entitiy";
+import utilService from "./utilService";
 var officegen = require('officegen')
+enum months {
+    Ocak = 1,
+    Şubat = 2,
+    Mart = 3,
+    Nisan = 4,
+    Mayıs = 5,
+    Haziran = 6,
+    Temmuz = 7,
+    Ağustos = 8,
+    Eylül = 9,
+    Ekim = 10,
+    Kasım = 11,
+    Aralık = 12
+}
+
 class reportService {
     private internshipRepository = AppDataSource.getRepository(Internship);
 
     private async getInternships(startingDate: any, endingDate: any) {
-        //zaman ve departmana bakılmalı
-        return this.internshipRepository.find({
-            relations: ["student", "company", "mentor"]
-        });
+        try {
+            //zaman ve departmana bakılmalı
+            return await this.internshipRepository.find({
+                relations: ["student", "company", "mentor"]
+            });
+        } catch (error) {
+            throw new Error("Failed to fetch internships");
+        }
     }
+
 
     // Create rows for the report
     // -----------------------------------------------------------------------------------
@@ -37,34 +58,44 @@ class reportService {
         return rows;
     }
 
-    async createReport(reportData: any) {
-        const internships = await this.getInternships(reportData.startingDate, reportData.endingDate);
-        const rows = this.createRows(internships);
+    async createReport(reportData: any, user: any) {
+        try {
 
-        // Create a new Word document
-        const docx = officegen(
-            {
-                type: 'docx',
-                pageMargins: { top: 680, right: 680, bottom: 680, left: 680 },
-            }
-        );
+            const reportCreator = await utilService.fetchUserById(user.id);
+            const reportCreationDateForReport = reportData.day + " " + months[reportData.month] + " " + reportData.year;
+            const reportCreationDateForQuery = new Date(parseInt(reportData.year), parseInt(reportData.month) - 1, parseInt(reportData.day));
+            const internships = await this.getInternships(reportData.startingDate, reportData.endingDate);
+            const rows = this.createRows(internships);
+            const comissionVise = reportData.comissionVise;
+            const comissionMember1 = reportData.comissionMember1;
+            const comissionMember2 = reportData.comissionMember2;
 
-        // Header
-        docx.setDocTitle('Internship Report1');
+            //Create a new Word document
+            const docx = officegen(
+                {
+                    type: 'docx',
+                    pageMargins: { top: 680, right: 680, bottom: 680, left: 680 },
+                }
+            );
 
-        var pObj = docx.createP({ align: 'center'});
-        pObj.addText('\n\nGEBZE TEKNİK ÜNİVERSİTESİ MÜHENDİSLİK FAKÜLTESİ\n\nBİLGİSAYAR MÜHENDİSLİĞİ BÖLÜMÜ STAJ KOMİSYONU DEĞERLENDİRME TUTANAĞI.\n\n', { bold: false, font_face: 'Times New Roman', font_size: 12,});
+            // Set the title of the document
+            docx.setDocTitle('Internship Report1');
 
-        pObj = docx.createP({ align: 'left' });
-        pObj.addText('Bölümümüz Staj Komisyonu, 17 Ekim 2024 tarihinde toplanmış ve aşağıda öğrenci numarası adı, soyadı belirtilen öğrenci/öğrencilerin zorunlu stajlarının aşağıdaki şekilde değerlendirilmesine karar verilmiştir.\n', { bold: false, font_face: 'Times New Roman', font_size: 12,});
-        pObj = docx.createP({ align: 'center', bold: true});
-        pObj.addText('ZORUNLU STAJLAR\n', { bold: true, font_face: 'Times New Roman',font_size: 12,});
+            // Create paragraph
+            var pObj = docx.createP({ align: 'center' });
+            pObj.addText('\n\nGEBZE TEKNİK ÜNİVERSİTESİ MÜHENDİSLİK FAKÜLTESİ\n\nBİLGİSAYAR MÜHENDİSLİĞİ BÖLÜMÜ STAJ KOMİSYONU DEĞERLENDİRME TUTANAĞI\n\n', { bold: false, font_face: 'Times New Roman', font_size: 12, });
+            pObj = docx.createP({ align: 'left' });
+            pObj.addText('Bölümümüz Staj Komisyonu, ', { bold: false, font_face: 'Times New Roman', font_size: 12 });
+            pObj.addText(reportCreationDateForReport, { bold: false, font_face: 'Times New Roman', font_size: 12});
+            pObj.addText(' tarihinde toplanmış ve aşağıda öğrenci numarası adı, soyadı belirtilen öğrenci/öğrencilerin zorunlu stajlarının aşağıdaki şekilde değerlendirilmesine karar verilmiştir.\n', { bold: false, font_face: 'Times New Roman', font_size: 12 });
+            pObj = docx.createP({ align: 'center', bold: true });
+            pObj.addText('ZORUNLU STAJLAR', { bold: true, font_face: 'Times New Roman', font_size: 12, });
 
-            // Table
+            // Create table
             const table = [
                 [
-                    { val: '#', opts: { b: true, cellColWidth: 650} },
-                    { val: 'Öğrenci No', opts: { b: true, cellColWidth: 1800} },
+                    { val: '#', opts: { b: true, cellColWidth: 650 } },
+                    { val: 'Öğrenci No', opts: { b: true, cellColWidth: 1800 } },
                     { val: 'Adı Soyadı', opts: { b: true, cellColWidth: 2500 } },
                     { val: 'Staj Yeri', opts: { b: true, cellColWidth: 2750 } },
                     { val: 'Staj Başlangıç Tarihi', opts: { b: true, cellColWidth: 1300 } },
@@ -72,38 +103,67 @@ class reportService {
                     { val: 'Staj Notu(S/U)', opts: { b: true, cellColWidth: 800 } }
                 ],
                 ...rows
-            ];       
-            
+            ];
 
+            var tableStyle = {
+                tableSize: 24,
+                tableColor: "ada",
+                tableAlign: "left",
+                tableFontFamily: "Times New Roman",
+                spacingBefor: 120, // default is 100
+                spacingAfter: 120, // default is 100
+                spacingLine: 240, // default is 240
+                spacingLineRule: 'atLeast', // default is atLeast
+                indent: 100, // table indent, default is 0
+                fixedLayout: true, // default is false
+                borders: true, // default is false. if true, default border size is 4
+                borderSize: 2, // To use this option, the 'borders' must set as true, default is 4
+            }
 
-        var tableStyle = {
-            tableSize: 24,
-            tableColor: "ada",
-            tableAlign: "left",
-            tableFontFamily: "Times New Roman",
-            spacingBefor: 120, // default is 100
-            spacingAfter: 120, // default is 100
-            spacingLine: 240, // default is 240
-            spacingLineRule: 'atLeast', // default is atLeast
-            indent: 100, // table indent, default is 0
-            fixedLayout: true, // default is false
-            borders: true, // default is false. if true, default border size is 4
-            borderSize: 2, // To use this option, the 'borders' must set as true, default is 4
-          }
+            docx.createTable(table, tableStyle);
 
-          docx.createTable(table, tableStyle);
+            docx.createP().addLineBreak();
+            docx.createP().addLineBreak();
+            docx.createP().addLineBreak();
 
-        // Save the docx file
-        const fs = require('fs');
-        const filePath = './Internship_Report2131.docx';
-        const out = fs.createWriteStream(filePath);
+            // Add committee members horizontally
+            const committeeTable = [
+                [
+                    { val: comissionVise, opts: { b: false, cellColWidth: 3450, align: 'left'} },
+                    { val: comissionMember1, opts: { b: false, cellColWidth: 3450, align: 'left'} },
+                    { val: comissionMember2, opts: { b: false, cellColWidth: 3450, align: 'left'} }
+                ],
+                [
+                    { val: 'Staj Komisyonu Başkanı', opts: { b: false, cellColWidth: 3450, align: 'left' } },
+                    { val: 'Staj Komisyonu Üyesi', opts: { b: false, cellColWidth: 3450, align: 'left' } },
+                    { val: 'Staj Komisyonu Üyesi', opts: { b: false, cellColWidth: 3450, align: 'left' } }
+                ]
+            ];
 
-        docx.generate(out);
-        out.on('finish', () => {
-            console.log('Report created successfully at ' + filePath);
-        });
+            const committeeTableStyle = {
+                tableSize: 5,
+                tableAlign: "center", // Center align the table
+                tableFontFamily: "Times New Roman",
+                spacingBefor: 50, // default is 100
+                spacingAfter: 50, // default is 100
+                spacingLine: 50, // default is 240
+            };
 
-        return { status: 200, data: { message: 'Report created successfully', filePath } };
+            // Add the table to the document
+            docx.createTable(committeeTable, committeeTableStyle);
+
+            // Save the docx file
+            const fs = require('fs');
+            const filePath = './Internship_Report2131.docx';
+            const out = fs.createWriteStream(filePath);
+
+            docx.generate(out);
+            out.on('finish', () => {
+            });
+            return { status: 200, data: { message: 'Report created successfully', filePath } };
+        } catch (error) {
+            return { status: 500, data: { message: 'A error occured during report creation: ' + error } };
+        }
     }
 }
 
