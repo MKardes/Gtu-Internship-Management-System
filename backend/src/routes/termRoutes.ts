@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.post('/term', verifyToken, termController.createTerm);
 router.get('/terms', verifyToken, termController.getTerms);
+router.get('/term-internships', verifyToken, termController.getTermInternships);
 
 export default router;

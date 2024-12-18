@@ -1,6 +1,7 @@
 import { validateOrReject } from "class-validator";
 import { AppDataSource } from "../../ormconfig";
 import { Term } from "../entities/term.entity";
+import { format } from "date-fns";
 
 class termService {
     private termRepository = AppDataSource.getRepository(Term)
@@ -33,7 +34,7 @@ class termService {
         }
     }
 
-    async getTerms(): Promise<{ status: number, data: any[]}> {
+    async getTerms(): Promise<{ status: number, data: Term[]}> {
         try {
             const result = await this.termRepository.find();
 
@@ -43,6 +44,73 @@ class termService {
             return { status: 500, data: [] };
         }
     }
+
+    async getTermInternships(year: string, companyId: string) {
+        const pieces = year.split("-");
+
+        if (pieces.length !== 2) {
+            return { status: 400, data: { message: 'Bilinmeyen yıl formatı!' } };
+        }
+
+        const { status, data } =await this.getTerms();
+
+        if (status !== 200){
+            return { status: 500, data: { message: 'Dönem tarihleri getirilemedi!' } };
+        }
+
+        const selectedYearTerms = data.find((e: Term) => e.name === year)
+        const termDates = Object.entries(selectedYearTerms).map(e => {
+            if (e[0] !== "id" &&  e[0] !== "name"){
+                return format(e[1], 'yyyy-MM-dd');
+            }
+        }).filter(e => e);
+
+        const sql = `
+            WITH categorized_internships AS (
+                SELECT 
+                    *,
+                    CASE 
+                        WHEN i.begin_date >= TO_DATE($1, 'YYYY-MM-DD') 
+                            AND i.end_date <= TO_DATE($2, 'YYYY-MM-DD') THEN 'midterm_fall'
+                        WHEN i.begin_date >= TO_DATE($3, 'YYYY-MM-DD') 
+                            AND i.end_date <= TO_DATE($4, 'YYYY-MM-DD') THEN 'midterm_break'
+                        WHEN i.begin_date >= TO_DATE($5, 'YYYY-MM-DD') 
+                            AND i.end_date <= TO_DATE($6, 'YYYY-MM-DD') THEN 'midterm_spring'
+                        WHEN i.begin_date >= TO_DATE($7, 'YYYY-MM-DD') 
+                            AND i.end_date <= TO_DATE($8, 'YYYY-MM-DD') THEN 'summer'
+                        ELSE 'undefined'
+                    END AS period_name
+                FROM 
+                    internship i 
+                WHERE 
+                    i.begin_date >= TO_DATE($1, 'YYYY-MM-DD') 
+                    AND i.end_date <= TO_DATE($8, 'YYYY-MM-DD')
+                    ${companyId ? 'AND i.company_id = $9' : ''}
+            )
+            SELECT 
+                ci.*,
+                c.name as company_name
+            FROM 
+                categorized_internships ci
+            LEFT JOIN company c on c.id = ci.company_id
+            WHERE 
+                ci.period_name != 'undefined'
+        `.trim();
+    
+        const params: any[] = termDates;
+        if (companyId) {
+            params.push(companyId);
+        }
+    
+        try {
+            const result = await AppDataSource.query(sql, params);
+            return { status: 200, data: result };
+        } catch (e) {
+            console.error(e);
+            return { status: 500, data: { message: 'Staj verileri getirilemedi!' } };
+        }
+    }
+    
 }
 
 export default termService;
