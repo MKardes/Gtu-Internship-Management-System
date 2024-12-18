@@ -1,0 +1,16 @@
+[2024-12-08T18:55:05.372Z] Logout attempt: User ID undefined
+[2024-12-08T18:55:05.417Z] Logout successful: User ID undefined
+[2024-12-08T18:55:05.419Z] POST /logout - Success: Returned 1 items, User Id: undefined
+[2024-12-08T18:55:08.761Z] Login attempt: admin@gtu.edu.tr
+[2024-12-08T18:55:08.965Z] Login successful: admin@gtu.edu.tr
+[2024-12-08T18:55:08.965Z] POST /login - Success: Returned 1 items, User Id: undefined
+[2024-12-08T18:55:09.058Z] GET /years - Success: Returned 7 items, User Id: "6188dd91-7c4e-40be-b28a-8ee512eeb59d"
+[2024-12-08T18:55:09.113Z] GET /internships - Success: Returned 1 items, User Id: "6188dd91-7c4e-40be-b28a-8ee512eeb59d"
+[2024-12-08T18:55:09.197Z] GET /companies - Success: Returned 13 items, User Id: "6188dd91-7c4e-40be-b28a-8ee512eeb59d"
+[2024-12-08T18:55:09.277Z] GET /internships - Success: Returned 1 items, User Id: "6188dd91-7c4e-40be-b28a-8ee512eeb59d"
+[2024-12-08T18:55:10.464Z] GET /students - Success: Returned 70 items, User Id: "6188dd91-7c4e-40be-b28a-8ee512eeb59d"
+[2024-12-08T18:55:10.793Z] GET /students - Success: Returned 70 items, User Id: "6188dd91-7c4e-40be-b28a-8ee512eeb59d"
+[2024-12-08T18:55:10.976Z] GET /students - Success: Returned 70 items, User Id: "6188dd91-7c4e-40be-b28a-8ee512eeb59d"
+[2024-12-08T18:55:11.297Z] GET /students - Success: Returned 70 items, User Id: "6188dd91-7c4e-40be-b28a-8ee512eeb59d"
+[2024-12-08T18:55:11.849Z] GET /department-admin/users - Failure: Status 500, Data: {"message":"Kullanıcılar alınamadı"}
+[2024-12-08T18:55:12.202Z] GET /department-admin/users - Failure: Status 500, Data: {"message":"Kullanıcılar alınamadı"}

@@ -1,21 +1,24 @@
 import chartService from '../services/chartService';
 import { Request, Response } from 'express';
+import Logger from '../utils/Logger';
+import { logRequest } from '../utils/ResponseHandler';
 
 const service = new chartService();
+const logger = new Logger('response.log');
 
 const getInternshipChartDatas = async (req: Request, res: Response) => {
     const result = await service.getInternshipChartDatas(req.query.year as string, req.query.company_id as string);
-    res.status(result.status).json(result.data);
+    logRequest(res, result, 'GET /internships', req);
 }
 
 const getYears = async (req: Request, res: Response) => {
     const result = await service.getYears();
-    res.status(result.status).json(result.data);
+    logRequest(res, result, 'GET /years',req);
 }
 
 const getCompanies = async (req: Request, res: Response) => {
     const result = await service.getCompanies();
-    res.status(result.status).json(result.data);
+    logRequest(res, result, 'GET /companies',req);
 }
 
 export default { getInternshipChartDatas, getYears, getCompanies };
