@@ -2,23 +2,16 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Card, Dropdown, OverlayTrigger, Pagination, ToggleButton, Tooltip } from 'react-bootstrap';
 import { Button, Modal, ListGroup, Table } from 'react-bootstrap';
-import { FaCheckCircle, FaSearch, FaTimesCircle } from 'react-icons/fa';
 import './StudentGrade.css';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 enum InternshipStates {
-  Begin = "begin",
-  ReportReceived = "report_received",
-  ReportApproved = "report_approved",
   Completed = "completed",
   Failed = "failed"
 }
 
 const StateConversions = {
-  "begin": "Staj Süreci Başladı",
-  "report_received": "Staj Raporu Alındı",
-  "report_approved": "Staj Rapor Onaylandı",
   "completed": "Staj Tamamlandı",
   "failed": "Staj Başarısız",
 }
@@ -29,12 +22,9 @@ const StudentGrade: React.FC = () => {
   const [internships, setInternships] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredGrade, setFilteredGrade] = useState<number | null>(null);
-  const [showModal, setShowModal] = useState<boolean>(false); // Modal'ın gösterilme durumunu tutan state.
   const [filteredSemester, setFilteredSemester] = useState<string | null>(null);
   const [selectedInternship, setSelectedInternship] = useState<any | null>(null);
-  const [showConfirmMessage, setShowConfirmMessage] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
-  const [isSGKUploaded, setIsSGKUploaded] = useState(false); // SGK yüklenme durumu
+  const [isStatusChanged, setIsStatusChanged] = useState(false); // Durum değişikliğini kontrol et
   const [refetch, setRefetch] = useState<boolean>(false);
   const [activeStudentPage, setActiveStudentPage] = useState(1);
   const studentPerPage = 10;
@@ -83,138 +73,38 @@ const filteredInternships = internships.filter(internship => {
       console.error(error);
     }
   };
+  const handleStatusChange = async (event: React.ChangeEvent<HTMLInputElement>, id : any) => {
+    const selectedValue = event.target.id;
+    
+    console.log("istek geldi" )
+    console.log(event.target)
+    console.log(event.target.id)
+    let newState: InternshipStates;
+    if (selectedValue === "flexRadioDefault1") {
+      newState = InternshipStates.Completed;
+      console.log(newState)
+    } else if (selectedValue === "flexRadioDefault2") {
+      newState = InternshipStates.Failed;
+    } else {
+      return; // Geçersiz değer, işlem yapılmıyor
+    }
+  
+    try {
+      await axios.put(`/api/internships/${id}/state`, {
+        state: newState,
+      }, {
+        headers: getAuthHeader(),
+      });
+      setIsStatusChanged(true);
+      setRefetch(!refetch);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
-
-  const handleGradeFilter = (grade: number | null) => {
-    setFilteredGrade(grade);
-  };
-
-  const handleSemesterFilter = (semester: string | null) => {
-    setFilteredSemester(semester);
-  };
-
-  // Modal'ı açma fonksiyonu
-  const handleShowModal = (internship: any) => {
-    setSelectedInternship(internship);
-    setShowModal(true);
-  };
-
-  // Modal'ı kapatma fonksiyonu
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
-
-  const handleToggle = async () => {
-    try {
-      if (!isSGKUploaded) {
-        // Eğer SGK yüklü değilse, direkt "Yüklendi" olarak işaretle
-        await axios.put(`/api/internships/${selectedInternship.id}/state`, {
-          is_sgk_uploaded: true
-        }, {
-          headers: getAuthHeader(),
-        })
-        setRefetch(!refetch);
-        setIsSGKUploaded(true);
-      } else if (showConfirmMessage) {
-        // Eğer onay mesajı gösterilmişse ve tekrar tıklanırsa "Yüklenmedi" durumuna geç
-        await axios.put(`/api/internships/${selectedInternship.id}/state`, {
-          is_sgk_uploaded: false
-        }, {
-          headers: getAuthHeader(),
-        })
-        setRefetch(!refetch);
-        setIsSGKUploaded(false);
-        setShowConfirmMessage(false); // Onay mesajını sıfırla
-      } else {
-        // İlk tıklamada onay mesajını göster
-        setShowConfirmMessage(true);
-        setTimeout(() => setShowConfirmMessage(false), 3000); // 3 saniye sonra otomatik gizle
-        handleConfirmModalOpen(); // Onay modal'ını aç
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  };
-
-  const handleConfirmModalOpen = () => {
-    setShowConfirmModal(true); // Confirmation modal'ını aç
-  };
-  
-  const handleConfirmModalClose = () => {
-    setShowConfirmModal(false); // Confirmation modal'ını kapat
-  };
-  
-  const handleConfirmRemove = async () => {
-    await axios.put(`/api/internships/${selectedInternship.id}/state`, {
-      is_sgk_uploaded: false
-    }, {
-      headers: getAuthHeader(),
-    })
-    setRefetch(!refetch);
-    setIsSGKUploaded(false); // SGK yüklemesini kaldır
-    setShowConfirmModal(false); // Confirmation modal'ını kapat
-  };
-
-  const handleNextStep = (internshipId: number) => {
-    setInternships((prevInternships) =>
-      prevInternships.map((internship) => {
-        if (internship.id === internshipId) {
-          // Sıradaki aşamayı belirle
-          const currentState = internship.state;
-          const nextState = getNextState(currentState);
-          return { ...internship, state: nextState }; // Durumu güncelle
-        }
-        return internship;
-      })
-    );
-  };
-  // Bir sonraki durumu döndüren yardımcı fonksiyon
-  const getNextState = (currentState: InternshipStates): InternshipStates => {
-    switch (currentState) {
-      case InternshipStates.Begin:
-        return InternshipStates.ReportReceived;
-      case InternshipStates.ReportReceived:
-        return InternshipStates.ReportApproved;
-      case InternshipStates.ReportApproved:
-        return InternshipStates.Completed;
-      default:
-        return currentState; // Eğer son durumdaysa değişiklik yapma
-    }
-  };
-
-  const isStateDone = (state: InternshipStates, deg: number) => {
-    switch (deg) {
-      case 1:
-        return "Tamamlandı";
-      case 2:
-        if (state === InternshipStates.Begin){
-          return '-'
-        }
-        return "Tamamlandı";
-      case 3:
-        if (state === InternshipStates.Begin || state === InternshipStates.ReportReceived){
-          return '-'
-        }
-        return "Tamamlandı";
-      case 4:
-        if (state === InternshipStates.Failed){
-          return 'Başarısız'
-        }
-        if (state === InternshipStates.Completed){
-          return 'Tamamlandı'
-        }
-        return "-";
-    }
-  }
-
-  useEffect(() => {
-    if(selectedInternship){
-      setIsSGKUploaded(selectedInternship.is_sgk_uploaded);
-    }
-  }, [selectedInternship])
 
   useEffect(() => {
 
@@ -260,7 +150,7 @@ const filteredInternships = internships.filter(internship => {
                 <th className='internship-table-writtings text-center'>Öğrenci Numarası</th>
                 <th className='internship-table-writtings text-center'>Şirket</th>
                 <th className='internship-table-writtings text-center'>Staj Türü</th>
-                <th className='internship-table-writtings text-center'>Detaylar</th>
+                <th className='internship-table-writtings text-center'>Staj Durumu</th>
               </tr>
             </thead>
             <tbody>
@@ -272,9 +162,33 @@ const filteredInternships = internships.filter(internship => {
                   <td className='internship-table-writtings text-center'>{internship.company.name}</td>
                   <td className='internship-table-writtings text-center'>{internship.type}</td>
                   <td className='internship-table-writtings text-center justify-content-center'>
-                    <Button className='custom-button' onClick={() => handleShowModal(internship)}>
-                      <FaSearch />
-                    </Button>
+                  <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
+                    <input 
+                      className={`form-check-input ${internship.state === InternshipStates.Completed ? 'bg-success' : ''}`}
+                      type="radio" 
+                      checked={internship.state == InternshipStates.Completed} 
+                      name={`internshipState-${internship.id}`} 
+                      id="flexRadioDefault1" 
+                      onChange={((e :any) => { handleStatusChange(e, internship.id);})}
+                      style={{ transform: 'scale(1.2)', marginLeft: '2px', marginRight: '2px'}}/>
+                    <label className="form-check-label" htmlFor="flexRadioDefault1" style={{ color: 'black', fontSize: '14px', marginLeft: '4px', fontWeight: 'normal' }} >
+                      Tamamlandı
+                    </label>
+                  </div>
+                  <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
+                    <input 
+                      className={`form-check-input ${internship.state === InternshipStates.Failed ? 'bg-danger' : ''}`}
+                      type="radio" 
+                      checked={internship.state == InternshipStates.Failed} 
+                      name={`internshipState-${internship.id}`} 
+                      id="flexRadioDefault2" 
+                      onChange={((e :any) => { handleStatusChange(e, internship.id);})} 
+                      style={{ transform: 'scale(1.2)', marginLeft: '2px', marginRight: '2px'}}/>
+                    <label className="form-check-label" htmlFor="flexRadioDefault2" style={{ color: 'black', fontSize: '14px', marginLeft: '4px', fontWeight: 'normal'}} >
+                      Başarısız
+                    </label>
+                  </div>
+
                   </td>
                 </tr>
               ))}
@@ -309,125 +223,6 @@ const filteredInternships = internships.filter(internship => {
           disabled={activeStudentPage === totalUserPages}
         />
       </Pagination>
-    {/* Modal component */}
-      <Modal size="lg" dialogClassName="modal-90w"
-        aria-labelledby="example-custom-modal-styling-title" show={showModal} onHide={handleCloseModal}>
-          <Modal.Header closeButton>
-          </Modal.Header>
-          <Modal.Body>
-            {selectedInternship && (
-              <>
-                {/* Öğrenci Bilgileri Kutusu */}
-                <Card className="mb-4">
-                <Card.Header>Öğrenci Bilgileri</Card.Header>
-                    <Card.Body>
-                        <p><strong>İsim:</strong> {selectedInternship.student.name}</p>
-                        <p><strong>Soyisim:</strong> {selectedInternship.student.surname}</p>
-                        <p><strong>Öğrenci Numarası:</strong> {selectedInternship.student.school_id}</p>
-                        <p><strong>Email:</strong> {selectedInternship.student.email}</p>
-                        <p><strong>Staj Türü:</strong> {selectedInternship.type}</p>
-                    </Card.Body>
-                </Card>
-
-                {/* Staj Aşamaları Kutusu */}
-            <Card className="mb-4">
-              <Card.Body>
-                <Card.Title className="text-center">{selectedInternship.company.name}</Card.Title>
-                <p className="text-center">
-                  <strong>İletişim:</strong> {selectedInternship.mentor.name} {selectedInternship.mentor.surname} (Supervisor), Tel: {selectedInternship.mentor.phone_number}
-                </p>
-                  <Card className="mb-4">
-                    <Card.Header style={{ backgroundColor: "#cce5ff"}}>Staj Aşamaları</Card.Header>
-                    <ListGroup>
-                      {nums.map((e: any) => (
-                        <ListGroup.Item>
-                          <div style={{display: "flex"}}>
-                            <strong>Durum {e} - </strong>
-                            <p>{isStateDone(selectedInternship.state, e)}</p>
-                            <div className='flex'>
-                              {isStateDone(selectedInternship.state, e) === 'Tamamlandı' ?
-                                <FaCheckCircle className="ms-2 text-success" />
-                              : isStateDone(selectedInternship.state, e) === 'Başarısız' ?
-                                <FaTimesCircle className="ms-2 text-red-600" />
-                              : null
-                              }
-                            </div>
-                          </div>
-                        </ListGroup.Item>
-                        ))
-                      }
-                    </ListGroup>
-                  </Card>
-                <p>
-                  <div className="d-flex align-items-center">
-                    <strong className="me-3">SGK Raporu:</strong> {/* Sağ tarafa boşluk ekledik */}
-                    <div style={{ position: "relative", display: "inline-block" }}></div>
-                    <OverlayTrigger
-                      placement="top"
-                      overlay={
-                        <Tooltip id="button-tooltip">
-                          {isSGKUploaded 
-                            ? "SGK yüklendi. Kaldırmak için tıklayın."
-                            : "SGK yüklenmedi. Yüklemek için tıklayın."}
-                        </Tooltip>
-                      }
-                    >
-                      <ToggleButton
-                        className="px-2 items-center justify-center"
-                        id="toggle-check"
-                        type="checkbox"
-                        variant={isSGKUploaded ? "outline-success" : "outline-danger"}
-                        checked={isSGKUploaded}
-                        size='sm'
-                        value="1"
-                        onClick={handleToggle}
-                      >
-                        {isSGKUploaded ? (
-                          <FaCheckCircle className="me-1" style={{ fontSize: "0.9rem" }} />
-                        ) : (
-                          <FaTimesCircle className="me-1" style={{ fontSize: "0.9rem" }} />
-                        )}
-                        <span style={{ fontSize: "0.85rem" }}>
-                          {isSGKUploaded ? "Yüklendi" : "Yüklenmedi"}
-                        </span>
-                      </ToggleButton>
-                    </OverlayTrigger>
-                  </div>
-                  <div className="d-flex align-items-center mb-3">
-                    <strong className="me-3">Durum:</strong>
-                    <span>{StateConversions[selectedInternship.state as keyof typeof StateConversions]}</span>
-                  </div>
-                </p>
-                </Card.Body>
-                </Card>
-                {/* Burada daha fazla öğrenci bilgisi ekleyebilirsiniz */}
-              </>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Kapat
-            </Button>
-          </Modal.Footer>
-        </Modal>
-
-        {/* SGK kaldırma onay modali */}
-        <Modal show={showConfirmModal} onHide={handleConfirmModalClose}>
-        <Modal.Header closeButton>
-            <Modal.Title>Onay Gerekli</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>SGK yüklemesini kaldırmak istediğinizden emin misiniz?</Modal.Body>
-        <Modal.Footer >
-            <div style={{  display: "flex", gap: "10px" }}>
-                <Button variant="secondary" onClick={handleConfirmModalClose}>
-                Vazgeç
-                </Button>
-                <Button variant="danger" onClick={handleConfirmRemove}>
-                Kaldır
-                </Button>
-            </div>
-        </Modal.Footer>
-        </Modal>
     </div>
   );
 };
