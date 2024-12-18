@@ -13,4 +13,9 @@ const getTerms = async (req: Request, res: Response) => {
     res.status(result.status).json(result.data);
 }
 
-export default { createTerm, getTerms};
+const getTermInternships = async (req: Request, res: Response) => {
+    const result = await service.getTermInternships(req.query.year as string, req.query.company_id as string);
+    res.status(result.status).json(result.data);
+}
+
+export default { createTerm, getTerms, getTermInternships };

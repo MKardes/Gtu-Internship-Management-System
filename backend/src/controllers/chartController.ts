@@ -3,8 +3,8 @@ import { Request, Response } from 'express';
 
 const service = new chartService();
 
-const getInternships = async (req: Request, res: Response) => {
-    const result = await service.getInternships(req.query.year as string, req.query.company_id as string);
+const getInternshipChartDatas = async (req: Request, res: Response) => {
+    const result = await service.getInternshipChartDatas(req.query.year as string, req.query.company_id as string);
     res.status(result.status).json(result.data);
 }
 
@@ -18,4 +18,4 @@ const getCompanies = async (req: Request, res: Response) => {
     res.status(result.status).json(result.data);
 }
 
-export default { getInternships, getYears, getCompanies };
+export default { getInternshipChartDatas, getYears, getCompanies };

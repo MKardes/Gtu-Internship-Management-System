@@ -161,6 +161,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleCloseModal = () => {
+    setDates(new Array(8));
     setShowModal(false);
   };
 
@@ -193,13 +194,8 @@ const Dashboard: React.FC = () => {
   const handleDateChange = (e: any, i: number) => {
     const updatedDates = [...dates];
     updatedDates[i] = e.target.value;
-    console.log("bişiler değişti")
     setDates(updatedDates);
   };
-
-  useEffect(() => {
-    console.log(dates)
-  }, [dates])
 
   const getYears = async () => {
     try {
@@ -238,7 +234,11 @@ const Dashboard: React.FC = () => {
   const getInternships = async (year: string, setData: any, companyId?: any) => {
     try {
       let url = `/api/chart/internships?year=${year}`;
-
+      let url1 = `/api/term-internships?year=${year}`;
+      const res1 = await axios.get(url1, {
+        headers: getAuthHeader()
+      });
+      console.log(res1.data)
       if (companyId) {
         url += `&company_id=${companyId}`;
       }
@@ -304,10 +304,6 @@ const Dashboard: React.FC = () => {
         default:
           return "";
       }
-      console.log(specifiedTermDate);
-      console.log(typeof specifiedTermDate);
-      console.log(new Date(specifiedTermDate));
-      console.log(new Date(specifiedTermDate));
       if (specifiedTermDate) {
         return ((new Date(specifiedTermDate)).toLocaleDateString());
       }
@@ -389,7 +385,7 @@ const Dashboard: React.FC = () => {
               <div className="row mt-2 align-items-center">
                 <label className='col-4' htmlFor="string">Yıl</label>
                 <div className='d-flex gap-2 col-4 col-lg-8'>
-                  <input className='w-100' type="text" id="text" value={selectedName} onChange={handleNameChange}/>
+                  <input placeholder='20xx-20xx' className='w-100' type="text" id="text" value={selectedName} onChange={handleNameChange}/>
                 </div>
               </div>
               <div className="row">
@@ -512,4 +508,3 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
-//TODO: free dates and name when the date create modal is closed

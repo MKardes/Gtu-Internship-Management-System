@@ -2,7 +2,11 @@ import { AppDataSource } from "../../ormconfig";
 import { InternShipChartDto } from "../dto/InternshipChart.dto";
 import { Company } from "../entities/company.entitiy";
 import { Internship } from "../entities/internship.entitiy";
-import { getYear, getMonth } from "date-fns"
+import { getYear, getMonth, format } from "date-fns"
+import termService from "./termService";
+import { Term } from "../entities/term.entity";
+
+const _termService = new termService();
 
 class chartService {
     private internshipRepository = AppDataSource.getRepository(Internship);
@@ -25,13 +29,25 @@ class chartService {
         return dto;
     }
 
-    async getInternships(year: string, companyId: string) {
+    async getInternshipChartDatas(year: string, companyId: string) {
         const pieces = year.split("-");
+
         if (pieces.length !== 2) {
             return { status: 400, data: { message: 'Bilinmeyen yıl formatı!' } };
         }
-    
-        const [startYear, endYear] = pieces;
+
+        const { status, data } =await _termService.getTerms();
+
+        if (status !== 200){
+            return { status: 500, data: { message: 'Dönem tarihleri getirilemedi!' } };
+        }
+
+        const selectedYearTerms = data.find((e: Term) => e.name === year)
+        const termDates = Object.entries(selectedYearTerms).map(e => {
+            if (e[0] !== "id" &&  e[0] !== "name"){
+                return format(e[1], 'yyyy-MM-dd');
+            }
+        }).filter(e => e);
         
         const sql = `
             WITH categorized_internships AS (
@@ -39,22 +55,22 @@ class chartService {
                     i.begin_date as begin,
                     i.state,
                     CASE 
-                        WHEN i.begin_date >= TO_DATE($1 || '-09-01', 'YYYY-MM-DD') 
-                         AND i.end_date <= TO_DATE($2 || '-01-12', 'YYYY-MM-DD') THEN 'midterm_fall'
-                        WHEN i.begin_date >= TO_DATE($2 || '-01-13', 'YYYY-MM-DD') 
-                         AND i.end_date <= TO_DATE($2 || '-02-28', 'YYYY-MM-DD') THEN 'midterm_break'
-                        WHEN i.begin_date >= TO_DATE($2 || '-02-28', 'YYYY-MM-DD') 
-                         AND i.end_date <= TO_DATE($2 || '-06-25', 'YYYY-MM-DD') THEN 'midterm_spring'
-                        WHEN i.begin_date >= TO_DATE($2 || '-06-26', 'YYYY-MM-DD') 
-                         AND i.end_date <= TO_DATE($2 || '-08-31', 'YYYY-MM-DD') THEN 'summer'
+                        WHEN i.begin_date >= TO_DATE($1, 'YYYY-MM-DD') 
+                         AND i.end_date <= TO_DATE($2, 'YYYY-MM-DD') THEN 'midterm_fall'
+                        WHEN i.begin_date >= TO_DATE($3, 'YYYY-MM-DD') 
+                         AND i.end_date <= TO_DATE($4, 'YYYY-MM-DD') THEN 'midterm_break'
+                        WHEN i.begin_date >= TO_DATE($5, 'YYYY-MM-DD') 
+                         AND i.end_date <= TO_DATE($6, 'YYYY-MM-DD') THEN 'midterm_spring'
+                        WHEN i.begin_date >= TO_DATE($7, 'YYYY-MM-DD') 
+                         AND i.end_date <= TO_DATE($8, 'YYYY-MM-DD') THEN 'summer'
                         ELSE 'undefined'
                     END AS period_name
                 FROM 
                     internship i 
                 WHERE 
-                    i.begin_date >= TO_DATE($1 || '-09-01', 'YYYY-MM-DD') 
-                    AND i.end_date <= TO_DATE($2 || '-08-31', 'YYYY-MM-DD')
-                    ${companyId ? 'AND i.company_id = $3' : ''}
+                    i.begin_date >= TO_DATE($1, 'YYYY-MM-DD') 
+                    AND i.end_date <= TO_DATE($8, 'YYYY-MM-DD')
+                    ${companyId ? 'AND i.company_id = $9' : ''}
             )
             SELECT 
                 ci.period_name,
@@ -73,7 +89,7 @@ class chartService {
                 ci.period_name;
         `.trim();
     
-        const params: any[] = [startYear, endYear];
+        const params: any[] = termDates;
         if (companyId) {
             params.push(companyId);
         }
@@ -85,7 +101,7 @@ class chartService {
             console.error(e);
             return { status: 500, data: { message: 'Staj verileri getirilemedi!' } };
         }
-    }    
+    }
 
     async getYears() {
         try {
