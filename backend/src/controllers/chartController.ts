@@ -1,14 +1,11 @@
 import chartService from '../services/chartService';
 import { Request, Response } from 'express';
-import Logger from '../utils/Logger';
 import { logRequest } from '../utils/ResponseHandler';
 
 const service = new chartService();
-const logger = new Logger('response.log');
 
-const getInternships = async (req: Request, res: Response) => {
-    console.log(req.body)
-    const result = await service.getInternships(req.query.year as string, req.query.company_id as string);
+const getInternshipChartDatas = async (req: Request, res: Response) => {
+    const result = await service.getInternshipChartDatas(req.query.year as string, req.query.company_id as string);
     logRequest(res, result, 'GET /internships', req);
 }
 
@@ -22,4 +19,4 @@ const getCompanies = async (req: Request, res: Response) => {
     logRequest(res, result, 'GET /companies',req);
 }
 
-export default { getInternships, getYears, getCompanies };
+export default { getInternshipChartDatas, getYears, getCompanies };
