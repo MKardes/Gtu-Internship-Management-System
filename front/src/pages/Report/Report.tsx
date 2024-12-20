@@ -53,10 +53,31 @@ const Report: React.FC = () => {
 
     const createReport = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        const findUserFullName = (userId: string) => {
+            const user = users.find((u) => u.id === userId);
+            return user ? user.full_name : "";
+        };
+    
+        const reportData = {
+            day: selectedDay,
+            month: selectedMonth,
+            year: selectedYear,
+            comissionVise: findUserFullName(selectedComissionVise),
+            comissionMember1: findUserFullName(selectedComission),
+            comissionMember2: findUserFullName(selectedComission_2),
+        };
+
         try {
-            console.log(selectedDay, selectedMonth, selectedYear, selectedComissionVise, selectedComission, selectedComission_2);
+            setLoading(true);
+            const response = await axios.post("api/report/create-report", reportData, {
+                headers: getAuthHeader(),
+            });
+            alert("Rapor başarıyla oluşturuldu!");
         } catch (error) {
             handleError(error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -181,8 +202,8 @@ const Report: React.FC = () => {
                         </Form.Group>
                     </Col>
                 </Row>
-                <Button type="submit" className="btn-submit">
-                    Rapor Oluştur
+                <Button type="submit" className="btn-submit" disabled={loading}>
+                    {loading ? "Oluşturuluyor..." : "Rapor Oluştur"}
                 </Button>
             </Form>
         </Container>

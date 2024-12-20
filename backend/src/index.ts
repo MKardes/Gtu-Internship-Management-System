@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth';
+import reportRoutes from './routes/reportRoutes';
 import refreshTokenRoutes from './routes/refreshToken';
 import superAdminRoutes from './routes/superAdminRoutes';
 import departmentAdminRoutes from './routes/departmentAdminRoutes';
@@ -35,6 +36,7 @@ app.use('/api', departmentAdminRoutes);
 app.use('/api', searchStudentRoutes);
 app.use('/api', chartRoutes);
 app.use('/api', termRoutes);
+app.use('/api', reportRoutes);
 
 app.listen(API_PORT, () => {
   console.log(`Server is running at ${API_URL}:${API_PORT}`);

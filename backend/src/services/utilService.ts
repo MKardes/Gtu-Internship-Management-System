@@ -52,7 +52,20 @@ export class utilService
         const nameRegex = /^[a-zA-Z\s]{3,20}$/;
         return nameRegex.test(name);
     }
-    
+
+    static async fetchUserById(id: string) {
+        const userRepository = AppDataSource.getRepository(User);
+        try {
+            const user = await userRepository
+                .createQueryBuilder('user')
+                .leftJoinAndSelect('user.department', 'department')
+                .where('user.id = :id', { id })
+                .getOne();
+            return user;
+        } catch (error) {
+            throw new Error('Kullanıcı bilgileri alınırken bir hata oluştu');
+        }
+    }
 }
 
 export default utilService;
