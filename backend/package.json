@@ -20,16 +20,19 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   },
-  "dependencies": {
+"dependencies": {
     "@types/express": "^5.0.0",
     "bcrypt": "^5.1.1",
+    "class-validator": "^0.14.1",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",
+    "mammoth": "^1.8.0",
     "mysql2": "^3.11.3",
     "nodemailer": "^6.9.16",
+    "officegen": "^0.6.5",
     "pg": "^8.13.0",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.20"
