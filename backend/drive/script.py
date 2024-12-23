@@ -66,13 +66,13 @@ def create_db_connection():
 
 # Sınıflar
 class Ogrenci:
-    def __init__(self, tc_kimlik_no, adi, soyadi, ogrenci_no, email):
+    def __init__(self, tc_kimlik_no, adi, soyadi, ogrenci_no, email, departman):
         self.tc_kimlik_no = tc_kimlik_no
         self.adi = adi
         self.soyadi = soyadi
         self.ogrenci_no = ogrenci_no
         self.email = email
-        self.departman = None
+        self.departman = departman
 
 class Mentor:
     def __init__(self, adi, soyadi, numara, eposta):
@@ -161,17 +161,17 @@ def insert_staj_to_db(staj, conn, pdf_file):
             """, (pdf_file['name'], "https://drive.google.com/file/d/" + pdf_file['id']))
             file_id = cursor.fetchone()[0]
         
-        cursor.execute("SELECT id FROM department WHERE department_name = %s;", (staj.ogrenci.departman,))
+        cursor.execute("SELECT id FROM department WHERE department_name = %s;", (staj.ogrenci.departman))
         result = cursor.fetchone()
         if not result:
-            cursor.execute("INSERT INTO department (department_name) VALUES (%s) RETURNING id;", (staj.ogrenci.departman,))
+            cursor.execute("INSERT INTO department (department_name) VALUES (%s) RETURNING id;", (staj.ogrenci.departman))
             result = cursor.fetchone()
         else:
             result = result[0]
 
         departman_id = result
 
-        cursor.execute("SELECT id FROM student WHERE turkish_id = %s;", (staj.ogrenci.tc_kimlik_no,))
+        cursor.execute("SELECT id FROM student WHERE turkish_id = %s;", (staj.ogrenci.tc_kimlik_no))
         result = cursor.fetchone()
         if result:
             ogrenci_id = result[0]
@@ -193,7 +193,7 @@ def insert_staj_to_db(staj, conn, pdf_file):
             """, (staj.mentor.adi, staj.mentor.soyadi, staj.mentor.numara, staj.mentor.eposta))
             mentor_id = cursor.fetchone()[0]
 
-        cursor.execute("SELECT id FROM company WHERE name = %s;", (staj.kurum.adi,))
+        cursor.execute("SELECT id FROM company WHERE name = %s;", (staj.kurum.adi))
         result = cursor.fetchone()
         if result:
             kurum_id = result[0]
