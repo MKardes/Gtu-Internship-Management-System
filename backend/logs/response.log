@@ -49,3 +49,75 @@
 [2024-12-17T11:55:28.397Z] GET /students - Success: Returned 0 items, User Id: "c0affb7e-497a-46c0-a3fe-c780c9ca6cbd"
 [2024-12-17T11:55:29.371Z] GET /years - Failure: Status 500, Data: {"message":"Yıl bilgisi alınamadı"}
 [2024-12-17T11:55:29.425Z] GET /companies - Success: Returned 0 items, User Id: "c0affb7e-497a-46c0-a3fe-c780c9ca6cbd"
+[2024-12-20T19:21:27.113Z] POST /refresh-token - Failure: Status 402, Data: {"message":"Token geçersiz veya süresi dolmuş","error":{"message":"No metadata for \"User\" was found."}}
+[2024-12-20T19:21:27.124Z] POST /refresh-token - Failure: Status 402, Data: {"message":"Token geçersiz veya süresi dolmuş","error":{"message":"No metadata for \"User\" was found."}}
+[2024-12-20T19:24:13.214Z] Login attempt: admin@gtu.edu.tr
+[2024-12-20T19:24:13.246Z] Login successful: admin@gtu.edu.tr
+[2024-12-20T19:24:13.247Z] POST /login - Success: Returned 1 items, User Id: undefined
+[2024-12-20T19:24:13.326Z] GET /years - Failure: Status 500, Data: {"message":"Yıl bilgisi alınamadı"}
+[2024-12-20T19:24:13.400Z] GET /companies - Success: Returned 0 items, User Id: "5ca6682f-e36c-48ca-a3da-356e30926b5b"
+[2024-12-20T19:24:19.422Z] GET /super-admin/5ca6682f-e36c-48ca-a3da-356e30926b5b - Success: Returned 1 items, User Id: "5ca6682f-e36c-48ca-a3da-356e30926b5b"
+[2024-12-20T19:24:19.425Z] GET /department-admins - Success: Returned 1 items, User Id: "5ca6682f-e36c-48ca-a3da-356e30926b5b"
+[2024-12-20T19:24:19.512Z] GET /departments - Success: Returned 1 items, User Id: "5ca6682f-e36c-48ca-a3da-356e30926b5b"
+[2024-12-20T19:24:51.738Z] POST /department - Failure: Status 400, Data: {"message":"Geçersiz departman adı"}
+[2024-12-20T19:24:53.614Z] POST /department - Failure: Status 400, Data: {"message":"Geçersiz departman adı"}
+[2024-12-20T19:24:58.493Z] POST /department - Failure: Status 400, Data: {"message":"Geçersiz departman adı"}
+[2024-12-20T19:25:02.460Z] POST /department - Success: Returned 1 items, User Id: "5ca6682f-e36c-48ca-a3da-356e30926b5b"
+[2024-12-20T19:25:07.283Z] POST /department - Success: Returned 1 items, User Id: "5ca6682f-e36c-48ca-a3da-356e30926b5b"
+[2024-12-20T19:25:11.587Z] POST /department-admin - Failure: Status 400, Data: {"message":"Geçersiz isim"}
+[2024-12-20T19:25:15.924Z] POST /department-admin - Failure: Status 400, Data: {"message":"Geçersiz isim"}
+[2024-12-20T19:25:20.329Z] POST /department-admin - Success: Returned 1 items, User Id: "5ca6682f-e36c-48ca-a3da-356e30926b5b"
+[2024-12-20T19:25:30.484Z] GET /super-admin/5ca6682f-e36c-48ca-a3da-356e30926b5b - Success: Returned 1 items, User Id: "5ca6682f-e36c-48ca-a3da-356e30926b5b"
+[2024-12-20T19:25:30.487Z] GET /department-admins - Success: Returned 2 items, User Id: "5ca6682f-e36c-48ca-a3da-356e30926b5b"
+[2024-12-20T19:25:30.491Z] GET /departments - Success: Returned 3 items, User Id: "5ca6682f-e36c-48ca-a3da-356e30926b5b"
+[2024-12-20T19:25:32.388Z] Logout attempt: User ID undefined
+[2024-12-20T19:25:32.393Z] Logout successful: User ID undefined
+[2024-12-20T19:25:32.394Z] POST /logout - Success: Returned 1 items, User Id: undefined
+[2024-12-20T19:25:39.921Z] Login attempt: h.cepni@gtu.edu.tr
+[2024-12-20T19:25:39.942Z] Login successful: h.cepni@gtu.edu.tr
+[2024-12-20T19:25:39.945Z] POST /login - Success: Returned 1 items, User Id: undefined
+[2024-12-20T19:25:40.093Z] GET /years - Failure: Status 500, Data: {"message":"Yıl bilgisi alınamadı"}
+[2024-12-20T19:25:40.099Z] GET /companies - Success: Returned 0 items, User Id: "f294ec3a-c4eb-4511-a82e-b869ae8fa5e9"
+[2024-12-20T19:25:44.093Z] GET /students - Success: Returned 0 items, User Id: "f294ec3a-c4eb-4511-a82e-b869ae8fa5e9"
+[2024-12-20T19:26:06.110Z] GET /department-admin/admin - Success: Returned 1 items, User Id: "f294ec3a-c4eb-4511-a82e-b869ae8fa5e9"
+[2024-12-20T19:26:06.115Z] GET /department-admin/users - Success: Returned 1 items, User Id: "f294ec3a-c4eb-4511-a82e-b869ae8fa5e9"
+[2024-12-20T19:26:14.031Z] GET /years - Failure: Status 500, Data: {"message":"Yıl bilgisi alınamadı"}
+[2024-12-20T19:26:14.035Z] GET /companies - Success: Returned 0 items, User Id: "f294ec3a-c4eb-4511-a82e-b869ae8fa5e9"
+[2024-12-20T19:33:43.654Z] Logout attempt: User ID undefined
+[2024-12-20T19:33:44.012Z] Logout successful: User ID undefined
+[2024-12-20T19:33:44.014Z] POST /logout - Success: Returned 1 items, User Id: undefined
+[2024-12-20T19:34:23.672Z] POST /send-code - Success: Returned 1 items, User Id: undefined
+[2024-12-20T19:34:42.146Z] POST /verify-code - Success: Returned 1 items, User Id: undefined
+[2024-12-20T19:34:49.243Z] POST /change-password - Success: Returned 1 items, User Id: undefined
+[2024-12-20T19:34:55.864Z] Login attempt: a.cepni2021@gtu.edu.tr
+[2024-12-20T19:34:56.046Z] Login successful: a.cepni2021@gtu.edu.tr
+[2024-12-20T19:34:56.049Z] POST /login - Success: Returned 1 items, User Id: undefined
+[2024-12-20T19:34:56.506Z] GET /years - Success: Returned 7 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:34:56.803Z] GET /internships - Success: Returned 1 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:34:56.965Z] GET /companies - Success: Returned 13 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:34:57.060Z] GET /internships - Success: Returned 1 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:34:59.135Z] GET /students - Success: Returned 70 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:35:00.284Z] GET /students - Success: Returned 70 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:36:09.738Z] GET /students - Success: Returned 70 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:36:10.512Z] GET /students - Success: Returned 70 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:36:20.862Z] GET /companies - Success: Returned 13 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:36:20.874Z] GET /years - Success: Returned 7 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:36:20.945Z] GET /internships - Success: Returned 1 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:36:20.955Z] GET /internships - Success: Returned 1 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:36:24.606Z] GET /internships - Success: Returned 1 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:36:33.151Z] GET /internships - Success: Returned 1 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-20T19:36:36.737Z] GET /students - Success: Returned 70 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-23T10:13:46.790Z] POST /refresh-token - Success: Returned 1 items, User Id: undefined
+[2024-12-23T10:13:46.794Z] POST /refresh-token - Success: Returned 1 items, User Id: undefined
+[2024-12-23T10:13:46.888Z] GET /companies - Success: Returned 13 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-23T10:13:46.893Z] GET /years - Success: Returned 7 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-23T10:13:46.955Z] GET /internships - Success: Returned 1 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-23T10:13:46.957Z] GET /internships - Success: Returned 1 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-23T10:13:49.615Z] GET /years - Success: Returned 7 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-23T10:13:49.617Z] GET /companies - Success: Returned 13 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-23T10:13:49.659Z] GET /internships - Success: Returned 1 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-23T10:13:49.662Z] GET /internships - Success: Returned 1 items, User Id: "42d0db22-2d67-4de3-b445-4ea825aff149"
+[2024-12-23T10:13:54.357Z] Logout attempt: User ID undefined
+[2024-12-23T10:13:54.398Z] Logout successful: User ID undefined
+[2024-12-23T10:13:54.400Z] POST /logout - Success: Returned 1 items, User Id: undefined
+[2024-12-23T10:14:06.427Z] POST /send-code - Success: Returned 1 items, User Id: undefined

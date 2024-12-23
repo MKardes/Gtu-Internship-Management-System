@@ -5,6 +5,7 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import utilService from "../services/utilService";
 import nodemailer from "nodemailer";
+import { debug } from "console";
 
 export class resetPasswordService {
     
@@ -55,6 +56,8 @@ export class resetPasswordService {
 
     async verifyCode(code: string, email: string) {
         try {
+            debug("mail--->")
+            debug(email);
             const queryBuilder = AppDataSource.getRepository(VerifCode).createQueryBuilder("verifcode");
             const verificationCode: VerifCode = await queryBuilder
             .where("verifcode.mail = :body_mail", { body_mail: email })
