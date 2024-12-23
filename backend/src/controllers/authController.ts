@@ -24,7 +24,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const isPasswordValid = true;
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       logger.log(`Login failed: ${mail} - Invalid password`);
       logRequest(res, { status: 401, data: { message: 'Geçersiz mail veya şifre' } }, `POST /login`, req); // logRequest ile loglama ve response
