@@ -2,6 +2,9 @@ import { validateOrReject } from "class-validator";
 import { AppDataSource } from "../../ormconfig";
 import { Term } from "../entities/term.entity";
 import { format } from "date-fns";
+import departmentAdminService from "./departmentAdminService";
+
+const _departmentAdminService = new departmentAdminService();
 
 class termService {
     private termRepository = AppDataSource.getRepository(Term)
@@ -45,7 +48,17 @@ class termService {
         }
     }
 
-    async getTermInternships(year: string, companyId: string) {
+    async getTermInternships(userID: string, year: string, companyId: string) {
+        if (!userID || !year) {
+            return { status: 400, data: { message: 'Kullanıcı veya yıl girilmedi!' } };
+        }
+
+        const department = await _departmentAdminService.findUserDepartmentByUserId(userID);
+
+        if (!department) {
+            return { status: 404, data: { message: 'Kullanıcının departmanı bulunamadı!' } };
+        }
+
         const pieces = year.split("-");
 
         if (pieces.length !== 2) {
@@ -73,7 +86,14 @@ class termService {
         const sql = `
             WITH categorized_internships AS (
                 SELECT 
-                    *,
+                    i.*,
+                    s.id as student_id,
+                    s.school_id as student_school_id,
+                    s.name as student_name,
+                    s.surname as student_surname,
+                    s.turkish_id as student_turkish_id,
+                    s.email as student_email,
+                    s.grade as student_grade,
                     CASE 
                         WHEN i.begin_date >= TO_DATE($1, 'YYYY-MM-DD') 
                             AND i.end_date <= TO_DATE($2, 'YYYY-MM-DD') THEN 'midterm_fall'
@@ -86,11 +106,14 @@ class termService {
                         ELSE 'undefined'
                     END AS period_name
                 FROM 
-                    internship i 
+                    internship i
+                LEFT JOIN student s
+                    ON s.id = i.student_id
                 WHERE 
                     i.begin_date >= TO_DATE($1, 'YYYY-MM-DD') 
                     AND i.end_date <= TO_DATE($8, 'YYYY-MM-DD')
-                    ${companyId ? 'AND i.company_id = $9' : ''}
+                    AND s.department_id = $9
+                    ${companyId ? 'AND i.company_id = $10' : ''}
             )
             SELECT 
                 ci.*,
@@ -101,12 +124,12 @@ class termService {
             WHERE 
                 ci.period_name != 'undefined'
         `.trim();
-    
-        const params: any[] = termDates;
+
+        const params: any[] = [...termDates, department.id];
         if (companyId) {
             params.push(companyId);
         }
-    
+
         try {
             const result = await AppDataSource.query(sql, params);
             return { status: 200, data: result };
