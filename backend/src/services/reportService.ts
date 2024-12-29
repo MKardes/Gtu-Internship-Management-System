@@ -3,8 +3,8 @@ import { AppDataSource } from "../../ormconfig";
 import { Internship } from "../entities/internship.entitiy";
 import utilService from "./utilService";
 import departmentAdminService from "./departmentAdminService";
-import { promises as fs } from "fs";
-import path from "path";
+import { readdir, unlink} from "fs/promises";
+import { Any } from "typeorm";
 
 var officegen = require('officegen')
 enum months {
@@ -25,6 +25,7 @@ enum months {
 class reportService {
     private internshipRepository = AppDataSource.getRepository(Internship);
     private reportDirectory = "./reports";
+    private _departmentAdminService = new departmentAdminService()
 
     private async getInternships(startingDate: any, endingDate: any) {
         try {
@@ -73,38 +74,45 @@ class reportService {
     //    
     //    - filter reports by reports.department_name ===user.depratment.department_name
     
-    async getReport(user: any) {
-        try {
-            // Kullanıcının departmanını al
-            const depService = new departmentAdminService()
+    async getReports(user: any): Promise<{ status: number; data: any }> {
 
-            const userDetails: any = await depService.getDepartmentAdmin(user.id);
+        try {
+            // Kullanıcının detaylarının alınması
+            const userDetails: any = await this._departmentAdminService.getDepartmentAdmin(user.id);
 
             if (userDetails.status === 200) {
-                const userDepartmentName = userDetails.data?.department?.department_name?.replace(/-/g, '') || '';
-                console.log('Kullanıcı departman ismi:', userDepartmentName);
-            
+                const userDepartmentName = userDetails.data?.department?.department_name || '';
+
                 // Tüm rapor dosyalarını oku
-                const files = await fs.readdir(this.reportDirectory);
-            
-                const departmentReports = files.filter(file => {
-                    const departmentPart = file.split('_')[0];
-                    const departmentName = departmentPart.replace(/-/g, '');
-            
-                    console.log(`Dosya departmanı: ${departmentName}, Kullanıcı departmanı: ${userDepartmentName}`);
-                    return departmentName === userDepartmentName;
-                });
+                const files = await readdir(this.reportDirectory);
+
+                const filteredReports = files
+                                            .map((file: any) => {
+                                                const parts = file.split("_");
+                                                const department = parts[0].replace("-", " ");
+                                                const academicYear = parts[1];
+                                                const term = parts[2].replace("-", "_");
+                                                const date = parts[3].replace(".docx", "");
+                                                return { file, department, academicYear, term, date };
+                                            })
+                                            .filter((e: any) => e.department.toLowerCase() === userDepartmentName.toLowerCase())
+                                            .map((e) => ({
+                                                file: e.file,
+                                                academicYear: e.academicYear,
+                                                term: e.term,
+                                                date: e.date,
+                                            }))
+                                            .sort((a: any, b: any) => {
+                                                const dateA = new Date(a.date.split('-').reverse().join('-'));
+                                                const dateB = new Date(b.date.split('-').reverse().join('-'));
+                                                return dateB.getTime() - dateA.getTime();
+                                            });
+                
+                return { status: 200, data: filteredReports };
             } else {
-                console.error('Kullanıcı alınamadı');
+                throw new Error('Kullanıcı alınamadı')
             }
-            
-            // return {
-            //     status: 200,
-            //     data: { 
-            //         message: "Reports fetched successfully",
-            //         reports: departmentReports,
-            //     }
-            // };
+
         } catch (error) {
             return {
                 status: 500,
@@ -112,6 +120,25 @@ class reportService {
                     message: `An error occurred while fetching reports: ${error}` 
                 }
             };
+        }
+    }
+
+    async deleteReport(filePath: any) {
+        try {
+            if (!filePath) {
+                throw new Error("File query param is required!");
+            }
+
+            try{
+                await unlink(this.reportDirectory + "/" + filePath);
+            } catch (e){
+                throw new Error('Error deleting file:' + e);
+            }
+
+            return { status: 200, data: { message: 'Report deleted successfully ' + filePath } };
+        } catch (error) {
+            
+            return { status: 404, data: { message: 'A error occured during report deletion: ' + error } };
         }
     }
 

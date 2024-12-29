@@ -9,9 +9,14 @@ const createReport = async (req: any, res: Response) => {
     logRequest(res, result, 'POST /report', req);
 }
 
-const getReport = async (req: any, res: Response) => {
-    const result = await service.getReport(req.user);
+const getReports = async (req: any, res: Response) => {
+    const result = await service.getReports(req.user);
     logRequest(res, result, 'GET /reports', req);
 }
 
-export default { createReport };
+const deleteReport = async (req: any, res: Response) => {
+    const result = await service.deleteReport(req.params.file);
+    logRequest(res, result, 'DELETE /report', req);
+}
+
+export default { createReport, getReports, deleteReport };
