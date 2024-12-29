@@ -4,8 +4,8 @@ import { logRequest } from '../utils/ResponseHandler';
 
 const service = new chartService();
 
-const getInternshipChartDatas = async (req: Request, res: Response) => {
-    const result = await service.getInternshipChartDatas(req.query.year as string, req.query.company_id as string);
+const getInternshipChartDatas = async (req: any, res: Response) => {
+    const result = await service.getInternshipChartDatas(req?.user?.id as string, req.query.year as string, req.query.company_id as string);
     logRequest(res, result, 'GET /chart/internships', req);
 }
 

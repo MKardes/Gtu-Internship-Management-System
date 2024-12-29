@@ -1,4 +1,5 @@
 import { AppDataSource } from '../../ormconfig';
+import { Department } from '../entities/department.entity';
 import { User } from '../entities/user.entity';
 import utilService from './utilService';
 import bcrypt from 'bcrypt';
@@ -78,6 +79,18 @@ export class departmentAdminService {
         } catch (error) {
             return { status: 500, data: { message: 'Kullanıcı silinemedi' } };
         }
+    }
+
+    async findUserDepartmentByUserId(userId: string) {
+        const userRepository = AppDataSource.getRepository(User);
+
+        const queryBuilder = userRepository.createQueryBuilder('usr')
+                                        .leftJoinAndSelect('usr.department', 'dp')
+                                        .where('usr.id = :prmUsrId', {prmUsrId: userId});
+
+        const user = await queryBuilder.getOne();
+
+        return user.department
     }
 }
 
