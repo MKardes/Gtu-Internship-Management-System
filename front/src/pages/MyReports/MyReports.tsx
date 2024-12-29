@@ -4,12 +4,13 @@ import { FiDownload, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./MyReports.css";
+import { TermConversions } from "../Dashboard/Dashboard";
 
 const MyReports: React.FC = () => {
   const [reports, setReports] = useState<any[]>([]);
-  const [adminInfo, setAdminInfo] = useState<any>(null);
   const [activeStudentPage, setActiveStudentPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
+  const [refetch, setRefetch] = useState<boolean>(false);
   const navigate = useNavigate();
   const studentPerPage = 10;
 
@@ -22,14 +23,19 @@ const MyReports: React.FC = () => {
             Authorization: `Bearer ${token}`,
         };
     };
-
-    // Yönetici Bilgilerini Getir
-    const fetchAdminInfo = async () => {
+    
+    // Raporları Getir
+    const fetchReports = async () => {
         try {
-            const response = await axios.get("/api/department-admin/department-admin", {
-                headers: getAuthHeader(),
+            const response = await axios.get("/api/reports", {
+              headers: getAuthHeader(),
             });
-            setAdminInfo(response.data);
+
+            setReports(response.data.map((e: any) => ({
+              ...e,
+              term: TermConversions[e.term as keyof typeof TermConversions]
+            })));
+
         } catch (error) {
             handleError(error);
         }
@@ -43,55 +49,26 @@ const MyReports: React.FC = () => {
         }
     };
 
-  const fetchReports = async () => {
-    try {
-      const exampleReports = [
-        { id: 1, name: "Bilgisayar-Mühendisliği_10.12.2024_2023-2024_midterm-fall.docx" },
-        { id: 2, name: "Makine-Mühendisliği_12.12.2024_2023-2024_summer.docx" },
-        { id: 3, name: "Elektrik-Mühendisliği_15.01.2024_2023-2024_midterm-spring.docx" },
-        { id: 4, name: "İnşaat-Mühendisliği_18.03.2024_2023-2024_midterm-break.docx" },
-        { id: 5, name: "Kimya-Mühendisliği_05.05.2023_2022-2023_final-fall.docx" },
-        { id: 6, name: "Mekatronik-Mühendisliği_08.06.2023_2022-2023_final-summer.docx" },
-        { id: 7, name: "Endüstri-Mühendisliği_11.07.2024_2023-2024_midterm-winter.docx" },
-        { id: 8, name: "Yazılım-Mühendisliği_14.08.2024_2023-2024_final-fall.docx" },
-        { id: 9, name: "Biyomedikal-Mühendisliği_17.09.2024_2023-2024_midterm-spring.docx" },
-        { id: 10, name: "Havacılık-Mühendisliği_20.10.2024_2023-2024_midterm-fall.docx" },
-        { id: 11, name: "Denizcilik-Mühendisliği_23.11.2023_2022-2023_final-summer.docx" },
-        { id: 12, name: "Petrol-Mühendisliği_26.12.2024_2023-2024_midterm-winter.docx" },
-        { id: 13, name: "Çevre-Mühendisliği_29.01.2024_2023-2024_midterm-spring.docx" },
-        { id: 14, name: "Jeoloji-Mühendisliği_01.02.2024_2023-2024_midterm-fall.docx" },
-        { id: 15, name: "Gıda-Mühendisliği_04.03.2024_2023-2024_midterm-summer.docx" },
-      ];
-
-      const reportsWithDetails = exampleReports.map((report) => {
-        const parts = report.name.split("_");
-        const department = parts[0];
-        const datePart = parts[1];
-        const academicYear = parts[2];
-        const term = parts[3].replace(".docx", "");
-        return { ...report, department, date: datePart, academicYear, term };
-      });
-
-      setReports(reportsWithDetails);
-    } catch (error) {
-      console.error("Raporlar alınırken hata oluştu:", error);
-    }
-  };
-
   const handleDownload = (report: any) => {
     console.log(`Rapor indiriliyor: ${report.name}`);
     // Backend indirme isteği buraya eklenecek
   };
 
-  const handleDelete = (report: any) => {
-    console.log(`Rapor siliniyor: ${report.name}`);
-    // Backend silme isteği buraya eklenecek
+  const handleDelete = async (report: any) => {
+    try {
+      await axios.delete(`/api/report/${report.file}`, {
+        headers: getAuthHeader(),
+      });
+      setRefetch(!refetch);
+
+  } catch (error) {
+      handleError(error);
+  }
   };
 
   useEffect(() => {
-    fetchAdminInfo();
     fetchReports();
-  }, []);
+  }, [refetch]);
 
   const indexOfLastReport = activeStudentPage * studentPerPage;
   const indexOfFirstReport = indexOfLastReport - studentPerPage;
@@ -110,10 +87,9 @@ const MyReports: React.FC = () => {
           <thead>
             <tr>
               <th>#</th>
-              <th>Bölüm</th>
-              <th>Tarih</th>
               <th>Akademik Yıl</th>
               <th>Dönem</th>
+              <th>Tarih</th>
               <th>Rapor</th>
             </tr>
           </thead>
@@ -122,10 +98,9 @@ const MyReports: React.FC = () => {
               currentReports.map((report, index) => (
                 <tr key={report.id}>
                   <td>{index + 1 + (activeStudentPage - 1) * studentPerPage}</td>
-                  <td>{report.department}</td>
-                  <td>{report.date}</td>
                   <td>{report.academicYear}</td>
                   <td>{report.term}</td>
+                  <td>{report.date}</td>
                   <td>
                     <div className="d-flex justify-content-start gap-2">
                       <button
