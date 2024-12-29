@@ -66,12 +66,13 @@ def create_db_connection():
 
 # Sınıflar
 class Ogrenci:
-    def __init__(self, tc_kimlik_no, adi, soyadi, ogrenci_no, email):
+    def __init__(self, tc_kimlik_no, adi, soyadi, ogrenci_no, email, departman):
         self.tc_kimlik_no = tc_kimlik_no
         self.adi = adi
         self.soyadi = soyadi
         self.ogrenci_no = ogrenci_no
         self.email = email
+        self.departman = departman
 
 class Mentor:
     def __init__(self, adi, soyadi, numara, eposta):
@@ -123,6 +124,7 @@ def parse_pdf(file_data):
         soyadi=text.split("Adı Soyadı")[1].split("\n")[0].strip().split()[1],
         email=text.split("Eposta Adresi")[1].split("\n")[0].strip(),
         ogrenci_no=text.split("Öğrenci No")[1].split()[0],
+        departman=text.split("Bölümü - Sınıfı")[1].split("\n")[0].strip()
     )
     kurum = Company(
         adi=text.split("Staj Yapılmak İstenilen Kurum/Kuruluş Adı")[1].split("\n")[0].strip(),
@@ -144,6 +146,7 @@ def insert_staj_to_db(staj, conn, pdf_file):
         ogrenci_id = None
         mentor_id = None
         kurum_id = None
+        departman_id = None
 
         cursor.execute("SELECT id FROM file WHERE name = %s;", (pdf_file['name'],))
         result = cursor.fetchone()
@@ -157,16 +160,26 @@ def insert_staj_to_db(staj, conn, pdf_file):
                         VALUES (%s, %s) RETURNING id;
             """, (pdf_file['name'], "https://drive.google.com/file/d/" + pdf_file['id']))
             file_id = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT id FROM department WHERE department_name = %s;", (staj.ogrenci.departman))
+        result = cursor.fetchone()
+        if not result:
+            cursor.execute("INSERT INTO department (department_name) VALUES (%s) RETURNING id;", (staj.ogrenci.departman))
+            result = cursor.fetchone()
+        else:
+            result = result[0]
 
-        cursor.execute("SELECT id FROM student WHERE turkish_id = %s;", (staj.ogrenci.tc_kimlik_no,))
+        departman_id = result
+
+        cursor.execute("SELECT id FROM student WHERE turkish_id = %s;", (staj.ogrenci.tc_kimlik_no))
         result = cursor.fetchone()
         if result:
             ogrenci_id = result[0]
         else:
             cursor.execute("""
-                INSERT INTO student (turkish_id, name, surname, school_id, email) 
-                VALUES (%s, %s, %s, %s, %s) RETURNING id;
-            """, (staj.ogrenci.tc_kimlik_no, staj.ogrenci.adi, staj.ogrenci.soyadi, staj.ogrenci.ogrenci_no, staj.ogrenci.email))
+                INSERT INTO student (turkish_id, name, surname, school_id, email, department) 
+                VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;
+            """, (staj.ogrenci.tc_kimlik_no, staj.ogrenci.adi, staj.ogrenci.soyadi, staj.ogrenci.ogrenci_no, staj.ogrenci.email, departman_id))
             ogrenci_id = cursor.fetchone()[0]
 
         cursor.execute("SELECT id FROM mentor WHERE name = %s AND surname = %s;", (staj.mentor.adi, staj.mentor.soyadi))
@@ -180,7 +193,7 @@ def insert_staj_to_db(staj, conn, pdf_file):
             """, (staj.mentor.adi, staj.mentor.soyadi, staj.mentor.numara, staj.mentor.eposta))
             mentor_id = cursor.fetchone()[0]
 
-        cursor.execute("SELECT id FROM company WHERE name = %s;", (staj.kurum.adi,))
+        cursor.execute("SELECT id FROM company WHERE name = %s;", (staj.kurum.adi))
         result = cursor.fetchone()
         if result:
             kurum_id = result[0]
