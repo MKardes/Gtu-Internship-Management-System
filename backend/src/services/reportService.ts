@@ -2,6 +2,10 @@ import { report } from "process";
 import { AppDataSource } from "../../ormconfig";
 import { Internship } from "../entities/internship.entitiy";
 import utilService from "./utilService";
+import departmentAdminService from "./departmentAdminService";
+import { promises as fs } from "fs";
+import path from "path";
+
 var officegen = require('officegen')
 enum months {
     Ocak = 1,
@@ -20,6 +24,7 @@ enum months {
 
 class reportService {
     private internshipRepository = AppDataSource.getRepository(Internship);
+    private reportDirectory = "./reports";
 
     private async getInternships(startingDate: any, endingDate: any) {
         try {
@@ -56,6 +61,58 @@ class reportService {
             rows.push(row);
         }
         return rows;
+    }
+    
+        // get api/reports/ ->
+    //    - req.user(myRequest) -> user_id
+    //    - user_id -> user_department 
+    //            - (const user = await getDepartmentAdmin(user_id)) 
+    //            -  user.department.department_name
+    //    - find reports ->
+    //            - file: "./reports/*"" bütün dosyaların isimlerini çek bir arraye yaz;
+    //    
+    //    - filter reports by reports.department_name ===user.depratment.department_name
+    
+    async getReport(user: any) {
+        try {
+            // Kullanıcının departmanını al
+            const depService = new departmentAdminService()
+
+            const userDetails: any = await depService.getDepartmentAdmin(user.id);
+
+            if (userDetails.status === 200) {
+                const userDepartmentName = userDetails.data?.department?.department_name?.replace(/-/g, '') || '';
+                console.log('Kullanıcı departman ismi:', userDepartmentName);
+            
+                // Tüm rapor dosyalarını oku
+                const files = await fs.readdir(this.reportDirectory);
+            
+                const departmentReports = files.filter(file => {
+                    const departmentPart = file.split('_')[0];
+                    const departmentName = departmentPart.replace(/-/g, '');
+            
+                    console.log(`Dosya departmanı: ${departmentName}, Kullanıcı departmanı: ${userDepartmentName}`);
+                    return departmentName === userDepartmentName;
+                });
+            } else {
+                console.error('Kullanıcı alınamadı');
+            }
+            
+            // return {
+            //     status: 200,
+            //     data: { 
+            //         message: "Reports fetched successfully",
+            //         reports: departmentReports,
+            //     }
+            // };
+        } catch (error) {
+            return {
+                status: 500,
+                data: { 
+                    message: `An error occurred while fetching reports: ${error}` 
+                }
+            };
+        }
     }
 
     async createReport(reportData: any, user: any) {

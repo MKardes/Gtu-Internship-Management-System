@@ -9,4 +9,9 @@ const createReport = async (req: any, res: Response) => {
     logRequest(res, result, 'POST /report', req);
 }
 
+const getReport = async (req: any, res: Response) => {
+    const result = await service.getReport(req.user);
+    logRequest(res, result, 'GET /reports', req);
+}
+
 export default { createReport };

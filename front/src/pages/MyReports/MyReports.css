@@ -1,1 +1,22 @@
-/*Temp*/
+.fancy-table {
+    margin-top: 20px;
+  }
+  
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  button svg {
+    margin: 0;
+  }
+  
+  .d-flex {
+    display: flex;
+  }
+  
+  .gap-2 {
+    gap: 8px; /* İki buton arasındaki boşluk */
+  }
+  
