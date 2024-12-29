@@ -49,16 +49,21 @@ class termService {
         const pieces = year.split("-");
 
         if (pieces.length !== 2) {
-            return { status: 400, data: { message: 'Bilinmeyen yıl formatı!' } };
+            return { status: 400, data: { message: 'Bilinmeyen akademik yıl formatı!' } };
         }
 
         const { status, data } =await this.getTerms();
 
         if (status !== 200){
-            return { status: 500, data: { message: 'Dönem tarihleri getirilemedi!' } };
+            return { status: 404, data: { message: 'Dönem tarihleri getirilemedi!' } };
         }
 
         const selectedYearTerms = data.find((e: Term) => e.name === year)
+
+        if (!selectedYearTerms) {
+            return { status: 404, data: { message: 'Akademik yıl bulunamadı!' } };
+        }
+
         const termDates = Object.entries(selectedYearTerms).map(e => {
             if (e[0] !== "id" &&  e[0] !== "name"){
                 return format(e[1], 'yyyy-MM-dd');
