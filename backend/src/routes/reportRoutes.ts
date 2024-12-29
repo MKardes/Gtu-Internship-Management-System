@@ -6,5 +6,6 @@ const router = express.Router();
 
 
 router.post('/report/create-report', verifyToken, reportController.createReport);
+router.post('/reports', verifyToken, reportController.createReport);
 
 export default router;
