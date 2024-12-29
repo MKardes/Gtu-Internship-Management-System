@@ -12,7 +12,7 @@ import { BsFillCalendar2DateFill } from "react-icons/bs";
 const passedColor = "#28b463";
 const failedColor = "#e74c3c";
 
-const GraphXConversions = {
+export const TermConversions = {
   "midterm_fall": "Dönem İçi 'Güz'",
   "midterm_break": "Ara Dönem",
   "midterm_spring": "Dönem İçi 'Bahar'",
@@ -32,8 +32,8 @@ const getOptions = (data: any) => {
     tooltip: {
       trigger: "item",
       formatter: function(params: any) {
-        const keyIndex = Object.values(GraphXConversions).indexOf(params.name);
-        const keys = Object.keys(GraphXConversions);
+        const keyIndex = Object.values(TermConversions).indexOf(params.name);
+        const keys = Object.keys(TermConversions);
         const relatedData = data[keys[keyIndex] as keyof typeof data];
 
         let tooltip = `
@@ -74,7 +74,7 @@ const getOptions = (data: any) => {
         fontWeight: 500,
         fontSize: 13
       },
-      data: Object.keys(data).map((e: any) => GraphXConversions[e as keyof typeof GraphXConversions]),
+      data: Object.keys(data).map((e: any) => TermConversions[e as keyof typeof TermConversions]),
     },
     yAxis: {
       type: "value",
