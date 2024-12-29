@@ -7,6 +7,12 @@ import './InternshipSearch.css';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+type Option = {
+  value: number;
+  name: string;
+  id?: string;
+}
+
 enum InternshipStates {
   Begin = "begin",
   ReportReceived = "report_received",
@@ -30,13 +36,14 @@ const InternshipSearch: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredGrade, setFilteredGrade] = useState<number | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false); // Modal'ın gösterilme durumunu tutan state.
-  const [filteredSemester, setFilteredSemester] = useState<string | null>(null);
+  const [filteredSemester, setFilteredSemester] = useState<Option | null>(null);
   const [selectedInternship, setSelectedInternship] = useState<any | null>(null);
   const [showConfirmMessage, setShowConfirmMessage] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [isSGKUploaded, setIsSGKUploaded] = useState(false); // SGK yüklenme durumu
   const [refetch, setRefetch] = useState<boolean>(false);
   const [activeStudentPage, setActiveStudentPage] = useState(1);
+  const [years, setYears] = useState<Option[]>();
   const studentPerPage = 10;
   const navigate = useNavigate();
 
@@ -49,6 +56,28 @@ const InternshipSearch: React.FC = () => {
         Authorization: `Bearer ${token}`,
     };
 };
+
+const getYears = async () => {
+  try {
+    const res = await axios.get(`/api/terms`, {
+      headers: getAuthHeader()
+    });
+    const termData = res.data
+                          .sort((a: any, b: any) => b.name.localeCompare(a.name))
+                          .map((e: any, index: number) => ({
+                              name: e.name,
+                              value: index + 1,
+                          }));
+
+    termData.unshift({
+      name: "Tümü",
+      value: 0,
+    })
+    setYears(termData);
+  } catch (e) {
+    console.error(e)
+  }
+}
 
 const filteredInternships = internships.filter(internship => {
   return (
@@ -73,7 +102,7 @@ const filteredInternships = internships.filter(internship => {
       // Construct query parameters
       const params = new URLSearchParams();
       if (filteredGrade !== null) params.append('grade', filteredGrade.toString());
-      if (filteredSemester !== null) params.append('semester', filteredSemester);
+      if (filteredSemester !== null && filteredSemester.name !== 'Tümü') params.append('semester', filteredSemester.name);
 
       const response = await axios.get(`/api/internships?${params.toString()}`, {
         headers: getAuthHeader(),
@@ -86,14 +115,6 @@ const filteredInternships = internships.filter(internship => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-  };
-
-  const handleGradeFilter = (grade: number | null) => {
-    setFilteredGrade(grade);
-  };
-
-  const handleSemesterFilter = (semester: string | null) => {
-    setFilteredSemester(semester);
   };
 
   // Modal'ı açma fonksiyonu
@@ -217,7 +238,7 @@ const filteredInternships = internships.filter(internship => {
   }, [selectedInternship])
 
   useEffect(() => {
-
+    getYears();
   }, [])
 
   return (
@@ -232,7 +253,7 @@ const filteredInternships = internships.filter(internship => {
               Sınıf
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => setFilteredGrade(null)}>Hepsi</Dropdown.Item>
+              <Dropdown.Item onClick={() => setFilteredGrade(null)}>Tümü</Dropdown.Item>
               <Dropdown.Item onClick={() => setFilteredGrade(1)}>1. Sınıf</Dropdown.Item>
               <Dropdown.Item onClick={() => setFilteredGrade(2)}>2. Sınıf</Dropdown.Item>
               <Dropdown.Item onClick={() => setFilteredGrade(3)}>3. Sınıf</Dropdown.Item>
@@ -244,11 +265,14 @@ const filteredInternships = internships.filter(internship => {
             <Dropdown.Toggle variant="success" id="dropdown-semester" size="sm">
               Dönem
             </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => setFilteredSemester(null)}>Hepsi</Dropdown.Item>
-              <Dropdown.Item onClick={() => setFilteredSemester('winter')}>2023 Yaz</Dropdown.Item>
-              <Dropdown.Item onClick={() => setFilteredSemester('summer')}>2023 Kış</Dropdown.Item>
-            </Dropdown.Menu>
+            {(years && years.length > 0) ? (
+              <Dropdown.Menu>
+                {years.map( (e: any) => (
+                  <Dropdown.Item key={e.value} onClick={() => setFilteredSemester(e)}>{e.name}</Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            ): null
+            }
           </Dropdown>
         </div>
         <div className='table-responsive'>
