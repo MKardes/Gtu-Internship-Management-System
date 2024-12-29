@@ -5,8 +5,10 @@ import { Internship } from "../entities/internship.entitiy";
 import { getYear, getMonth, format } from "date-fns"
 import termService from "./termService";
 import { Term } from "../entities/term.entity";
+import departmentAdminService from "./departmentAdminService";
 
 const _termService = new termService();
+const _departmentAdminService = new departmentAdminService();
 
 class chartService {
     private internshipRepository = AppDataSource.getRepository(Internship);
@@ -29,7 +31,17 @@ class chartService {
         return dto;
     }
 
-    async getInternshipChartDatas(year: string, companyId: string) {
+    async getInternshipChartDatas(userID: string, year: string, companyId: string) {
+        if (!userID || !year) {
+            return { status: 400, data: { message: 'Kullanıcı veya yıl girilmedi!' } };
+        }
+
+        const department = await _departmentAdminService.findUserDepartmentByUserId(userID);
+
+        if (!department) {
+            return { status: 404, data: { message: 'Kullanıcının departmanı bulunamadı!' } };
+        }
+
         const pieces = year.split("-");
 
         if (pieces.length !== 2) {
@@ -48,7 +60,7 @@ class chartService {
                 return format(e[1], 'yyyy-MM-dd');
             }
         }).filter(e => e);
-        
+
         const sql = `
             WITH categorized_internships AS (
                 SELECT 
@@ -66,11 +78,14 @@ class chartService {
                         ELSE 'undefined'
                     END AS period_name
                 FROM 
-                    internship i 
+                    internship i
+                LEFT JOIN student s
+                    ON s.id = i.student_id
                 WHERE 
                     i.begin_date >= TO_DATE($1, 'YYYY-MM-DD') 
                     AND i.end_date <= TO_DATE($8, 'YYYY-MM-DD')
-                    ${companyId ? 'AND i.company_id = $9' : ''}
+                    AND s.department_id = $9
+                    ${companyId ? 'AND i.company_id = $10' : ''}
             )
             SELECT 
                 ci.period_name,
@@ -89,11 +104,11 @@ class chartService {
                 ci.period_name;
         `.trim();
     
-        const params: any[] = termDates;
+        const params: any[] = [...termDates, department.id];
         if (companyId) {
             params.push(companyId);
         }
-    
+
         try {
             const result = await AppDataSource.query(sql, params);
             return { status: 200, data: this.toInternshipChartDto(result) };
