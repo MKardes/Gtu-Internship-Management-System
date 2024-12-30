@@ -14,8 +14,8 @@ const getTerms = async (req: Request, res: Response) => {
     logRequest(res, result, 'GET /terms', req);
 }
 
-const getTermInternships = async (req: Request, res: Response) => {
-    const result = await service.getTermInternships(req.query.year as string, req.query.company_id as string);
+const getTermInternships = async (req: any, res: Response) => {
+    const result = await service.getTermInternships(req?.user?.id as string, req.query.year as string, req.query.company_id as string);
     logRequest(res, result, 'GET /term-internships', req);
 }
 

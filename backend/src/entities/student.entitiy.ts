@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique, CreateDateColumn} from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, Unique, CreateDateColumn, ManyToOne, JoinColumn} from "typeorm";
+import { Department } from "./department.entity";
 
 @Entity("student")
 @Unique(['id', 'school_id', 'email', 'turkish_id'])
@@ -27,4 +28,8 @@ export class Student {
 
     @Column({ nullable: true }) // şimdilik
     grade: number;
+
+    @ManyToOne(() => Department)
+    @JoinColumn({ name: "department_id" })
+    department: Department;
 }

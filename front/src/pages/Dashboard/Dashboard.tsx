@@ -12,7 +12,7 @@ import { BsFillCalendar2DateFill } from "react-icons/bs";
 const passedColor = "#28b463";
 const failedColor = "#e74c3c";
 
-const GraphXConversions = {
+export const TermConversions = {
   "midterm_fall": "Dönem İçi 'Güz'",
   "midterm_break": "Ara Dönem",
   "midterm_spring": "Dönem İçi 'Bahar'",
@@ -32,8 +32,8 @@ const getOptions = (data: any) => {
     tooltip: {
       trigger: "item",
       formatter: function(params: any) {
-        const keyIndex = Object.values(GraphXConversions).indexOf(params.name);
-        const keys = Object.keys(GraphXConversions);
+        const keyIndex = Object.values(TermConversions).indexOf(params.name);
+        const keys = Object.keys(TermConversions);
         const relatedData = data[keys[keyIndex] as keyof typeof data];
 
         let tooltip = `
@@ -74,7 +74,7 @@ const getOptions = (data: any) => {
         fontWeight: 500,
         fontSize: 13
       },
-      data: Object.keys(data).map((e: any) => GraphXConversions[e as keyof typeof GraphXConversions]),
+      data: Object.keys(data).map((e: any) => TermConversions[e as keyof typeof TermConversions]),
     },
     yAxis: {
       type: "value",
@@ -162,6 +162,7 @@ const Dashboard: React.FC = () => {
 
   const handleCloseModal = () => {
     setDates(new Array(8));
+    setSelectedName('')
     setShowModal(false);
   };
 
@@ -203,10 +204,12 @@ const Dashboard: React.FC = () => {
         headers: getAuthHeader()
       });
       setTermDetails(res.data);
-      setYears(res.data.map((e: any, index: number) => ({
-          name: e.name,
-          value: index + 1,
-      })))
+      setYears(res.data
+                    .sort((a: any, b: any) => b.name.localeCompare(a.name))
+                    .map((e: any, index: number) => ({
+                        name: e.name,
+                        value: index + 1,
+                    })))
       setFirstSelectedYear(res.data[0] ?? undefined);
       setSecondSelectedYear(res.data[0] ?? undefined);
       setTermsSelectedYear(res.data[0] ?? undefined);
@@ -234,11 +237,13 @@ const Dashboard: React.FC = () => {
   const getInternships = async (year: string, setData: any, companyId?: any) => {
     try {
       let url = `/api/chart/internships?year=${year}`;
+
       let url1 = `/api/term-internships?year=${year}`;
       const res1 = await axios.get(url1, {
         headers: getAuthHeader()
       });
       console.log(res1.data)
+
       if (companyId) {
         url += `&company_id=${companyId}`;
       }
@@ -333,8 +338,8 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
               <div className="row mt-2 align-items-center border-top border-1">
-                <label className='mt-2 col-4' htmlFor="string">Yıl</label>
-                <div className="mt-2 col-4 col-lg-8 text-nowrap">
+                <label className='mt-2 col-4' htmlFor="string">Akademik Yıl</label>
+                <div className="mt-2 col-4 col-lg-8 text-nowrap fw-semibold">
                   {termsSelectedYear?.name}
                 </div>
               </div>
@@ -383,7 +388,7 @@ const Dashboard: React.FC = () => {
         <Modal.Body>
             <div className='grid-cols-2'>
               <div className="row mt-2 align-items-center">
-                <label className='col-4' htmlFor="string">Yıl</label>
+                <label className='col-4' htmlFor="string">Akademik Yıl</label>
                 <div className='d-flex gap-2 col-4 col-lg-8'>
                   <input placeholder='20xx-20xx' className='w-100' type="text" id="text" value={selectedName} onChange={handleNameChange}/>
                 </div>
