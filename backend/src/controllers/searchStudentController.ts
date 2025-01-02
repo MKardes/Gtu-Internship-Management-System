@@ -14,4 +14,9 @@ const putInternshipState = async (req: Request, res: Response) => {
     logRequest(res, result, `PUT /students/${req.params.id}/internship-state`, req);
 }
 
-export default { getStudents, putInternshipState };
+const sendMail = async (req: Request, res: Response) => {
+    const result = await service.sendMail(req.body.email, req.body.subject, req.body.message);
+    logRequest(res, result, 'POST /send-mail', req);
+}
+
+export default { getStudents, putInternshipState, sendMail};
