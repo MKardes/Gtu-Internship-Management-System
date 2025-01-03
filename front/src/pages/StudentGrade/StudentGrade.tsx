@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Card, Dropdown, OverlayTrigger, Pagination, ToggleButton, Tooltip } from 'react-bootstrap';
-import { Button, Modal, ListGroup, Table } from 'react-bootstrap';
+import { Dropdown, Pagination, ToggleButton, Tooltip } from 'react-bootstrap';
+import { Button, Modal, Table } from 'react-bootstrap';
 import './StudentGrade.css';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Option } from '../InternshipSearch/InternshipSearch';
+import { TbMailUp } from "react-icons/tb";
 
 enum InternshipStates {
   Completed = "completed",
@@ -29,6 +30,10 @@ const StudentGrade: React.FC = () => {
   const [refetch, setRefetch] = useState<boolean>(false);
   const [activeStudentPage, setActiveStudentPage] = useState(1);
   const [years, setYears] = useState<Option[]>();
+  const [showMailModal, setShowMailModal] = useState(false);
+  const [selectedInternshipForMail, setSelectedInternshipForMail] = useState<any | null>(null);
+  const [emailSubject, setEmailSubject] = useState<string>('');
+  const [emailBody, setEmailBody] = useState<string>('');
   const studentPerPage = 10;
   const navigate = useNavigate();
 
@@ -97,6 +102,36 @@ const filteredInternships = internships.filter(internship => {
       console.error(error);
     }
   };
+
+  const handleMailSend = async () => {
+    if (!selectedInternshipForMail || !emailSubject || !emailBody) {
+      alert("Lütfen tüm alanları doldurunuz!");
+      return;
+    }
+  
+    console.log(selectedInternshipForMail.student.email)
+    const emailData = {
+      email: selectedInternshipForMail.student.email, // Öğrenci mail adresi
+      subject: emailSubject,
+      message: emailBody,
+    };
+  
+    try {
+      await axios.post('/api/send-mail', emailData, {
+        headers: getAuthHeader(),
+      });
+      alert("Mail başarıyla gönderildi!");
+      handleMailModalClose();
+      setEmailSubject(''); // Input'u sıfırla
+      setEmailBody('');
+    } catch (error) {
+      console.error("Mail gönderme hatası:", error);
+      alert("Mail gönderilirken bir hata oluştu.");
+    }
+  };
+  
+  
+
   const handleStatusChange = async (event: React.ChangeEvent<HTMLInputElement>, id : any) => {
     const selectedValue = event.target.id;
     
@@ -128,6 +163,16 @@ const filteredInternships = internships.filter(internship => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleMailModalOpen = (internship: any) => {
+    setSelectedInternshipForMail(internship);
+    setShowMailModal(true);
+  };
+  
+  const handleMailModalClose = () => {
+    setShowMailModal(false);
+    setSelectedInternshipForMail(null);
   };
 
   useEffect(() => {
@@ -168,6 +213,7 @@ const filteredInternships = internships.filter(internship => {
             }
           </Dropdown>
         </div>
+
         <div className='table-responsive'>
           <Table striped bordered hover size='sm' className='mt-4 fancy-table'>
             <thead>
@@ -177,9 +223,11 @@ const filteredInternships = internships.filter(internship => {
                 <th className='internship-table-writtings text-center'>Öğrenci Numarası</th>
                 <th className='internship-table-writtings text-center'>Şirket</th>
                 <th className='internship-table-writtings text-center'>Staj Türü</th>
+                <th className='internship-table-writtings text-center'>Mail Gönder</th>
                 <th className='internship-table-writtings text-center'>Staj Durumu</th>
               </tr>
             </thead>
+
             <tbody>
               {currentStudents.map((internship) => (
                 <tr key={internship.id}>
@@ -188,6 +236,11 @@ const filteredInternships = internships.filter(internship => {
                   <td className='internship-table-writtings text-center'>{internship.student.school_id}</td>
                   <td className='internship-table-writtings text-center'>{internship.company.name}</td>
                   <td className='internship-table-writtings text-center'>{internship.type}</td>
+                  <td className='internship-table-writtings text-center'>
+                    <Button className='custom-button' onClick={() => handleMailModalOpen(internship)}>
+                      <TbMailUp />
+                    </Button>
+                  </td>
                   <td className='internship-table-writtings text-center justify-content-center'>
                   <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
                     <input 
@@ -217,9 +270,62 @@ const filteredInternships = internships.filter(internship => {
                   </div>
 
                   </td>
+                  <Modal className="custom-modal" show={showMailModal} onHide={handleMailModalClose} >
+                    <Modal.Header closeButton>
+                      <Modal.Title>Mail Gönder</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      {selectedInternshipForMail && (
+                        <div>
+                          <p>
+                            <strong>Öğrenci:</strong> {selectedInternshipForMail.student.name}{' '}
+                            {selectedInternshipForMail.student.surname}
+                          </p>
+                          <p>
+                            <strong>Öğrenci Numarası:</strong> {selectedInternshipForMail.student.school_id}
+                          </p>
+                          <form>
+                            <div className="form-group">
+                              <label htmlFor="emailSubject">Konu</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="emailSubject"
+                                placeholder="Konu"
+                                value={emailSubject}
+                                onChange={(e) => setEmailSubject(e.target.value)} // State güncelle
+                              />
+                            </div>
+                            <div className="form-group">
+                              <label htmlFor="emailBody">Mesaj</label>
+                              <textarea
+                                className="form-control"
+                                id="emailBody"
+                                rows={4}
+                                placeholder="Mesaj"
+                                value={emailBody}
+                                onChange={(e) => setEmailBody(e.target.value)} // State güncelle
+                              ></textarea>
+                            </div>
+                          </form>
+                        </div>
+                      )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="secondary" onClick={handleMailModalClose}>
+                        Kapat
+                      </Button>
+                      <Button variant="primary" onClick={handleMailSend}>
+                        Gönder
+                      </Button>
+
+                    </Modal.Footer>
+                  </Modal>
+
                 </tr>
               ))}
             </tbody>
+
           </Table>
         </div>
       </div>
