@@ -3,7 +3,7 @@ import { Internship } from "../entities/internship.entitiy";
 import utilService from "./utilService";
 import termService from "./termService";
 import departmentAdminService from "./departmentAdminService";
-import { readdir, unlink } from "fs/promises";
+import { readdir, readFile, unlink, writeFile } from "fs/promises";
 import { Writable } from "stream";
 
 var officegen = require('officegen')
@@ -104,9 +104,6 @@ class reportService {
             return { status: 404, data: { message: 'A error occured during report deletion: ' + error } };
         }
     }
-
-
-
 
     private async getInternships(user: any, term: any, year: any) {
         try {
@@ -262,27 +259,46 @@ class reportService {
 
             // Save the docx file
             const department = reportCreator.department.department_name.replace(" ", "-");
-            const meetingdate = reportData.day + "." + reportData.month + "." + reportData.year;
-            const schoolyear = reportData.term;
-            const sem = semester; 
-            const fileName = `${department}_${meetingdate}_${schoolyear}_${sem}.docx`;
+            const meetingdate = `${String(reportData.day).padStart(2, '0')}-${String(reportData.month).padStart(2, '0')}-${reportData.year}`;
+            const academicYear = reportData.term;
+            const sem = semester.replace("_", "-"); 
+            const fileName = `${department}_${academicYear}_${sem}_${meetingdate}.docx`;
+            const filePath = this.reportDirectory + "/" + fileName;
 
             const buffer = await new Promise<Buffer>((resolve, reject) => {
-            const buffers: Buffer[] = [];
-            const stream = new Writable({
-                write (chunk, encoding, callback) {
-                buffers.push(chunk);
-                callback();
-                }    
+                const buffers: Buffer[] = [];
+                const stream = new Writable({
+                    write (chunk, encoding, callback) {
+                    buffers.push(chunk);
+                    callback();
+                    }    
+                });
+                stream.on('finish', () => resolve(Buffer.concat(buffers)));
+                stream.on('error', reject);
+                docx.generate(stream);
             });
-            stream.on('finish', () => resolve(Buffer.concat(buffers)));
-            stream.on('error', reject);
-            docx.generate(stream);
-            });
+
+            await writeFile(filePath, buffer);
 
             const headers = {
             'Content-Disposition': `attachment; filename=${fileName}`,
             'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            }
+
+            return { status: 200, data: buffer, headers: headers};
+        } catch (error) {
+            return { status: 500, data: { message: 'A error occured during report creation: ' + error } };
+        }
+    }
+    
+    async getReport(fileName: string) {
+        try {
+            const filePath = this.reportDirectory + "/" + fileName;
+            const buffer =  await readFile(filePath);
+
+            const headers = {
+                'Content-Disposition': `attachment; filename=${fileName}`,
+                'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
             }
 
             return { status: 200, data: buffer, headers: headers};

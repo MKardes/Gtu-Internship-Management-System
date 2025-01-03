@@ -49,9 +49,28 @@ const MyReports: React.FC = () => {
         }
     };
 
-  const handleDownload = (report: any) => {
+  const handleDownload = async (report: any) => {
     console.log(`Rapor indiriliyor: ${report.name}`);
-    // Backend indirme isteği buraya eklenecek
+    const response = await axios.get(`/api/report/${report.file}`, {
+      headers: {
+          ...getAuthHeader(),
+      },
+      responseType: 'blob',
+    });
+
+
+
+    const contentDisposition = response.headers['content-disposition'];
+    const fileName = contentDisposition
+        ? contentDisposition.split('filename=')[1].trim().replace(/"/g, '')
+        : 'report.docx';
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleDelete = async (report: any) => {
