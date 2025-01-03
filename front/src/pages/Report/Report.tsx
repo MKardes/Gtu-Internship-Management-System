@@ -9,6 +9,9 @@ const Report: React.FC = () => {
     const [selectedMonth, setSelectedMonth] = useState("");
     const [selectedYear, setSelectedYear] = useState("");
     const [selectedComissionVise, setSelectedComissionVise] = useState("");
+    const [allTerms, setAllTerms] = useState<any[]>([]);
+    const [selectedTerm, setTerm] = useState("");
+    const [selectedSemester, setSelectedSemester] = useState("");
     const [selectedComission, setSelectedComission] = useState("");
     const [selectedComission_2, setSelectedComission_2] = useState("");
     const [users, setUsers] = useState<any[]>([]);
@@ -16,6 +19,14 @@ const Report: React.FC = () => {
     const navigate = useNavigate();
 
     const currentYear = new Date().getFullYear();
+
+
+    const semesterEnum: Record<number, string> = {
+        1: "Dönem içi 'Güz'",
+        2: "Ara Dönem",
+        3: "Dönem içi 'Bahar'",
+        4: "Yaz Dönemi",
+    }
 
     const getAuthHeader = () => {
         const token = localStorage.getItem("accessToken");
@@ -36,14 +47,30 @@ const Report: React.FC = () => {
 
     useEffect(() => {
         fetchUsers();
+        fetchTerms();
     }, []);
 
     const fetchUsers = async () => {
         try {
             const response = await axios.get("/api/department-admin/users", {
-                headers: getAuthHeader(),
+                headers: {
+                    ...getAuthHeader(),
+                },
             });
             setUsers(response.data);
+        } catch (error) {
+            handleError(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchTerms = async () => {
+        try {
+            const response = await axios.get("/api/terms", {
+                headers: getAuthHeader(),
+            });
+            setAllTerms(response.data.sort((a: any, b: any) => b.name.localeCompare(a.name)));
         } catch (error) {
             handleError(error);
         } finally {
@@ -58,7 +85,6 @@ const Report: React.FC = () => {
             const user = users.find((u) => u.id === userId);
             return user ? user.full_name : "";
         };
-    
         const reportData = {
             day: selectedDay,
             month: selectedMonth,
@@ -66,19 +92,39 @@ const Report: React.FC = () => {
             comissionVise: findUserFullName(selectedComissionVise),
             comissionMember1: findUserFullName(selectedComission),
             comissionMember2: findUserFullName(selectedComission_2),
+            semester: semesterEnum[parseInt(selectedSemester)],
+            term: allTerms.find(term => term.id == selectedTerm)?.name,
         };
 
         try {
             setLoading(true);
             const response = await axios.post("api/report/create-report", reportData, {
-                headers: getAuthHeader(),
+                headers: {
+                    ...getAuthHeader(),
+                },
+                responseType: 'blob', // Blob olarak yanıt almak için
             });
-            alert("Rapor başarıyla oluşturuldu!");
+
+            
+
+            const contentDisposition = response.headers['content-disposition'];
+            const fileName = contentDisposition
+                ? contentDisposition.split('filename=')[1].trim().replace(/"/g, '')
+                : 'report.docx'; // Varsayılan dosya adı
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
         } catch (error) {
             handleError(error);
         } finally {
             setLoading(false);
         }
+
     };
 
     return (
@@ -89,13 +135,13 @@ const Report: React.FC = () => {
                     {/* Day Input */}
                     <Col md={4} sm={12} className="mb-3">
                         <Form.Group>
-                            <Form.Label>Gün</Form.Label>
+                            <Form.Label>Toplantı Günü</Form.Label>
                             <Form.Control
                                 as="select"
                                 value={selectedDay}
                                 onChange={(e) => setSelectedDay(e.target.value)}
                             >
-                                <option value="">Gün</option>
+                                <option value="">Toplantı Günü</option>
                                 {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                                     <option key={day} value={day}>
                                         {day}
@@ -107,13 +153,13 @@ const Report: React.FC = () => {
                     {/* Month Input */}
                     <Col md={4} sm={12} className="mb-3">
                         <Form.Group>
-                            <Form.Label>Ay</Form.Label>
+                            <Form.Label>Toplantı Ayı</Form.Label>
                             <Form.Control
                                 as="select"
                                 value={selectedMonth}
                                 onChange={(e) => setSelectedMonth(e.target.value)}
                             >
-                                <option value="">Ay</option>
+                                <option value="">Toplantı Ayı</option>
                                 {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
                                     <option key={month} value={month}>
                                         {month}
@@ -125,13 +171,13 @@ const Report: React.FC = () => {
                     {/* Year Input */}
                     <Col md={4} sm={12} className="mb-3">
                         <Form.Group>
-                            <Form.Label>Yıl</Form.Label>
+                            <Form.Label>Toplantı Yılı</Form.Label>
                             <Form.Control
                                 as="select"
                                 value={selectedYear}
                                 onChange={(e) => setSelectedYear(e.target.value)}
                             >
-                                <option value="">Yıl</option>
+                                <option value="">Toplantı Yılı</option>
                                 {Array.from({ length: 5 }, (_, i) => i + currentYear - 5).map((year) => (
                                     <option key={year} value={year}>
                                         {year}
@@ -140,6 +186,42 @@ const Report: React.FC = () => {
                                 {Array.from({ length: 5 }, (_, i) => i + currentYear).map((year) => (
                                     <option key={year} value={year}>
                                         {year}
+                                    </option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={4} sm={12} className="mb-3">
+                        <Form.Group>
+                            <Form.Label>Okul Dönemi</Form.Label>
+                            <Form.Control
+                                as="select"
+                                value={selectedSemester}
+                                onChange={(e) => setSelectedSemester(e.target.value)}
+                            >
+                                <option value="">Okul Dönemi</option>
+                                {Array.from({ length: 4 }, (_, i) => i + 1).map((semester) => (
+                                    <option key={semester} value={semester}>
+                                        {semesterEnum[semester]}
+                                    </option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                    </Col>
+                    <Col md={4} sm={12} className="mb-3">
+                        <Form.Group>
+                            <Form.Label>Okul Yılı</Form.Label>
+                            <Form.Control
+                                as="select"
+                                value={selectedTerm}
+                                onChange={(e) => setTerm(e.target.value)}
+                            >
+                                <option value="">Okul Yılı</option>
+                                {allTerms.map((term) => (
+                                    <option key={term.id} value={term.id}>
+                                        {term.name}
                                     </option>
                                 ))}
                             </Form.Control>
