@@ -12,9 +12,10 @@ export class utilService
         .{8,} : en az 8 karakter olmalıdır
     */
     static isValidPassword(password: string) {
-        const passwordRegex = /^(?!.*['"%`;])(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        const passwordRegex = /^(?!.*['"%`;])(?=.*[a-zçÇğĞıİöÖşŞüÜ])(?=.*[A-ZçÇğĞıİöÖşŞüÜ])(?=.*\d).{8,}$/;
         return passwordRegex.test(password);
     }
+    
 
     static isValidRole(role: string) {
         return role === 'User' || role === 'DepartmentAdmin' || role === 'SuperAdmin';
@@ -26,7 +27,7 @@ export class utilService
     }
 
     static isValidDepartmentName(department_name: string) {
-        const departmentNameRegex = /^[a-zA-Z\s]{2,20}$/;
+        const departmentNameRegex = /^[a-zA-Z\sçÇğĞıİöÖşŞüÜ]{2,50}$/;
         return departmentNameRegex.test(department_name);
     }
 
@@ -49,7 +50,7 @@ export class utilService
         /^[a-zA-Z]{3,20}$/ : 3-20 karakter arasında olmalıdır
     */
     static isValidName(name: string) {
-        const nameRegex = /^[a-zA-Z\s]{3,20}$/;
+        const nameRegex = /^[a-zA-Z\sçÇğĞıİöÖşŞüÜ]{3,20}$/;
         return nameRegex.test(name);
     }
 

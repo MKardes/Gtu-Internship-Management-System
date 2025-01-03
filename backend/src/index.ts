@@ -26,7 +26,10 @@ const app = express();
 // Middleware'ler
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+
+app.use(cors({
+    exposedHeaders: ['Content-Disposition'], // headers that is shown in browser
+}));
 
 //routes
 app.use('/api/auth', authRoutes);
