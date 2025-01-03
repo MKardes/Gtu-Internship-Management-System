@@ -1,5 +1,6 @@
 import { AppDataSource } from "../../ormconfig";
 import { Internship } from "../entities/internship.entitiy";
+import nodemailer from "nodemailer";
 
 class DashboardService {
 
@@ -88,6 +89,30 @@ class DashboardService {
     } catch (error) {
       console.error('Error fetching students:', error);
       return { status: 500, data: [] };
+    }
+  }
+
+  async sendMail(email: string, subject: string, message: string){
+    try {
+      const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+          },
+        });
+
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: subject,
+        text: message,
+      });
+
+      return { status: 200, data: { message: 'Internship mail sent successfully!' } };
+    } catch (error) {
+      console.error(error);
+      return { status: 500, data: { message: 'An error occurred while sending mail', error: error } };
     }
   }
 }

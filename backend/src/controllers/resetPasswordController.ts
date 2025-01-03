@@ -16,7 +16,6 @@ const verifyCode = async (req: Request, res: Response) => {
 }
 
 const changePassword = async (req: Request, res: Response) => {
-    debug(req.body.mail);
     const result = await service.changePassword(req.body.mail, req.body.password);
     logRequest(res, result, 'POST /change-password', req);
 }
