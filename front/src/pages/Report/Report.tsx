@@ -55,7 +55,6 @@ const Report: React.FC = () => {
             const response = await axios.get("/api/department-admin/users", {
                 headers: {
                     ...getAuthHeader(),
-                    'Content Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                 },
             });
             setUsers(response.data);
@@ -71,7 +70,7 @@ const Report: React.FC = () => {
             const response = await axios.get("/api/terms", {
                 headers: getAuthHeader(),
             });
-            setAllTerms(response.data);
+            setAllTerms(response.data.sort((a: any, b: any) => b.name.localeCompare(a.name)));
         } catch (error) {
             handleError(error);
         } finally {
