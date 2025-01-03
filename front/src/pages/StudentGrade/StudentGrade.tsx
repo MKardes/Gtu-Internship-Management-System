@@ -5,6 +5,7 @@ import { Button, Modal, Table } from 'react-bootstrap';
 import './StudentGrade.css';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Option } from '../InternshipSearch/InternshipSearch';
 import { TbMailUp } from "react-icons/tb";
 
 enum InternshipStates {
@@ -23,11 +24,12 @@ const StudentGrade: React.FC = () => {
   const [internships, setInternships] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredGrade, setFilteredGrade] = useState<number | null>(null);
-  const [filteredSemester, setFilteredSemester] = useState<string | null>(null);
+  const [filteredSemester, setFilteredSemester] = useState<Option | null>(null);
   const [selectedInternship, setSelectedInternship] = useState<any | null>(null);
   const [isStatusChanged, setIsStatusChanged] = useState(false); // Durum değişikliğini kontrol et
   const [refetch, setRefetch] = useState<boolean>(false);
   const [activeStudentPage, setActiveStudentPage] = useState(1);
+  const [years, setYears] = useState<Option[]>();
   const [showMailModal, setShowMailModal] = useState(false);
   const [selectedInternshipForMail, setSelectedInternshipForMail] = useState<any | null>(null);
   const [emailSubject, setEmailSubject] = useState<string>('');
@@ -44,6 +46,28 @@ const StudentGrade: React.FC = () => {
         Authorization: `Bearer ${token}`,
     };
 };
+
+const getYears = async () => {
+  try {
+    const res = await axios.get(`/api/terms`, {
+      headers: getAuthHeader()
+    });
+    const termData = res.data
+                          .sort((a: any, b: any) => b.name.localeCompare(a.name))
+                          .map((e: any, index: number) => ({
+                              name: e.name,
+                              value: index + 1,
+                          }));
+
+    termData.unshift({
+      name: "Tümü",
+      value: 0,
+    })
+    setYears(termData);
+  } catch (e) {
+    console.error(e)
+  }
+}
 
 const filteredInternships = internships.filter(internship => {
   return (
@@ -68,7 +92,7 @@ const filteredInternships = internships.filter(internship => {
       // Construct query parameters
       const params = new URLSearchParams();
       if (filteredGrade !== null) params.append('grade', filteredGrade.toString());
-      if (filteredSemester !== null) params.append('semester', filteredSemester);
+      if (filteredSemester !== null && filteredSemester.name !== 'Tümü') params.append('semester', filteredSemester.name);
 
       const response = await axios.get(`/api/internships?${params.toString()}`, {
         headers: getAuthHeader(),
@@ -152,7 +176,7 @@ const filteredInternships = internships.filter(internship => {
   };
 
   useEffect(() => {
-
+    getYears();
   }, [])
 
   return (
@@ -167,7 +191,7 @@ const filteredInternships = internships.filter(internship => {
               Sınıf
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => setFilteredGrade(null)}>Hepsi</Dropdown.Item>
+              <Dropdown.Item onClick={() => setFilteredGrade(null)}>Tümü</Dropdown.Item>
               <Dropdown.Item onClick={() => setFilteredGrade(1)}>1. Sınıf</Dropdown.Item>
               <Dropdown.Item onClick={() => setFilteredGrade(2)}>2. Sınıf</Dropdown.Item>
               <Dropdown.Item onClick={() => setFilteredGrade(3)}>3. Sınıf</Dropdown.Item>
@@ -179,11 +203,14 @@ const filteredInternships = internships.filter(internship => {
             <Dropdown.Toggle variant="success" id="dropdown-semester" size="sm">
               Dönem
             </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => setFilteredSemester(null)}>Hepsi</Dropdown.Item>
-              <Dropdown.Item onClick={() => setFilteredSemester('winter')}>2023 Yaz</Dropdown.Item>
-              <Dropdown.Item onClick={() => setFilteredSemester('summer')}>2023 Kış</Dropdown.Item>
-            </Dropdown.Menu>
+            {(years && years.length > 0) ? (
+              <Dropdown.Menu>
+                {years.map( (e: any) => (
+                  <Dropdown.Item key={e.value} onClick={() => setFilteredSemester(e)}>{e.name}</Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            ): null
+            }
           </Dropdown>
         </div>
 

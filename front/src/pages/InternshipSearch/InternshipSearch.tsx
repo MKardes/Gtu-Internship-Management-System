@@ -7,7 +7,7 @@ import './InternshipSearch.css';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type Option = {
+export type Option = {
   value: number;
   name: string;
   id?: string;
