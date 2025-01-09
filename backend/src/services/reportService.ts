@@ -274,7 +274,7 @@ class reportService {
                                                 borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } },
                                             })
                                         ),
-                                        height: { value: 500, rule: HeightRule.EXACT } // Satır yüksekliğini burada ayarlıyoruz
+                                        height: { value: 700, rule: HeightRule.EXACT } // Satır yüksekliğini burada ayarlıyoruz
                                     }),
                                     ...rows.map((row) => new TableRow({
                                         children: row.map((text) =>
@@ -289,7 +289,7 @@ class reportService {
                                                 borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } },
                                             })
                                         ),
-                                        height: { value: 500, rule: HeightRule.EXACT } // Her bir satır için yüksekliği ayarlıyoruz
+                                        height: { value: 600, rule: HeightRule.EXACT } // Her bir satır için yüksekliği ayarlıyoruz
                                     })),
                                 ],
                             }),
