@@ -5,7 +5,7 @@ import termService from "./termService";
 import departmentAdminService from "./departmentAdminService";
 import { readdir, readFile, unlink } from "fs/promises";
 import { Writable } from "stream";
-import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, WidthType, HeadingLevel } from "docx";
+import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, WidthType, HeadingLevel, HeightRule } from "docx";
 import { writeFile } from "fs/promises";
 
 var officegen = require('officegen')
@@ -262,22 +262,38 @@ class reportService {
                                             "#", "Öğrenci No", "Adı Soyadı", "Staj Yeri", "Staj Başlangıç Tarihi", "Staj Bitiş Tarihi", "Staj Notu(S/U)"
                                         ].map((text) =>
                                             new TableCell({
-                                                children: [new Paragraph({ children: [new TextRun({ text, bold: true, font: "Times New Roman", size: 24 })] })],
+                                                children: [new Paragraph({ 
+                                                    children: [new TextRun({ 
+                                                        text, 
+                                                        bold: true, 
+                                                        font: "Times New Roman", 
+                                                        size: 24 
+                                                    })] 
+                                                })],
                                                 width: { size: 15, type: WidthType.PERCENTAGE },
                                                 borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } },
                                             })
                                         ),
+                                        height: { value: 500, rule: HeightRule.EXACT } // Satır yüksekliğini burada ayarlıyoruz
                                     }),
                                     ...rows.map((row) => new TableRow({
                                         children: row.map((text) =>
                                             new TableCell({
-                                                children: [new Paragraph({ children: [new TextRun({ text: text.toString(), font: "Times New Roman", size: 22 })] })],
+                                                children: [new Paragraph({ 
+                                                    children: [new TextRun({ 
+                                                        text: text.toString(), 
+                                                        font: "Times New Roman", 
+                                                        size: 22 
+                                                    })] 
+                                                })],
                                                 borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } },
                                             })
                                         ),
+                                        height: { value: 500, rule: HeightRule.EXACT } // Her bir satır için yüksekliği ayarlıyoruz
                                     })),
                                 ],
                             }),
+                            
                             new Paragraph({ // Boş satır
                                 text: "",
                             }),
@@ -375,7 +391,7 @@ class reportService {
             await writeFile(filePath, buffer);
 
             const headers = {
-                "Content-Disposition": `attachment; filename=${fileName}`,
+                "Content-Disposition": `attachment; filename=${encodeURIComponent(fileName)}`,
                 "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             };
 
