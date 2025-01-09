@@ -186,9 +186,9 @@ class reportService {
                                     bottom: 900,
                                     left: 720,
                                 },
-                                
+
                             },
-                            
+
                         },
                         children: [
                             new Paragraph({ // Boş satır
@@ -262,13 +262,13 @@ class reportService {
                                             "#", "Öğrenci No", "Adı Soyadı", "Staj Yeri", "Staj Başlangıç Tarihi", "Staj Bitiş Tarihi", "Staj Notu(S/U)"
                                         ].map((text) =>
                                             new TableCell({
-                                                children: [new Paragraph({ 
-                                                    children: [new TextRun({ 
-                                                        text, 
-                                                        bold: true, 
-                                                        font: "Times New Roman", 
-                                                        size: 24 
-                                                    })] 
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({
+                                                        text,
+                                                        bold: true,
+                                                        font: "Times New Roman",
+                                                        size: 24
+                                                    })]
                                                 })],
                                                 width: { size: 15, type: WidthType.PERCENTAGE },
                                                 borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } },
@@ -279,21 +279,29 @@ class reportService {
                                     ...rows.map((row) => new TableRow({
                                         children: row.map((text) =>
                                             new TableCell({
-                                                children: [new Paragraph({ 
-                                                    children: [new TextRun({ 
-                                                        text: text.toString(), 
-                                                        font: "Times New Roman", 
-                                                        size: 22 
-                                                    })] 
-                                                })],
+                                                children:
+                                                    [
+                                                        new Paragraph({
+                                                            children: [new TextRun({
+                                                                text: text.toString(),
+                                                                font: "Times New Roman",
+                                                                size: 22
+                                                            })]
+                                                        }),
+                                                        new Paragraph({ text: "" }),
+
+                                                    ],
                                                 borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } },
                                             })
                                         ),
-                                        height: { value: 600, rule: HeightRule.EXACT } // Her bir satır için yüksekliği ayarlıyoruz
+                                        height: {
+                                            rule: HeightRule.AUTO,
+                                            value: 0
+                                        } // Her bir satır için yüksekliği ayarlıyoruz
                                     })),
                                 ],
                             }),
-                            
+
                             new Paragraph({ // Boş satır
                                 text: "",
                             }),
@@ -320,21 +328,21 @@ class reportService {
                                 rows: [
                                     new TableRow({
                                         children: [
-                                            new TableCell({ 
-                                                children: [new Paragraph({ 
-                                                    children: [new TextRun({ text: reportData.comissionVise, font: "Times New Roman", size: 24 })] 
+                                            new TableCell({
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({ text: reportData.comissionVise, font: "Times New Roman", size: 24 })]
                                                 })],
                                                 borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } }
                                             }),
-                                            new TableCell({ 
-                                                children: [new Paragraph({ 
-                                                    children: [new TextRun({ text: reportData.comissionMember1, font: "Times New Roman", size: 24 })] 
+                                            new TableCell({
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({ text: reportData.comissionMember1, font: "Times New Roman", size: 24 })]
                                                 })],
                                                 borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } }
                                             }),
-                                            new TableCell({ 
-                                                children: [new Paragraph({ 
-                                                    children: [new TextRun({ text: reportData.comissionMember2, font: "Times New Roman", size: 24 })] 
+                                            new TableCell({
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({ text: reportData.comissionMember2, font: "Times New Roman", size: 24 })]
                                                 })],
                                                 borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } }
                                             }),
@@ -342,21 +350,21 @@ class reportService {
                                     }),
                                     new TableRow({
                                         children: [
-                                            new TableCell({ 
-                                                children: [new Paragraph({ 
-                                                    children: [new TextRun({ text: "Staj Komisyonu Başkanı", font: "Times New Roman", size: 24 })] 
+                                            new TableCell({
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({ text: "Staj Komisyonu Başkanı", font: "Times New Roman", size: 24 })]
                                                 })],
                                                 borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } }
                                             }),
-                                            new TableCell({ 
-                                                children: [new Paragraph({ 
-                                                    children: [new TextRun({ text: "Staj Komisyonu Üyesi", font: "Times New Roman", size: 24 })] 
+                                            new TableCell({
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({ text: "Staj Komisyonu Üyesi", font: "Times New Roman", size: 24 })]
                                                 })],
                                                 borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } }
                                             }),
-                                            new TableCell({ 
-                                                children: [new Paragraph({ 
-                                                    children: [new TextRun({ text: "Staj Komisyonu Üyesi", font: "Times New Roman", size: 24 })] 
+                                            new TableCell({
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({ text: "Staj Komisyonu Üyesi", font: "Times New Roman", size: 24 })]
                                                 })],
                                                 borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } }
                                             }),
@@ -374,12 +382,12 @@ class reportService {
                                 },  // Tablonun sınırlarını kaldırmak
                                 alignment: AlignmentType.CENTER,  // Tabloyu sayfa ortasına yerleştirmek
                             })
-                            
+
                         ],
                     },
                 ],
             });
-            
+
             const department = reportCreator.department.department_name.replace(" ", "-");
             const meetingdate = `${String(reportData.day).padStart(2, "0")}-${String(reportData.month).padStart(2, "0")}-${reportData.year}`;
             const academicYear = reportData.term;
