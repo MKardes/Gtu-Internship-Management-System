@@ -121,54 +121,14 @@ const DepartmentAdminPage: React.FC = () => {
                             message={error}
                         />}
             </Row>
-            <Row className='deparment-admin-container mb-4 justify-content-center'>
-                { /* Sol tarafta Kullanıcı bilgileri */ }
-                <Col md={4} className="admin-info elegant-card-wrapper">
-                    <Card className='mb-4 elegant-card shadow-sm rounded-lg border-primary profile-card'>
-                            <Card.Header 
-                                className="text-center text-white profile-header" 
-                                style={{ 
-                                        fontWeight: "bold",
-                                        fontSize: "18px",
-                                        backgroundColor: "#007bff",
-                                        borderBottom: "3px solid #0056b3",
-                                    }}>
-                                    Yönetici Bilgileri
-                            </Card.Header>
-                            <Card.Body className='profile-body'
-                                style={{
-                                    backgroundColor: "#f8f9fa",
-                                    padding: "20px",
-                                }}
-                            >
-                                <ListGroup variant="flush">
-                                    {adminInfo ? (
-                                        <>
-                                            <ListGroup.Item className="profile-info">
-                                                <Form.Group className="info-group mb-3">
-                                                <Form.Label className="form-label font-weight-bold">İsim Soyisim:</Form.Label>
-                                                <span className="d-block">{adminInfo.full_name}</span>
-                                                </Form.Group>
-
-                                                <Form.Group className="info-group mb-3">
-                                                <Form.Label className="form-label font-weight-bold">Email:</Form.Label>
-                                                <span className="d-block">{adminInfo.mail}</span>
-                                                </Form.Group>
-
-                                                <Form.Group className="info-group">
-                                                <Form.Label className="form-label font-weight-bold">Departman:</Form.Label>
-                                                <span className="d-block">{adminInfo.department.department_name}</span>
-                                                </Form.Group>
-                                            </ListGroup.Item>
-                                        </>
-                                    ) : (
-                                        <ListGroup.Item>Yönetici bilgileri yükleniyor...</ListGroup.Item>
-                                    )}
-                                </ListGroup>
-                            </Card.Body>
-                    </Card>
-                </Col>
-                <Col md={4} className="add-user elegant-card-wrapper">
+            {/* Süper Admin Yönetici paneli yazısı */}
+            <Row className="justify-content-start mb-3">
+                <h3 className="font-weight-bold text-primary fs-3 text-center">
+                    {adminInfo && adminInfo.department.department_name}
+                </h3>
+            </Row>
+            <Row className='deparment-admin-container mb-4 justify-content-center'>            
+                <Col md={8} className="add-user">
                     <Card>
                         <Card.Header 
                             className="text-center text-white profile-header" 

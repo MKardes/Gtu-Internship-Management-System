@@ -49,12 +49,19 @@ export class resetPasswordService {
           }
         catch (error) {
             console.error(error);
-            return { status: 500, data: { message: 'An error occurred while sending the verification code', error: error } };
+            return { status: 500, data: { message: 'Kod gönderilirken bir hata oluştu', error: error } };
         }
     };
 
     async verifyCode(code: string, email: string) {
         try {
+            if (!code){
+                return { status: 400, data: { message: 'Boş kod yollanamaz' } };
+            }
+            if (!email){
+                return { status: 400, data: { message: 'Mailsiz kod yollanamaz!' } };
+            }
+
             const queryBuilder = AppDataSource.getRepository(VerifCode).createQueryBuilder("verifcode");
             const verificationCode: VerifCode = await queryBuilder
             .where("verifcode.mail = :body_mail", { body_mail: email })
@@ -76,7 +83,7 @@ export class resetPasswordService {
         }
         catch (error) {
             console.error(error);
-            return { status: 500, data: { message: 'An error occurred while verifying the code', error: error } };
+            return { status: 500, data: { message: 'Kod doğrulanırken bir hata oluştu', error: error } };
         }
     };
 
@@ -87,6 +94,10 @@ export class resetPasswordService {
         
             if (!user) {
                 return { status: 404, data: { message: 'Geçersiz mail' } };
+            }
+
+            if (password === null){
+                return { status: 400, data: { message: 'Şifre boş olamaz' } };
             }
         
             if (!utilService.isValidPassword(password)) {
@@ -100,7 +111,7 @@ export class resetPasswordService {
         }
         catch (error) {
             console.error(error);
-            return { status: 500, data: { message: 'An error occurred while changing the password', error: error } };
+            return { status: 500, data: { message: 'Şifre değiştirilirken bir hata oluştu', error: error } };
         }
     }
 }
