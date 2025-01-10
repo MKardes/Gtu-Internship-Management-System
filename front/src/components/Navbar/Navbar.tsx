@@ -217,16 +217,10 @@ const Navigation: React.FC = () => {
             <div className="overlay" onClick={toggleOverlay}>
                <div className="overlay-content" onClick={e => e.stopPropagation()}>
                     {user.role == 'SuperAdmin' &&
-                      <Button variant="outline-light" className="d-flex align-items-center justify-content-center gap-2 me-3" onClick={handleShowTermModal}>
-                        <BsFillCalendar2DateFill fontSize={20} />
-                        <span>Dönem Tarihleri</span>
-                      </Button>
+                      <Button variant="outline-light" className="overlay-button" onClick={handleShowTermModal}>Dönem Tarihleri</Button>
                     }
                     {user.role == 'SuperAdmin' &&
-                      <Button variant="outline-light" className='d-flex align-items-center justify-content-center gap-2 me-3' onClick={handleShowModal}>
-                        <IoMdAddCircleOutline fontSize={20} />
-                        <span>Dönem Oluştur</span>
-                      </Button>
+                      <Button variant="outline-light" className="overlay-button" onClick={handleShowModal}>Dönem Oluştur</Button>
                     }
                     {user.role !== 'SuperAdmin' &&
                       <LinkContainer to="/internship-search">
@@ -289,16 +283,14 @@ const Navigation: React.FC = () => {
                     <>
                       {/* Buttons and Links */}
                       {user.role == 'SuperAdmin' &&
-                          <Button variant="outline-light" className="d-flex align-items-center gap-2 me-3" onClick={handleShowTermModal}>
-                            <BsFillCalendar2DateFill fontSize={20} />
-                            <span>Dönem Tarihleri</span>
-                          </Button>
+                        <div className='w-300px me-3'>
+                          <Button variant="outline-light" onClick={handleShowTermModal}>Dönem Tarihleri</Button>
+                        </div>
                       }
                       {user.role == 'SuperAdmin' &&
-                          <Button variant="outline-light" className='d-flex align-items-center gap-2 me-3' onClick={handleShowModal}>
-                            <IoMdAddCircleOutline fontSize={20} />
-                            <span>Dönem Oluştur</span>
-                          </Button>
+                        <div className='w-300px me-3'>
+                          <Button variant="outline-light" onClick={handleShowModal}>Dönem Oluştur</Button>
+                        </div>
                       }
                       {user.role !== 'SuperAdmin' &&
                         <LinkContainer to="/internship-search">
