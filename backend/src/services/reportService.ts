@@ -3,8 +3,10 @@ import { Internship } from "../entities/internship.entitiy";
 import utilService from "./utilService";
 import termService from "./termService";
 import departmentAdminService from "./departmentAdminService";
-import { readdir, readFile, unlink, writeFile } from "fs/promises";
+import { readdir, readFile, unlink } from "fs/promises";
 import { Writable } from "stream";
+import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, AlignmentType, WidthType, HeadingLevel, HeightRule } from "docx";
+import { writeFile } from "fs/promises";
 
 var officegen = require('officegen')
 enum months {
@@ -27,7 +29,7 @@ class reportService {
     private reportDirectory = "./reports";
     private _departmentAdminService = new departmentAdminService()
 
-        // get api/reports/ ->
+    // get api/reports/ ->
     //    - req.user(myRequest) -> user_id
     //    - user_id -> user_department 
     //            - (const user = await getDepartmentAdmin(user_id)) 
@@ -36,7 +38,7 @@ class reportService {
     //            - file: "./reports/*"" bütün dosyaların isimlerini çek bir arraye yaz;
     //    
     //    - filter reports by reports.department_name ===user.depratment.department_name
-    
+
     async getReports(user: any): Promise<{ status: number; data: any }> {
 
         try {
@@ -50,27 +52,27 @@ class reportService {
                 const files = await readdir(this.reportDirectory);
 
                 const filteredReports = files
-                                            .map((file: any) => {
-                                                const parts = file.split("_");
-                                                const department = parts[0].replace("-", " ");
-                                                const academicYear = parts[1];
-                                                const term = parts[2].replace("-", "_");
-                                                const date = parts[3].replace(".docx", "");
-                                                return { file, department, academicYear, term, date };
-                                            })
-                                            .filter((e: any) => e.department.toLowerCase() === userDepartmentName.toLowerCase())
-                                            .map((e) => ({
-                                                file: e.file,
-                                                academicYear: e.academicYear,
-                                                term: e.term,
-                                                date: e.date,
-                                            }))
-                                            .sort((a: any, b: any) => {
-                                                const dateA = new Date(a.date.split('-').reverse().join('-'));
-                                                const dateB = new Date(b.date.split('-').reverse().join('-'));
-                                                return dateB.getTime() - dateA.getTime();
-                                            });
-                
+                    .map((file: any) => {
+                        const parts = file.split("_");
+                        const department = parts[0].replace("-", " ");
+                        const academicYear = parts[1];
+                        const term = parts[2].replace("-", "_");
+                        const date = parts[3].replace(".docx", "");
+                        return { file, department, academicYear, term, date };
+                    })
+                    .filter((e: any) => e.department.toLowerCase() === userDepartmentName.toLowerCase())
+                    .map((e) => ({
+                        file: e.file,
+                        academicYear: e.academicYear,
+                        term: e.term,
+                        date: e.date,
+                    }))
+                    .sort((a: any, b: any) => {
+                        const dateA = new Date(a.date.split('-').reverse().join('-'));
+                        const dateB = new Date(b.date.split('-').reverse().join('-'));
+                        return dateB.getTime() - dateA.getTime();
+                    });
+
                 return { status: 200, data: filteredReports };
             } else {
                 throw new Error('Kullanıcı alınamadı')
@@ -79,8 +81,8 @@ class reportService {
         } catch (error) {
             return {
                 status: 500,
-                data: { 
-                    message: `An error occurred while fetching reports: ${error}` 
+                data: {
+                    message: `An error occurred while fetching reports: ${error}`
                 }
             };
         }
@@ -92,15 +94,15 @@ class reportService {
                 throw new Error("File query param is required!");
             }
 
-            try{
+            try {
                 await unlink(this.reportDirectory + "/" + filePath);
-            } catch (e){
+            } catch (e) {
                 throw new Error('Error deleting file:' + e);
             }
 
             return { status: 200, data: { message: 'Report deleted successfully ' + filePath } };
         } catch (error) {
-            
+
             return { status: 404, data: { message: 'A error occured during report deletion: ' + error } };
         }
     }
@@ -110,12 +112,12 @@ class reportService {
             const termserv = new termService();
             const response = (await termserv.getTermInternships(user.id, year, ""));
             if (response.status != 200)
-                return { status: response.status, data: {message: response.data.message} };
+                return { status: response.status, data: { message: response.data.message } };
             const internships = response.data;
             const filteredInternships = internships.filter((internship: any) => internship.period_name == term);
-            return {status: 200, data: filteredInternships};
+            return { status: 200, data: filteredInternships };
         } catch (error) {
-            return {status: 500, data: {message: 'An error occured while fetching internships: ' + error}};
+            return { status: 500, data: { message: 'An error occured while fetching internships: ' + error } };
         }
     }
 
@@ -144,172 +146,285 @@ class reportService {
         }
         return rows;
     }
-    
+
 
     async createReport(reportData: any, user: any) {
-        //create term variable
         let semester = "";
         switch (reportData.semester) {
             case "Dönem içi 'Bahar'":
-            semester = "midterm_spring";
-            break;
+                semester = "midterm_spring";
+                break;
             case "Dönem içi 'Güz'":
-            semester = "midterm_fall";
-            break;
+                semester = "midterm_fall";
+                break;
             case "Ara Dönem":
-            semester = "midterm_break";
-            break;
+                semester = "midterm_break";
+                break;
             case "Yaz Dönemi":
-            semester = "summer";
-            break;
+                semester = "summer";
+                break;
         }
+
         try {
-            // Control datas for being null 
             if (!reportData.day || !reportData.month || !reportData.year || !reportData.term || !reportData.comissionVise || !reportData.comissionMember1 || !reportData.comissionMember2)
                 return { status: 400, data: { message: 'Tüm alanlar doldurulmalıdır.' } };
             // All commionMembers must be different
             if (reportData.comissionVise === reportData.comissionMember1 || reportData.comissionVise === reportData.comissionMember2 || reportData.comissionMember1 === reportData.comissionMember2)
                 return { status: 400, data: { message: 'Komisyon üyeleri birbirinden farklı olmalıdır.' } };
-            
             const reportCreator = await utilService.fetchUserById(user.id);
-            const reportCreationDateForReport = reportData.day + " " + months[reportData.month] + " " + reportData.year;
+            const reportCreationDateForReport = `${reportData.day} ${months[reportData.month]} ${reportData.year}`;
             const internshipsResponse = await this.getInternships(reportCreator, semester, reportData.term);
-            if (internshipsResponse.status !== 200)
+            if (internshipsResponse.status !== 200) {
                 return { status: internshipsResponse.status, data: { message: internshipsResponse.data.message } };
-            
+            }
+
             const rows = this.createRows(internshipsResponse.data);
-            const comissionVise = reportData.comissionVise;
-            const comissionMember1 = reportData.comissionMember1;
-            const comissionMember2 = reportData.comissionMember2;
 
-            //Create a new Word document
-            const docx = officegen(
-            {
-                type: 'docx',
-                pageMargins: { top: 680, right: 680, bottom: 680, left: 680 },
-            }
-            );
+            const doc = new Document({
+                sections: [
+                    {
+                        properties: {
+                            page: {
+                                margin: {
+                                    top: 900,  // 2.54 cm in Twips (1/20 of a point)
+                                    right: 720,
+                                    bottom: 900,
+                                    left: 720,
+                                },
 
-            // Set the title of the document
-            docx.setDocTitle('Internship Report1');
+                            },
 
-            // Create paragraph
-            var pObj = docx.createP({ align: 'center' });
-            pObj.addText('\n\nGEBZE TEKNİK ÜNİVERSİTESİ MÜHENDİSLİK FAKÜLTESİ\n\nBİLGİSAYAR MÜHENDİSLİĞİ BÖLÜMÜ STAJ KOMİSYONU DEĞERLENDİRME TUTANAĞI\n\n', { bold: false, font_face: 'Times New Roman', font_size: 12, });
-            pObj = docx.createP({ align: 'left' });
-            pObj.addText('Bölümümüz Staj Komisyonu, ', { bold: false, font_face: 'Times New Roman', font_size: 12 });
-            pObj.addText(reportCreationDateForReport, { bold: false, font_face: 'Times New Roman', font_size: 12});
-            pObj.addText(' tarihinde toplanmış ve aşağıda öğrenci numarası adı, soyadı belirtilen öğrenci/öğrencilerin zorunlu stajlarının aşağıdaki şekilde değerlendirilmesine karar verilmiştir.\n', { bold: false, font_face: 'Times New Roman', font_size: 12 });
-            pObj = docx.createP({ align: 'center', bold: true });
-            pObj.addText('ZORUNLU STAJLAR', { bold: true, font_face: 'Times New Roman', font_size: 12, });
+                        },
+                        children: [
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Paragraph({
+                                children: [
+                                    new TextRun({
+                                        text: "GEBZE TEKNİK ÜNİVERSİTESİ MÜHENDİSLİK FAKÜLTESİ",
+                                        size: 24, // 12pt
+                                        font: "Times New Roman",
+                                    }),
+                                ],
+                                alignment: AlignmentType.CENTER,
+                            }),
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Paragraph({
+                                children: [
+                                    new TextRun({
+                                        text: "BİLGİSAYAR MÜHENDİSLİĞİ BÖLÜMÜ STAJ KOMİSYONU DEĞERLENDİRME TUTANAĞI",
+                                        size: 24, // 12pt
+                                        font: "Times New Roman",
+                                    }),
+                                ],
+                                alignment: AlignmentType.CENTER,
+                            }),
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Paragraph({
+                                children: [
+                                    new TextRun({
+                                        text: `Bölümümüz Staj Komisyonu, ${reportCreationDateForReport} tarihinde toplanmış ve aşağıda öğrenci numarası, adı, soyadı belirtilen öğrenci/öğrencilerin zorunlu stajlarının aşağıdaki şekilde değerlendirilmesine karar verilmiştir.`,
+                                        size: 24, // 10pt
+                                        font: "Times New Roman",
+                                    }),
+                                ],
+                            }),
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Paragraph({
+                                children: [
+                                    new TextRun({
+                                        text: "ZORUNLU STAJLAR",
+                                        size: 24, // 12pt
+                                        font: "Times New Roman",
+                                        bold: true,
+                                    }),
+                                ],
+                                alignment: AlignmentType.CENTER,
+                            }),
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Table({
+                                rows: [
+                                    new TableRow({
+                                        children: [
+                                            "#", "Öğrenci No", "Adı Soyadı", "Staj Yeri", "Staj Başlangıç Tarihi", "Staj Bitiş Tarihi", "Staj Notu(S/U)"
+                                        ].map((text) =>
+                                            new TableCell({
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({
+                                                        text,
+                                                        bold: true,
+                                                        font: "Times New Roman",
+                                                        size: 24
+                                                    })]
+                                                })],
+                                                width: { size: 15, type: WidthType.PERCENTAGE },
+                                                borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } },
+                                            })
+                                        ),
+                                        height: { value: 700, rule: HeightRule.EXACT } // Satır yüksekliğini burada ayarlıyoruz
+                                    }),
+                                    ...rows.map((row) => new TableRow({
+                                        children: row.map((text) =>
+                                            new TableCell({
+                                                children:
+                                                    [
+                                                        new Paragraph({
+                                                            children: [new TextRun({
+                                                                text: text.toString(),
+                                                                font: "Times New Roman",
+                                                                size: 22
+                                                            })]
+                                                        }),
+                                                        new Paragraph({ text: "" }),
 
-            // Create table
-            const table = [
-            [
-                { val: '#', opts: { b: true, cellColWidth: 650 } },
-                { val: 'Öğrenci No', opts: { b: true, cellColWidth: 1800 } },
-                { val: 'Adı Soyadı', opts: { b: true, cellColWidth: 2500 } },
-                { val: 'Staj Yeri', opts: { b: true, cellColWidth: 2750 } },
-                { val: 'Staj Başlangıç Tarihi', opts: { b: true, cellColWidth: 1300 } },
-                { val: 'Staj Bitiş Tarihi', opts: { b: true, cellColWidth: 1300 } },
-                { val: 'Staj Notu(S/U)', opts: { b: true, cellColWidth: 800 } }
-            ],
-            ...rows
-            ];
+                                                    ],
+                                                borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } },
+                                            })
+                                        ),
+                                        height: {
+                                            rule: HeightRule.AUTO,
+                                            value: 0
+                                        } // Her bir satır için yüksekliği ayarlıyoruz
+                                    })),
+                                ],
+                            }),
 
-            var tableStyle = {
-            tableSize: 24,
-            tableColor: "ada",
-            tableAlign: "left",
-            tableFontFamily: "Times New Roman",
-            spacingBefor: 120, // default is 100
-            spacingAfter: 120, // default is 100
-            spacingLine: 240, // default is 240
-            spacingLineRule: 'atLeast', // default is atLeast
-            indent: 100, // table indent, default is 0
-            fixedLayout: true, // default is false
-            borders: true, // default is false. if true, default border size is 4
-            borderSize: 2, // To use this option, the 'borders' must set as true, default is 4
-            }
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Paragraph({ // Boş satır
+                                text: "",
+                            }),
+                            new Table({
+                                width: { size: 100, type: WidthType.PERCENTAGE },  // Tabloyu sayfa genişliğine orantılı hale getirmek
+                                rows: [
+                                    new TableRow({
+                                        children: [
+                                            new TableCell({
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({ text: reportData.comissionVise, font: "Times New Roman", size: 24 })]
+                                                })],
+                                                borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } }
+                                            }),
+                                            new TableCell({
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({ text: reportData.comissionMember1, font: "Times New Roman", size: 24 })]
+                                                })],
+                                                borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } }
+                                            }),
+                                            new TableCell({
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({ text: reportData.comissionMember2, font: "Times New Roman", size: 24 })]
+                                                })],
+                                                borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } }
+                                            }),
+                                        ],
+                                    }),
+                                    new TableRow({
+                                        children: [
+                                            new TableCell({
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({ text: "Staj Komisyonu Başkanı", font: "Times New Roman", size: 24 })]
+                                                })],
+                                                borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } }
+                                            }),
+                                            new TableCell({
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({ text: "Staj Komisyonu Üyesi", font: "Times New Roman", size: 24 })]
+                                                })],
+                                                borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } }
+                                            }),
+                                            new TableCell({
+                                                children: [new Paragraph({
+                                                    children: [new TextRun({ text: "Staj Komisyonu Üyesi", font: "Times New Roman", size: 24 })]
+                                                })],
+                                                borders: { top: { style: "none" }, bottom: { style: "none" }, left: { style: "none" }, right: { style: "none" } }
+                                            }),
+                                        ],
+                                    }),
+                                ],
+                                columnWidths: [25, 35, 40],  // Her hücrenin genişliğini orantılı şekilde ayarlamak
+                                borders: {
+                                    top: { style: "none" },
+                                    bottom: { style: "none" },
+                                    left: { style: "none" },
+                                    right: { style: "none" },
+                                    insideHorizontal: { style: "none" },
+                                    insideVertical: { style: "none" },
+                                },  // Tablonun sınırlarını kaldırmak
+                                alignment: AlignmentType.CENTER,  // Tabloyu sayfa ortasına yerleştirmek
+                            })
 
-            docx.createTable(table, tableStyle);
+                        ],
+                    },
+                ],
+            });
 
-            docx.createP().addLineBreak();
-            docx.createP().addLineBreak();
-            docx.createP().addLineBreak();
-
-            // Add committee members horizontally
-            const committeeTable = [
-            [
-                { val: comissionVise, opts: { b: false, cellColWidth: 3450, align: 'left'} },
-                { val: comissionMember1, opts: { b: false, cellColWidth: 3450, align: 'left'} },
-                { val: comissionMember2, opts: { b: false, cellColWidth: 3450, align: 'left'} }
-            ],
-            [
-                { val: 'Staj Komisyonu Başkanı', opts: { b: false, cellColWidth: 3450, align: 'left' } },
-                { val: 'Staj Komisyonu Üyesi', opts: { b: false, cellColWidth: 3450, align: 'left' } },
-                { val: 'Staj Komisyonu Üyesi', opts: { b: false, cellColWidth: 3450, align: 'left' } }
-            ]
-            ];
-
-            const committeeTableStyle = {
-            tableSize: 5,
-            tableAlign: "center", // Center align the table
-            tableFontFamily: "Times New Roman",
-            spacingBefor: 50, // default is 100
-            spacingAfter: 50, // default is 100
-            spacingLine: 50, // default is 240
-            };
-
-            // Add the table to the document
-            docx.createTable(committeeTable, committeeTableStyle);
-
-
-            // Save the docx file
             const department = reportCreator.department.department_name.replace(" ", "-");
-            const meetingdate = `${String(reportData.day).padStart(2, '0')}-${String(reportData.month).padStart(2, '0')}-${reportData.year}`;
+            const meetingdate = `${String(reportData.day).padStart(2, "0")}-${String(reportData.month).padStart(2, "0")}-${reportData.year}`;
             const academicYear = reportData.term;
-            const sem = semester.replace("_", "-"); 
+            const sem = semester.replace("_", "-");
             const fileName = `${department}_${academicYear}_${sem}_${meetingdate}.docx`;
             const filePath = this.reportDirectory + "/" + fileName;
 
-            const buffer = await new Promise<Buffer>((resolve, reject) => {
-                const buffers: Buffer[] = [];
-                const stream = new Writable({
-                    write (chunk, encoding, callback) {
-                    buffers.push(chunk);
-                    callback();
-                    }    
-                });
-                stream.on('finish', () => resolve(Buffer.concat(buffers)));
-                stream.on('error', reject);
-                docx.generate(stream);
-            });
-
+            const buffer = await Packer.toBuffer(doc);
             await writeFile(filePath, buffer);
 
             const headers = {
-            'Content-Disposition': `attachment; filename=${fileName}`,
-            'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            }
+                "Content-Disposition": `attachment; filename=${encodeURIComponent(fileName)}`,
+                "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            };
 
-            return { status: 200, data: buffer, headers: headers};
+            return { status: 200, data: buffer, headers };
         } catch (error) {
-            return { status: 500, data: { message: 'A error occured during report creation: ' + error } };
+            return { status: 500, data: { message: "An error occurred during report creation: " + error } };
         }
     }
-    
+
     async getReport(fileName: string) {
         try {
             const filePath = this.reportDirectory + "/" + fileName;
-            const buffer =  await readFile(filePath);
+            const buffer = await readFile(filePath);
 
             const headers = {
                 'Content-Disposition': `attachment; filename=${fileName}`,
                 'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
             }
 
-            return { status: 200, data: buffer, headers: headers};
+            return { status: 200, data: buffer, headers: headers };
         } catch (error) {
             return { status: 500, data: { message: 'A error occured during report creation: ' + error } };
         }
