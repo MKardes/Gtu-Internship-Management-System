@@ -203,8 +203,10 @@ const Navigation: React.FC = () => {
     }, []);
 
     useEffect(() => {
+      if (user){
         getYears();
-      }, [fetchYear]);
+      }
+      }, [fetchYear, user]);
 
     if (loading) {
         return <Navbar bg="dark" variant="dark" expand="lg"><Container>Loading...</Container></Navbar>;
