@@ -41,7 +41,7 @@ const Home: React.FC = () => {
     }
   };
   checkToken();
-}, [navigate]);
+}, [navigate, user]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
