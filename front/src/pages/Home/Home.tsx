@@ -13,7 +13,7 @@ const Home: React.FC = () => {
   const [inputPassword, setInputPassword] = useState("");
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { fetchUserData } = useNavbar();
+  const { fetchUserData, user } = useNavbar();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,7 +27,10 @@ const Home: React.FC = () => {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         
-        if (response.status === 200) {
+        console.log(user.token);
+        if (user.role === "SuperAdmin") {
+          navigate("/super-admin");
+        } else {
           navigate("/dashboard");
         }
 
@@ -54,7 +57,12 @@ const Home: React.FC = () => {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
       fetchUserData();
-      navigate("/dashboard");
+      console.log(user.token);
+        if (user.role === "SuperAdmin") {
+          navigate("/super-admin");
+        } else {
+          navigate("/dashboard");
+        }
     } catch (error) {
       console.error("Hata:", error);
       setShow(true);
