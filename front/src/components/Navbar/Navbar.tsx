@@ -70,12 +70,12 @@ const Navigation: React.FC = () => {
                <div className="overlay-content" onClick={e => e.stopPropagation()}>
                     {user.role !== 'SuperAdmin' &&
                       <LinkContainer to="/internship-search">
-                        <Button variant="outline-light" className="me-3" onClick={handleInternshipSearch}>Öğrenci Ara</Button>
+                        <Button variant="outline-light" className="overlay-button" onClick={handleInternshipSearch}>Öğrenci Ara</Button>
                       </LinkContainer>
                     }
                     {user.role !== 'SuperAdmin' &&
                       <LinkContainer to="/student-grade">
-                        <Button variant="outline-light" className="me-3" onClick={handleStudentEvoluation}>Öğrenci Notlandır</Button>
+                        <Button variant="outline-light" className="overlay-button" onClick={handleStudentEvoluation}>Öğrenci Notlandır</Button>
                       </LinkContainer>
                     }
                     {(user.role !== "SuperAdmin") && (
@@ -152,7 +152,7 @@ const Navigation: React.FC = () => {
 
                   {/* User Dropdown */}
                   {user && (
-                    <Dropdown align="end" show={showMenu} onToggle={() => setShowMenu(!showMenu)} drop="down">
+                    <Dropdown align="end" show={showMenu} onToggle={() => setShowMenu(!showMenu)} drop="down" className='dropdown-class'>
                       <Dropdown.Toggle variant="outline-light">{user.username}</Dropdown.Toggle>
                       <Dropdown.Menu>
                         {(user.role === "SuperAdmin" || user.role === "DepartmentAdmin") && (
