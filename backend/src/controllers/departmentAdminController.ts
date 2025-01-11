@@ -9,6 +9,11 @@ const getAllUsers = async (req: any, res: Response) => {
     logRequest(res, result, 'GET /department-admin/users', req);
 }
 
+const getAllUsersIncludingAdmins = async (req: any, res: Response) => {
+    const result = await service.getAllUsersIncludingAdmins(req.user);
+    logRequest(res, result, 'GET /department-admin/all-users', req);
+}
+
 const getDepartmentAdmin = async (req: any, res: Response) => {
     const result = await service.getDepartmentAdmin(req.user.id);
     logRequest(res, result, 'GET /department-admin/admin', req);
@@ -24,4 +29,4 @@ const deleteUser = async (req: Request, res: Response) => {
     logRequest(res, result, 'DELETE /department-admin/user/:id', req);
 }
 
-export default { getAllUsers, getDepartmentAdmin, createUser, deleteUser};
+export default { getAllUsers, getDepartmentAdmin, createUser, deleteUser, getAllUsersIncludingAdmins };
