@@ -1,6 +1,10 @@
+import { format } from "path";
 import { AppDataSource } from "../../ormconfig";
 import { Internship } from "../entities/internship.entitiy";
+import { Term } from "../entities/term.entity";
 import nodemailer from "nodemailer";
+import { formatDate } from "date-fns";
+import { debug } from "console";
 
 class DashboardService {
 
@@ -12,25 +16,30 @@ class DashboardService {
         .leftJoinAndSelect('internship.mentor', 'mentor', 'mentor.id = internship.mentor_id')
         .leftJoinAndSelect('internship.company', 'company', 'company.id = internship.company_id');
 
-      if (grade) { // TODO: Will be fixed
-        queryBuilder.andWhere('student.grade = :grade', { grade: parseInt(grade, 10) });
+
+      if (grade) {
+        queryBuilder.andWhere('internship.grade = :grade', { grade: parseInt(grade, 10) });
       }
+
+      const termBuilder = AppDataSource.getRepository(Term);
+      const result = await termBuilder.find();
+      
 
       if (semester) {
-        if (semester === 'winter') {
-          // September to May is considered winter
-          queryBuilder.andWhere(
-            `EXTRACT(MONTH FROM internship.begin_date) BETWEEN 9 AND 5`
-          );
-        } else if (semester === 'summer') {
-          // June to August is considered summer
-          queryBuilder.andWhere(
-            `EXTRACT(MONTH FROM internship.begin_date) NOT BETWEEN 9 AND 5`
-          );
-        }
+        const selectedYearTerms = result.find((e: Term) => e.name === semester)
+        const termDates = Object.entries(selectedYearTerms).map(e => {
+            if (e[0] !== "id" &&  e[0] !== "name"){
+                return formatDate(e[1], 'yyyy-MM-dd');
+            }
+        }).filter(e => e);
+
+        debug(termDates)
+
+        queryBuilder.andWhere('internship.begin_date >= :beginDate', { beginDate: termDates[0] });
+        queryBuilder.andWhere('internship.end_date <= :endDate', { endDate: termDates[7] });
       }
 
-      queryBuilder.orderBy('internship.id', 'DESC')
+      queryBuilder.orderBy('student.name', 'ASC');
 
       // Fetch both student and internship columns
       const students = await queryBuilder.select([
