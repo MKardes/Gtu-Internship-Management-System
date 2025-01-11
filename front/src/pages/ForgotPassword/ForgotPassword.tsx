@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import './ForgotPassword.css';
-import Input from '../../components/Input/Input';
-import ErrorAlert from '../../components/ErrorAlert/ErrorAlert';
+import { Button, Card, Form, Alert, Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import ErrorAlert from '../../components/ErrorAlert/ErrorAlert';
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -11,21 +10,30 @@ const ForgotPassword: React.FC = () => {
   const [showError, setShowError] = useState(false);
   const navigate = useNavigate();
 
+  
+  const handleError = (error: any) => {
+    if (axios.isAxiosError(error) && error.response) {
+        setError(error.response.data.message);
+    } else {
+        setError('Bilinmeyen bir hata oluştu');
+    }
+  };
+
   const handleSendCode = async () => {
     try {
-      // Call the API to send the verification code to the email
+      // API'yi çağırıp e-posta adresine kod göndermek
       const response = await axios.post('/api/auth/send-code', { email });
       localStorage.setItem('mail', email);
-      // If successful, navigate to the code confirmation page
+      // Başarılı olursa kod doğrulama sayfasına yönlendirme
       if (response.status === 200) {
         navigate('/confirm-code');
       }
     } catch (err) {
-      // Handle error, show error message to user
-      setError('Kod gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
+      // Hata durumunu işleme
+      handleError(err);
       setShowError(true);
     }
-  };
+  }; 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,24 +46,38 @@ const ForgotPassword: React.FC = () => {
   };
 
   return (
-    <div className="forgot-password-container">
-      <div className="forgot-password-card">
-        <div className="h4 mb-2 text-center">Şifremi Unuttum</div>
-        {showError && (
-          <ErrorAlert show={showError} onClose={handleCloseError} message={error} />
-        )}
-        <p>Lütfen kayıtlı e-posta adresinizi girin. Size şifre sıfırlama kodu göndereceğiz.</p>
-        <form onSubmit={handleSubmit}>
-          <Input
-            type="email"
-            placeholder="E-posta Adresiniz"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <button type="submit" className="send-code-button">Kodu Gönder</button>
-        </form>
-      </div>
-    </div>
+    <Container className="d-flex justify-content-center align-items-center">
+      <Row className="w-100 justify-content-center">
+        <Col xs={12} md={8} lg={6}>
+          <Card className="p-4">
+            <Card.Body>
+              <h4 className="text-center">Şifremi Unuttum</h4>
+              <Row className='mb-4'>
+                {showError && (
+                  <ErrorAlert show={showError} onClose={handleCloseError} message={error} />
+                )}
+              </Row>
+              <p className="text-center mb-4">
+                Lütfen kayıtlı e-posta adresinizi girin. Size şifre sıfırlama kodu göndereceğiz.
+              </p>
+              <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3">
+                  <Form.Control
+                    type="email"
+                    placeholder="E-posta Adresiniz"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </Form.Group>
+                <Button type="submit" variant="primary" className="w-100">
+                  Kodu Gönder
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

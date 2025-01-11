@@ -9,7 +9,6 @@ import './SuperAdmin.css';
 
 const SuperAdminPage: React.FC = () => {
 
-    const [adminInfo, setAdminInfo] = useState<any>(null);
     const [inputUsername, setInputUsername] = useState("");
     const [inputPassword, setInputPassword] = useState("");
     const [inputEmail, setInputEmail] = useState("");
@@ -22,19 +21,8 @@ const SuperAdminPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [activeDepartmentPage, setActiveDepartmentPage] = useState(1);
     const departmentsPerPage = 3;
-    const navigate = useNavigate();
 
     // Fetch Super Admin Info
-    const fetchSuperAdmin = async () => {
-        try {
-            const response = await axios.get("/api/super-admin/super-admin", {
-                headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
-            });
-            setAdminInfo(response.data);
-        } catch (error) {
-            handleError(error);
-        }
-    };
 
     // Fetch Admins
     const fetchAdmins = async () => {
@@ -157,7 +145,6 @@ const SuperAdminPage: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchSuperAdmin();
         fetchAdmins();
         fetchDepartments();
     }, []);
@@ -172,58 +159,24 @@ const SuperAdminPage: React.FC = () => {
                             message={error}
                         />}
             </Row>
-            <Row className='super-admin-container mb-4'>
+            {/* Süper Admin Yönetici paneli yazısı */}
+            <Row className="justify-content-start mb-4">
+                <h3 className="font-weight-bold text-primary fs-3">
+                    Departman Yönetim Paneli
+                </h3>
+            </Row>
 
-                { /* Sol tarafta Kullanıcı bilgileri */ }
+            <Row className='super-admin-container mb-4 justify-content-center'>
                 <Col md={4} className='admin-info'>
-                    <Card className='mb-4 elegant-card shadow-sm rounded-lg border-primary profile-card'>
-                        <Card.Header 
-                            className="text-center text-white profile-header" 
-                            style={{ 
-                                    fontWeight: "bold",
-                                    fontSize: "18px",
-                                    backgroundColor: "#007bff",
-                                    borderBottom: "3px solid #0056b3",
-                                }}>
-                                Yönetici Bilgileri
-                        </Card.Header>
-                        <Card.Body className='profile-body'
-                            style={{
-                                backgroundColor: "#f8f9fa",
-                                padding: "20px",
-                              }}
-                        >
-                            <ListGroup variant="flush">
-                                {adminInfo ? (
-                                    <>
-                                        <ListGroup.Item className="profile-info">
-                                            <Form.Group className="info-group mb-3">
-                                            <Form.Label className="form-label font-weight-bold">İsim Soyisim:</Form.Label>
-                                            <span className="d-block">{adminInfo.full_name}</span>
-                                            </Form.Group>
-
-                                            <Form.Group className="info-group">
-                                            <Form.Label className="form-label font-weight-bold">Email:</Form.Label>
-                                            <span className="d-block">{adminInfo.mail}</span>
-                                            </Form.Group>
-                                        </ListGroup.Item>
-                                    </>
-                                ) : (
-                                    <ListGroup.Item>Yönetici bilgileri yükleniyor...</ListGroup.Item>
-                                )}
-                            </ListGroup>
-                        </Card.Body>
-                    </Card>
-
                     { /* Yeni Departman Ekleme Formu */ }
-                    <Card className='mb-4 elegant-card shadow-sm rounded-lg border-primary'>
-                        <Card.Header 
+                    <Card className='mb-4 elegant-card shadow-sm rounded-lg border-primary same-height-card'>
+                    <Card.Header 
                             className="text-center text-white profile-header" 
                             style={{ 
                                     fontWeight: "bold",
                                     fontSize: "18px",
-                                    backgroundColor: "#007bff",
-                                    borderBottom: "3px solid #0056b3",
+                                    backgroundColor: "#003166",
+                                    borderBottom: "3px solid #003166",
                                 }}>
                                 Yeni Departman Ekle
                         </Card.Header>
@@ -249,6 +202,94 @@ const SuperAdminPage: React.FC = () => {
                             </Form>
                         </Card.Body>
                     </Card>
+                </Col>
+                { /* Sağ tarafta yeni yönetici ekleme formu */ }
+                <Col md={8} className='admin-management mb-4 mt-md-0'>
+                    <Card className='mb-4 elegant-card shadow-sm rounded-lg border-primary same-height-card'>
+                    <Card.Header 
+                            className="text-center text-white profile-header" 
+                            style={{ 
+                                    fontWeight: "bold",
+                                    fontSize: "18px",
+                                    backgroundColor: "#003166",
+                                    borderBottom: "3px solid #003166",
+                                }}>
+                                Yeni Yönetici Ekle
+                        </Card.Header>
+                        <Card.Body>
+                            <Form className="form-super-admin" onSubmit={handleCreateDepartmentAdmin}>
+                                <Row>
+                                    <Col md={6}>
+                                        <Form.Group className="mb-2" controlId="name">
+                                            <Form.Label className="form-label">İsim Soyisim</Form.Label>
+                                            <Form.Control
+                                                type='text'
+                                                placeholder='İsim Soyisim'
+                                                value={inputUsername}
+                                                onChange={(e) => setInputUsername(e.target.value)}
+                                                required
+                                                className='custom-input shadow-sm'
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={6}>
+                                        <Form.Group className="mb-2" controlId="email">
+                                            <Form.Label className="form-label">Email</Form.Label>
+                                            <Form.Control
+                                                type='email'
+                                                placeholder='Email'
+                                                value={inputEmail}
+                                                onChange={(e) => setInputEmail(e.target.value)}
+                                                required
+                                                className='custom-input shadow-sm'
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md={6}>
+                                        <Form.Group className="mb-2" controlId="password">
+                                            <Form.Label className="form-label">Şifre</Form.Label>
+                                            <Form.Control
+                                                required
+                                                className='custom-input shadow-sm'
+                                                type='password'
+                                                placeholder='Şifre'
+                                                value={inputPassword}
+                                                onChange={(e) => setInputPassword(e.target.value)}
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={6}>
+                                        <Form.Group className="mb-2" controlId="department">
+                                            <Form.Label className="form-label">Departman</Form.Label>
+                                            <Form.Select
+                                                value={inputDepartment}
+                                                onChange={(e) => setInputDepartment(e.target.value)}
+                                                required
+                                                className='custom-input justify-content-center align-items-center shadow-sm'
+                                            >
+                                                <option value="">Departman Seçin</option>
+                                                {departments.map((dept, index) => (
+                                                    <option key={index} value={dept.id}>{dept.department_name}</option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                                <Button 
+                                    type="submit"
+                                    className="submit-btn"
+                                    >
+                                    Ekle
+                                </Button>
+                            </Form>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+            <Row className='super-admin-container mb-4'>
+                <Col md={4} className='admin-info'>
                     {/*Departmanı listele*/}
                     <Card className='elegant-card shadow-sm rounded-lg mb-4'>
                         <Card.Header 
@@ -256,8 +297,8 @@ const SuperAdminPage: React.FC = () => {
                             style={{ 
                                     fontWeight: "bold",
                                     fontSize: "18px",
-                                    backgroundColor: "#007bff",
-                                    borderBottom: "3px solid #0056b3",
+                                    backgroundColor: "#003166",
+                                    borderBottom: "3px solid #003166",
                                 }}>
                                 Departmanlar
                         </Card.Header>
@@ -320,103 +361,19 @@ const SuperAdminPage: React.FC = () => {
                                     disabled={activeDepartmentPage === totalDepartmentPages}
                                 />
                             </Pagination>
-
-
                         </Card.Body>
                     </Card>
                 </Col>
-                { /* Sağ tarafta yeni yönetici ekleme formu */ }
-                <Col md={8} className='admin-management mb-4 mt-md-0'>
-                    <Card className='elegant-card shadow-sm rounded-lg'>
-                            <Card.Header 
-                                className="text-center text-white profile-header" 
-                                style={{ 
-                                        fontWeight: "bold",
-                                        fontSize: "18px",
-                                        backgroundColor: "#007bff",
-                                        borderBottom: "3px solid #0056b3",
-                                    }}>
-                                    Yeni Yönetici Ekle
-                            </Card.Header>
-                            <Card.Body>
-                                <Form className="form-super-admin" onSubmit={handleCreateDepartmentAdmin}>
-                                    <Row>
-                                        <Col md={6}>
-                                            <Form.Group className="mb-2" controlId="name">
-                                                <Form.Label className="form-label">İsim Soyisim</Form.Label>
-                                                <Form.Control
-                                                    type='text'
-                                                    placeholder='İsim Soyisim'
-                                                    value={inputUsername}
-                                                    onChange={(e) => setInputUsername(e.target.value)}
-                                                    required
-                                                    className='custom-input shadow-sm'
-                                                />
-                                            </Form.Group>
-                                        </Col>
-                                        <Col md={6}>
-                                            <Form.Group className="mb-2" controlId="email">
-                                                <Form.Label className="form-label">Email</Form.Label>
-                                                <Form.Control
-                                                    type='email'
-                                                    placeholder='Email'
-                                                    value={inputEmail}
-                                                    onChange={(e) => setInputEmail(e.target.value)}
-                                                    required
-                                                    className='custom-input shadow-sm'
-                                                />
-                                            </Form.Group>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col md={6}>
-                                            <Form.Group className="mb-2" controlId="password">
-                                                <Form.Label className="form-label">Şifre</Form.Label>
-                                                <Form.Control
-                                                    required
-                                                    className='custom-input shadow-sm'
-                                                    type='password'
-                                                    placeholder='Şifre'
-                                                    value={inputPassword}
-                                                    onChange={(e) => setInputPassword(e.target.value)}
-                                                />
-                                            </Form.Group>
-                                        </Col>
-                                        <Col md={6}>
-                                            <Form.Group className="mb-2" controlId="department">
-                                                <Form.Label className="form-label">Departman</Form.Label>
-                                                <Form.Select
-                                                    value={inputDepartment}
-                                                    onChange={(e) => setInputDepartment(e.target.value)}
-                                                    required
-                                                    className='custom-input justify-content-center align-items-center shadow-sm'
-                                                >
-                                                    <option value="">Departman Seçin</option>
-                                                    {departments.map((dept, index) => (
-                                                        <option key={index} value={dept.id}>{dept.department_name}</option>
-                                                    ))}
-                                                </Form.Select>
-                                            </Form.Group>
-                                        </Col>
-                                    </Row>
-                                    <Button 
-                                        type="submit"
-                                        className="submit-btn"
-                                        >
-                                        Ekle
-                                    </Button>
-                                </Form>
-                            </Card.Body>
-                    </Card>
+                <Col>
                     {/*Yöneticileri listele*/}
-                    <Card className='elegant-card shadow-sm rounded-lg mt-4'>
+                    <Card className='elegant-card shadow-sm rounded-lg'>
                         <Card.Header 
                             className="text-center text-white profile-header" 
                             style={{ 
                                     fontWeight: "bold",
                                     fontSize: "18px",
-                                    backgroundColor: "#007bff",
-                                    borderBottom: "3px solid #0056b3",
+                                    backgroundColor: "#003166",
+                                    borderBottom: "3px solid #003166",
                                 }}>
                                 Departman Yöneticileri
                         </Card.Header>

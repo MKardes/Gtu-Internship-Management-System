@@ -16,10 +16,10 @@ class DashboardService {
         .leftJoinAndSelect('internship.mentor', 'mentor', 'mentor.id = internship.mentor_id')
         .leftJoinAndSelect('internship.company', 'company', 'company.id = internship.company_id');
 
+
       if (grade) {
         queryBuilder.andWhere('internship.grade = :grade', { grade: parseInt(grade, 10) });
       }
-
 
       const termBuilder = AppDataSource.getRepository(Term);
       const result = await termBuilder.find();

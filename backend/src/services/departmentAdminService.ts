@@ -20,13 +20,36 @@ export class departmentAdminService {
                 return { status: 500, data: { message: 'Bir hata oluştu' } };
             const users = await userRepository
                 .createQueryBuilder('user')
+                .leftJoinAndSelect('user.department', 'department')
                 .where('department.department_name = :departmentName', { departmentName })
-                .where('user.role = :role', { role: 'User' })
+                .andWhere('user.role = :role', { role: 'User' })
                 .getMany();
             /*HİÇ USER YOKSA 404 MÜ DÖNMELİ ? boş array mi ? */
             return { status: 200, data: users };
         } catch (error) {
             return { status: 500, data: { message: 'Kullanıcılar alınamadı' } }; // Error handling
+        }
+    }
+
+    async getAllUsersIncludingAdmins(DepartmentAdminInfo: any) {
+        try {
+            const userRepository = AppDataSource.getRepository(User);
+            const departmentAdmin = await userRepository.findOne(
+                { where: { id: DepartmentAdminInfo.id }, relations: ['department'] }
+            )
+            if (!departmentAdmin)
+                return { status: 500, data: { message: 'Bir hata oluştu' } };
+            const departmentName = departmentAdmin.department.department_name;
+            if (!departmentName)
+                return { status: 500, data: { message: 'Bir hata oluştu' } };
+            const users = await userRepository
+                .createQueryBuilder('user')
+                .leftJoinAndSelect('user.department', 'department')
+                .where('department.department_name = :departmentName', { departmentName })
+                .getMany();
+            return { status: 200, data: users };
+        } catch (error) {
+            return { status: 500, data: { message: 'Kullanıcılar alınamadı' } };
         }
     }
 

@@ -3,6 +3,7 @@ import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Report.css"; // Importing custom CSS file for styling
+import ErrorAlert from '../../components/ErrorAlert/ErrorAlert';
 
 const Report: React.FC = () => {
     const [selectedDay, setSelectedDay] = useState("");
@@ -16,6 +17,7 @@ const Report: React.FC = () => {
     const [selectedComission_2, setSelectedComission_2] = useState("");
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const currentYear = new Date().getFullYear();
@@ -38,12 +40,25 @@ const Report: React.FC = () => {
         };
     };
 
-    const handleError = (error: any) => {
-        console.error(error);
-        if (error.response && error.response.status === 401) {
-            navigate("/login");
+    const handleError = async (error: any) => {
+        if (error.response) {
+            if (error.response.data instanceof Blob) {
+                // Handle Blob response (in case the server returns binary data)
+                try {
+                    const text = await error.response.data.text();
+                    const json = JSON.parse(text);
+                    setError(json.message || "Bir şeyler yanlış gitti.");
+                } catch (e) {
+                    setError("Bir şeyler yanlış gitti.");
+                }
+            } else {
+                setError(error.response.data.message || "Bir şeyler yanlış gitti.");
+            }
+        } else {
+            setError("Bir şeyler yanlış gitti.");
         }
     };
+    
 
     useEffect(() => {
         fetchUsers();
@@ -52,12 +67,15 @@ const Report: React.FC = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get("/api/department-admin/users", {
+            const response = await axios.get("/api/department-admin/all-users", {
                 headers: {
                     ...getAuthHeader(),
                 },
             });
+            // İsme göre sıralama
+            response.data.sort((a: any, b: any) => a.full_name.localeCompare(b.full_name));
             setUsers(response.data);
+
         } catch (error) {
             handleError(error);
         } finally {
@@ -104,12 +122,19 @@ const Report: React.FC = () => {
                 },
                 responseType: 'blob', // Blob olarak yanıt almak için
             });
-
-            
+            setError(null);
+            setSelectedDay("");
+            setSelectedMonth("");
+            setSelectedYear("");
+            setSelectedComissionVise("");
+            setSelectedComission("");
+            setSelectedComission_2("");
+            setSelectedSemester("");
+            setTerm("");
 
             const contentDisposition = response.headers['content-disposition'];
             const fileName = contentDisposition
-                ? contentDisposition.split('filename=')[1].trim().replace(/"/g, '')
+                ? decodeURIComponent(contentDisposition.split('filename=')[1]).trim().replace(/"/g, '')
                 : 'report.docx'; // Varsayılan dosya adı
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
@@ -129,8 +154,15 @@ const Report: React.FC = () => {
 
     return (
         <Container className="report-container">
-            <h1 className="text-center mb-4">Rapor Oluştur</h1>
+            <Row className="justify-content-center" style={{ position: 'relative' }}>
+                {error && <ErrorAlert 
+                            show={true} 
+                            onClose={() => setError(null)}
+                            message={error}
+                        />}
+            </Row>
             <Form onSubmit={createReport}>
+                <h1 className="text-center mb-4">Rapor Oluştur</h1>
                 <Row>
                     {/* Day Input */}
                     <Col md={4} sm={12} className="mb-3">
