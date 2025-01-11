@@ -1,5 +1,5 @@
 :root {
-    --primary-blue: #1e88e5;
+    --primary-blue: #05101a;
     --primary-green: #4caf50;
     --light-blue: #e3f2fd;
     --white: #ffffff;
@@ -8,7 +8,6 @@
 .admin-info, .add-user {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     height: 100%; /* Aynı yükseklik */
 }
 
@@ -47,7 +46,7 @@
   }
   
   .profile-header {
-    background: linear-gradient(135deg, var(--primary-blue), #64b5f6);
+    background: linear-gradient(135deg, var(--primary-blue), #16212b);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -130,7 +129,7 @@
   }
   
   .form-wrapper .submit-btn {
-    background: linear-gradient(135deg, var(--primary-green), #8bc34a);
+    background: linear-gradient(135deg, var(--primary-blue), #16212b);
     border: none;
     border-radius: 8px;
     font-weight: 600;
@@ -143,7 +142,7 @@
   .submit-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
-    background: linear-gradient(135deg, #4caf50, #8bc34a);
+    background: linear-gradient(135deg, var(--primary-blue), #16212b);
   }
   
   .submit-btn:active {
@@ -170,6 +169,7 @@
     padding: 6px 16px;
     border-radius: 6px;
     transition: all 0.3s ease;
+    width: 100%; 
   }
   
   .delete-btn:hover {
@@ -223,7 +223,7 @@
 }
 
 .form-super-admin .submit-btn {
-  background: linear-gradient(135deg, var(--primary-green), #8bc34a);
+  background: linear-gradient(135deg, var(--primary-blue), #16212b);
   border: none;
   border-radius: 8px;
   font-weight: 600;
@@ -248,3 +248,5 @@
       white-space: nowrap; /* Hücrelerin taşmasını engelle ve kaydırılabilir yap */
   }
 }
+
+

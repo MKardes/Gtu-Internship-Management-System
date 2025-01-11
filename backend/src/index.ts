@@ -12,6 +12,8 @@ import { verifyToken } from './middlewares/verifyToken'; // Token doğrulama mid
 import 'reflect-metadata';
 import { AppDataSource } from '../ormconfig';
 import { API_PORT, API_URL } from './config';
+import { parsePdf } from './drive/pdfparse'
+import cron from 'node-cron';
 
 AppDataSource.initialize()
   .then(() => {
@@ -43,4 +45,15 @@ app.use('/api', reportRoutes);
 
 app.listen(API_PORT, () => {
   console.log(`Server is running at ${API_URL}:${API_PORT}`);
+});
+
+//her 30dk'da bir pdf dosyalarını parse eder
+cron.schedule('34 * * * *', async () => {
+  console.log("Scheduled task started: Parsing PDF files...");
+  try {
+      await parsePdf();
+      console.log("Scheduled task completed: PDF files parsed successfully.");
+  } catch (error) {
+      console.error("Scheduled task error: ", error);
+  }
 });
