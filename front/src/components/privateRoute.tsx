@@ -48,12 +48,18 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element, requiredRole, ...r
   }
 
   // Eğer bir role gerekiyorsa ve role uyumsuzsa, login sayfasına yönlendiriyoruz
-  if (requiredRole && userRole !== requiredRole) {
-    console.log(userRole)
-    if(userRole === "SuperAdmin")
-      return <Navigate to="/super-admin" />;
-    else
-      return <Navigate to="/dashboard" />;
+
+  if (requiredRole) {
+    const allowedRoles = requiredRole.split("||").map(role => role.trim()); // Trim ile boşlukları temizleyelim
+
+    // Eğer kullanıcı rolü bu allowedRoles içerisinde değilse yönlendirme yap
+    if (!allowedRoles.includes(userRole!)) {
+      if (userRole === "SuperAdmin") {
+        return <Navigate to="/super-admin" />;
+      } else {
+        return <Navigate to="/dashboard" />;
+      }
+    }
   }
 
   // Tüm kontroller geçerse, protected route'u render ediyoruz
