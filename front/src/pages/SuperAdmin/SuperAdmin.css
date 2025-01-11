@@ -169,6 +169,7 @@
     padding: 6px 16px;
     border-radius: 6px;
     transition: all 0.3s ease;
+    width: 100%; 
   }
   
   .delete-btn:hover {

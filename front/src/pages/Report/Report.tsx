@@ -67,12 +67,15 @@ const Report: React.FC = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get("/api/department-admin/users", {
+            const response = await axios.get("/api/department-admin/all-users", {
                 headers: {
                     ...getAuthHeader(),
                 },
             });
+            // İsme göre sıralama
+            response.data.sort((a: any, b: any) => a.full_name.localeCompare(b.full_name));
             setUsers(response.data);
+
         } catch (error) {
             handleError(error);
         } finally {
