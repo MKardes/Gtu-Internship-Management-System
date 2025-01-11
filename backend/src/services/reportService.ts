@@ -166,6 +166,11 @@ class reportService {
         }
 
         try {
+            if (!reportData.day || !reportData.month || !reportData.year || !reportData.term || !reportData.comissionVise || !reportData.comissionMember1 || !reportData.comissionMember2)
+                return { status: 400, data: { message: 'Tüm alanlar doldurulmalıdır.' } };
+            // All commionMembers must be different
+            if (reportData.comissionVise === reportData.comissionMember1 || reportData.comissionVise === reportData.comissionMember2 || reportData.comissionMember1 === reportData.comissionMember2)
+                return { status: 400, data: { message: 'Komisyon üyeleri birbirinden farklı olmalıdır.' } };
             const reportCreator = await utilService.fetchUserById(user.id);
             const reportCreationDateForReport = `${reportData.day} ${months[reportData.month]} ${reportData.year}`;
             const internshipsResponse = await this.getInternships(reportCreator, semester, reportData.term);

@@ -1,6 +1,6 @@
 .navbar
 {
-  background-color: #173778;
+    background-color: #173778;
     padding: 10px 20px;
 }
 
@@ -115,4 +115,8 @@
   .overlay {
       height: 100vh; /* Mobilde tam ekran kaplar */
   }
+}
+
+.dropdown-class{
+  
 }
