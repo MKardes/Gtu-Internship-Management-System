@@ -93,7 +93,6 @@ class termService {
                     s.surname as student_surname,
                     s.turkish_id as student_turkish_id,
                     s.email as student_email,
-                    s.grade as student_grade,
                     CASE 
                         WHEN i.begin_date >= TO_DATE($1, 'YYYY-MM-DD') 
                             AND i.end_date <= TO_DATE($2, 'YYYY-MM-DD') THEN 'midterm_fall'
