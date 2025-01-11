@@ -38,6 +38,9 @@ export class Internship {
     @JoinColumn({ name: "student_id" })
     student: Student;
 
+    @Column({ nullable: true }) // şimdilik
+    grade: number;
+
     @Column({nullable: false, default: InternshipStates.Begin})
     state: InternshipStates
     
