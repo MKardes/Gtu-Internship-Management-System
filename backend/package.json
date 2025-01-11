@@ -16,7 +16,9 @@
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.7.5",
+    "@types/node-cron": "^3.0.11",
     "@types/nodemailer": "^6.4.16",
+    "@types/pdf-parse": "^1.1.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   },
@@ -32,8 +34,10 @@
     "jsonwebtoken": "^9.0.2",
     "mammoth": "^1.8.0",
     "mysql2": "^3.11.3",
+    "node-cron": "^3.0.3",
     "nodemailer": "^6.9.16",
     "officegen": "^0.6.5",
+    "pdf-parse": "^1.1.1",
     "pg": "^8.13.0",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.20"
