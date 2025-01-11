@@ -12,7 +12,7 @@ class DashboardService {
         .leftJoinAndSelect('internship.mentor', 'mentor', 'mentor.id = internship.mentor_id')
         .leftJoinAndSelect('internship.company', 'company', 'company.id = internship.company_id');
 
-      if (grade) {
+      if (grade) { // TODO: Will be fixed
         queryBuilder.andWhere('student.grade = :grade', { grade: parseInt(grade, 10) });
       }
 
