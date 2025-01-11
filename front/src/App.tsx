@@ -43,7 +43,7 @@ const App: React.FC = () => {
           <Route 
             path = "/dashboard"
             element = {
-              <PrivateRoute element = {<Dashboard />} requiredRole = "DepartmentAdmin" />
+              <PrivateRoute element = {<Dashboard />} requiredRole = "DepartmentAdmin||User" />
             }
           />
           <Route 
