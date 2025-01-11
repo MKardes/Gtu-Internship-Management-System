@@ -101,7 +101,6 @@ function extractStudent(text: any)
     const ogrenci_no = text.split("Öğrenci No")[1].split("\n")[0].trim();
     const departmanAndGrade = text.split("Bölümü")[1].split("\n")[0].split("Sınıfı")[1].trim();
     const departman = departmanAndGrade.split("-")[0].trim();
-    const grade = departmanAndGrade.split("-")[1].trim();
     const student = {
         tc: tc,
         ad: ad,
@@ -109,7 +108,6 @@ function extractStudent(text: any)
         email: email,
         ogrenci_no: ogrenci_no,
         departman: departman,
-        grade: grade
     }
     return student;
 }
@@ -155,11 +153,15 @@ function extractInternship(text: string)
     const tarihler_arasi = text.split("stajımı")[1].split("tarihleri")[0].trim();
     const begin_date = tarihler_arasi.split("-")[0].trim();
     const end_date = tarihler_arasi.split("-")[1].trim();
+    const departmanAndGrade = text.split("Bölümü")[1].split("\n")[0].split("Sınıfı")[1].trim();
+    const grade = departmanAndGrade.split("-")[1].trim();
+
 
     
     const student = extractStudent(text);
     const company = extractCompany(text);
     const mentor = extractMentor(text);
+
 
 
     const staj = {
@@ -169,6 +171,7 @@ function extractInternship(text: string)
         student: student,
         company: company,
         mentor: mentor,
+        grade: grade
     }
 
     return staj;
@@ -269,6 +272,8 @@ async function addInternship(staj: any, file: any) {
         internship.company = company;
         internship.mentor = mentor;
         internship.type = staj.nthStaj;
+        internship.name = fileRepo;
+        internship.grade = parseInt(staj.grade);
 
         await internshipRepository.save(internship);
 
