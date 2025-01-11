@@ -26,9 +26,6 @@ export class Student {
     @CreateDateColumn()
     created_at: Date;
 
-    @Column({ nullable: true }) // şimdilik
-    grade: number;
-
     @ManyToOne(() => Department)
     @JoinColumn({ name: "department_id" })
     department: Department;
