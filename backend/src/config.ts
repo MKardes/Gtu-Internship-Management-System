@@ -13,3 +13,5 @@ export const MIGRATE_DB = process.env.MIGRATE_DB === 'true';
 
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+
+export const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID;

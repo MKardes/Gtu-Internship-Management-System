@@ -4,7 +4,7 @@ import Logger from './Logger'; // Aynı utils klasöründen import edilir
 interface MyRequest extends Request {
     user: any;
 }
-const logger = new Logger('response.log');
+export const logger = new Logger('response.log');
 
 export const logRequest = (
     res: Response, // request objesini parametre olarak alıyoruz
