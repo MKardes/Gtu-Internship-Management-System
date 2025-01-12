@@ -147,14 +147,10 @@ const filteredInternships = internships.filter(internship => {
 
   const handleStatusChange = async (event: React.ChangeEvent<HTMLInputElement>, id : any) => {
     const selectedValue = event.target.id;
-    
-    console.log("istek geldi" )
-    console.log(event.target)
-    console.log(event.target.id)
+
     let newState: InternshipStates;
     if (selectedValue === "flexRadioDefault1") {
       newState = InternshipStates.Completed;
-      console.log(newState)
     } else if (selectedValue === "flexRadioDefault2") {
       newState = InternshipStates.Failed;
     } else {
@@ -280,33 +276,32 @@ const filteredInternships = internships.filter(internship => {
                     </Button>
                   </td>
                   <td className='internship-table-writtings text-center justify-content-center'>
-                  <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
-                    <input 
-                      className={`form-check-input ${internship.state === InternshipStates.Completed ? 'bg-success' : ''}`}
-                      type="radio" 
-                      checked={internship.state == InternshipStates.Completed} 
-                      name={`internshipState-${internship.id}`} 
-                      id="flexRadioDefault1" 
-                      onChange={((e :any) => { handleStatusChange(e, internship.id);})}
-                      style={{ transform: 'scale(1.2)', marginLeft: '2px', marginRight: '2px'}}/>
-                    <label className="form-check-label" htmlFor="flexRadioDefault1" style={{ color: 'black', fontSize: '14px', marginLeft: '4px', fontWeight: 'normal' }} >
-                      Tamamlandı
-                    </label>
-                  </div>
-                  <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
-                    <input 
-                      className={`form-check-input ${internship.state === InternshipStates.Failed ? 'bg-danger' : ''}`}
-                      type="radio" 
-                      checked={internship.state == InternshipStates.Failed} 
-                      name={`internshipState-${internship.id}`} 
-                      id="flexRadioDefault2" 
-                      onChange={((e :any) => { handleStatusChange(e, internship.id);})} 
-                      style={{ transform: 'scale(1.2)', marginLeft: '2px', marginRight: '2px'}}/>
-                    <label className="form-check-label" htmlFor="flexRadioDefault2" style={{ color: 'black', fontSize: '14px', marginLeft: '4px', fontWeight: 'normal'}} >
-                      Başarısız
-                    </label>
-                  </div>
-
+                    <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
+                      <input 
+                        className={`form-check-input ${internship.state === InternshipStates.Completed ? 'bg-success' : ''}`}
+                        type="radio" 
+                        checked={internship.state == InternshipStates.Completed} 
+                        name={`internshipState-${internship.id}`} 
+                        id="flexRadioDefault1" 
+                        onChange={((e :any) => { handleStatusChange(e, internship.id);})}
+                        style={{ transform: 'scale(1.2)', marginLeft: '2px', marginRight: '2px'}}/>
+                      <label className="form-check-label" style={{ color: 'black', fontSize: '14px', marginLeft: '4px', fontWeight: 'normal' }} >
+                        Tamamlandı
+                      </label>
+                    </div>
+                    <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
+                      <input 
+                        className={`form-check-input ${internship.state === InternshipStates.Failed ? 'bg-danger' : ''}`}
+                        type="radio" 
+                        checked={internship.state == InternshipStates.Failed} 
+                        name={`internshipState-${internship.id}`} 
+                        id="flexRadioDefault2" 
+                        onChange={((e :any) => { handleStatusChange(e, internship.id);})} 
+                        style={{ transform: 'scale(1.2)', marginLeft: '2px', marginRight: '2px'}}/>
+                      <label className="form-check-label" style={{ color: 'black', fontSize: '14px', marginLeft: '4px', fontWeight: 'normal'}} >
+                        Başarısız
+                      </label>
+                    </div>
                   </td>
                   <Modal className="custom-modal" show={showMailModal} onHide={handleMailModalClose} >
                     <Modal.Header closeButton>
