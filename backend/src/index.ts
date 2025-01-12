@@ -49,7 +49,7 @@ app.listen(API_PORT, () => {
 });
 
 //her 30dk'da bir pdf dosyalarını parse eder
-cron.schedule('*/30 * * * * *', async () => {
+cron.schedule('*/30 * * * *', async () => {
   logger.log("[SERVER] - Scheduled task started: Parsing PDF files...");
   try {
     await parsePdf();
