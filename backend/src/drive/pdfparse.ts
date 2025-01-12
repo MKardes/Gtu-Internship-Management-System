@@ -1,10 +1,10 @@
 import { AppDataSource } from '../../ormconfig'
 import { Department } from "../../src/entities/department.entity";
-import { Student } from "../../src/entities/student.entitiy";
-import { Company } from "../../src/entities/company.entitiy";
-import { Mentor } from "../../src/entities/mentor.entitiy";
-import { Internship } from "../../src/entities/internship.entitiy";
-import { File } from "../../src/entities/file.entitiy";
+import { Student } from "../../src/entities/student.entity";
+import { Company } from "../../src/entities/company.entity";
+import { Mentor } from "../../src/entities/mentor.entity";
+import { Internship } from "../../src/entities/internship.entity";
+import { File } from "../../src/entities/file.entity";
 import { google } from 'googleapis';
 import pdf from 'pdf-parse';
 

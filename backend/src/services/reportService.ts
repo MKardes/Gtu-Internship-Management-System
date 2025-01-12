@@ -1,5 +1,5 @@
 import { AppDataSource } from "../../ormconfig";
-import { Internship } from "../entities/internship.entitiy";
+import { Internship } from "../entities/internship.entity";
 import utilService from "./utilService";
 import termService from "./termService";
 import departmentAdminService from "./departmentAdminService";

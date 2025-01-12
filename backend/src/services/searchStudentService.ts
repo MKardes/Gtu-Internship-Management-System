@@ -1,6 +1,6 @@
 import { format } from "path";
 import { AppDataSource } from "../../ormconfig";
-import { Internship } from "../entities/internship.entitiy";
+import { Internship } from "../entities/internship.entity";
 import { Term } from "../entities/term.entity";
 import nodemailer from "nodemailer";
 import { formatDate } from "date-fns";
