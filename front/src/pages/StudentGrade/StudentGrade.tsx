@@ -27,9 +27,6 @@ const StudentGrade: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredGrade, setFilteredGrade] = useState<number | null>(null);
   const [filteredSemester, setFilteredSemester] = useState<Option | null>(null);
-  const [selectedInternship, setSelectedInternship] = useState<any | null>(null);
-  const [isStatusChanged, setIsStatusChanged] = useState(false); // Durum değişikliğini kontrol et
-  const [refetch, setRefetch] = useState<boolean>(false);
   const [activeStudentPage, setActiveStudentPage] = useState(1);
   const [years, setYears] = useState<Option[]>();
   const [showMailModal, setShowMailModal] = useState(false);
@@ -95,7 +92,7 @@ const filteredInternships = internships.filter(internship => {
 
   useEffect(() => {
     fetchInternships();
-  }, [filteredGrade, filteredSemester, refetch]);
+  }, [filteredGrade, filteredSemester]);
 
   const fetchInternships = async () => {
     try {
@@ -163,8 +160,13 @@ const filteredInternships = internships.filter(internship => {
       }, {
         headers: getAuthHeader(),
       });
-      setIsStatusChanged(true);
-      setRefetch(!refetch);
+      //setIsStatusChanged(true);
+      //setRefetch(!refetch);
+      setInternships((prevInternships) => 
+        prevInternships.map((internship) =>
+          internship.id === id ? { ...internship, state: newState } : internship
+        )
+      );
     } catch (e) {
       console.error(e);
     }
@@ -325,6 +327,9 @@ const filteredInternships = internships.filter(internship => {
                           </p>
                           <p>
                             <strong>Öğrenci Numarası:</strong> {selectedInternshipForMail.student.school_id}
+                          </p>
+                          <p>
+                            <strong>Mail:</strong> {selectedInternshipForMail.student.email}
                           </p>
                           <form>
                             <div className="form-group">
