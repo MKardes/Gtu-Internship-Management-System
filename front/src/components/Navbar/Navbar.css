@@ -1,6 +1,6 @@
 .navbar
 {
-  background-color: #173778;
+    background-color: #173778;
     padding: 10px 20px;
 }
 
@@ -87,6 +87,7 @@
   font-size: 1rem;
   padding: 10px; /* Butonun iç boşluğu */
   margin: 5px 0; /* Butonlar arasındaki boşluk */
+  white-space: nowrap;
   text-align: center;
 }
 
@@ -115,4 +116,8 @@
   .overlay {
       height: 100vh; /* Mobilde tam ekran kaplar */
   }
+}
+
+.dropdown-class{
+  
 }

@@ -43,9 +43,9 @@ const App: React.FC = () => {
           <Route 
             path = "/dashboard"
             element = {
-              <PrivateRoute element = {<Dashboard />} />
+              <PrivateRoute element = {<Dashboard />} requiredRole = "DepartmentAdmin||User" />
             }
-            />
+          />
           <Route 
             path="/my-reports"
             element={
