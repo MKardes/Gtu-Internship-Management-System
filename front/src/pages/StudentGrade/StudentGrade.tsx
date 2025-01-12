@@ -3,12 +3,12 @@ import axios from 'axios';
 import { Dropdown, Pagination, Row, ToggleButton, Tooltip, Col } from 'react-bootstrap';
 import { Button, Modal, Table } from 'react-bootstrap';
 import { FaCheckCircle, FaSearch, FaTimesCircle } from 'react-icons/fa';
-
 import './StudentGrade.css';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Option } from '../InternshipSearch/InternshipSearch';
 import { TbMailUp } from "react-icons/tb";
+import ErrorAlert from '../../components/ErrorAlert/ErrorAlert';
 
 enum InternshipStates {
   Completed = "completed",
@@ -36,6 +36,8 @@ const StudentGrade: React.FC = () => {
   const [selectedInternshipForMail, setSelectedInternshipForMail] = useState<any | null>(null);
   const [emailSubject, setEmailSubject] = useState<string>('');
   const [emailBody, setEmailBody] = useState<string>('');
+  const [showError, setShowError] = useState(false);
+  const [error, setError] = useState('');
   const studentPerPage = 10;
   const navigate = useNavigate();
 
@@ -111,9 +113,12 @@ const filteredInternships = internships.filter(internship => {
     }
   };
 
+  const handleCloseError = () => setShowError(false);
+
   const handleMailSend = async () => {
     if (!selectedInternshipForMail || !emailSubject || !emailBody) {
-      alert("Lütfen tüm alanları doldurunuz!");
+      setError('Lütfen tüm alanları doldurunuz!');
+      setShowError(true); // Alert'i görünür hale getir
       return;
     }
   
@@ -128,13 +133,13 @@ const filteredInternships = internships.filter(internship => {
       await axios.post('/api/send-mail', emailData, {
         headers: getAuthHeader(),
       });
-      alert("Mail başarıyla gönderildi!");
       handleMailModalClose();
       setEmailSubject(''); // Input'u sıfırla
       setEmailBody('');
     } catch (error) {
       console.error("Mail gönderme hatası:", error);
-      alert("Mail gönderilirken bir hata oluştu.");
+      setError("Mail gönderilirken bir hata oluştu.")
+      setShowError(true);
     }
   };
   
@@ -192,7 +197,6 @@ const filteredInternships = internships.filter(internship => {
       <div className="student-table-container">
         <h2>Öğrenci Notlandırma</h2>
         <input type="text" placeholder="Öğrenci Ara (İsim/Numara)" value={searchTerm} onChange={handleSearchChange} />
-
         <Row className="mb-3 align-items-center">
           <Col xs="auto" className="dropdown-col">
             {/* Sınıf Dropdown */}
@@ -306,9 +310,18 @@ const filteredInternships = internships.filter(internship => {
                   </td>
                   <Modal className="custom-modal" show={showMailModal} onHide={handleMailModalClose} >
                     <Modal.Header closeButton>
-                      <Modal.Title>Mail Gönder</Modal.Title>
+                      <Modal.Title>
+                        Mail Gönder
+                      </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
+                      {showError && (
+                        <ErrorAlert
+                          show={showError}
+                          onClose={handleCloseError}
+                          message={error}
+                        />
+                      )}
                       {selectedInternshipForMail && (
                         <div>
                           <p>
@@ -350,6 +363,7 @@ const filteredInternships = internships.filter(internship => {
                         Kapat
                       </Button>
                       <Button variant="primary" onClick={handleMailSend}>
+                        
                         Gönder
                       </Button>
 

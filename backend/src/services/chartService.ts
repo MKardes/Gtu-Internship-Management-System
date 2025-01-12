@@ -1,7 +1,7 @@
 import { AppDataSource } from "../../ormconfig";
 import { InternShipChartDto } from "../dto/InternshipChart.dto";
-import { Company } from "../entities/company.entitiy";
-import { Internship } from "../entities/internship.entitiy";
+import { Company } from "../entities/company.entity";
+import { Internship } from "../entities/internship.entity";
 import { getYear, getMonth, format } from "date-fns"
 import termService from "./termService";
 import { Term } from "../entities/term.entity";
@@ -14,14 +14,14 @@ class chartService {
     private internshipRepository = AppDataSource.getRepository(Internship);
     private companyRepository = AppDataSource.getRepository(Company);
 
-    private toInternshipChartDto(entitiy: any): InternShipChartDto {
+    private toInternshipChartDto(entity: any): InternShipChartDto {
         const dto = new InternShipChartDto();
         dto.midterm_fall = { passed: 0, failed: 0 }
         dto.midterm_break = { passed: 0, failed: 0 }
         dto.midterm_spring = { passed: 0, failed: 0 }
         dto.summer = { passed: 0, failed: 0 }
 
-        entitiy.forEach((element: any) => {
+        entity.forEach((element: any) => {
             if (element.period_name){
                 dto[element.period_name as keyof InternShipChartDto].passed = Number(element.completed);
                 dto[element.period_name as keyof InternShipChartDto].failed = Number(element.failed);

@@ -1,9 +1,9 @@
 import { DataSource } from 'typeorm';
-import { Company } from './src/entities/company.entitiy';
-import { File } from './src/entities/file.entitiy';
-import { Internship } from './src/entities/internship.entitiy';
-import { Mentor } from './src/entities/mentor.entitiy';
-import { Student } from './src/entities/student.entitiy';
+import { Company } from './src/entities/company.entity';
+import { File } from './src/entities/file.entity';
+import { Internship } from './src/entities/internship.entity';
+import { Mentor } from './src/entities/mentor.entity';
+import { Student } from './src/entities/student.entity';
 import { User } from './src/entities/user.entity';
 import { Department } from './src/entities/department.entity';
 import { VerifCode } from './src/entities/verifcode.entity';
