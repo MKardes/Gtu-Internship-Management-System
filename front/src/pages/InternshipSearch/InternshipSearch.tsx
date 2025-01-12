@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Card, Dropdown, OverlayTrigger, Pagination, ToggleButton, Tooltip } from 'react-bootstrap';
+import { Card, Dropdown, OverlayTrigger, Pagination, ToggleButton, Tooltip, Badge, Row, Col} from 'react-bootstrap';
 import { Button, Modal, ListGroup, Table } from 'react-bootstrap';
 import { FaCheckCircle, FaSearch, FaTimesCircle } from 'react-icons/fa';
 import './InternshipSearch.css';
@@ -46,6 +46,11 @@ const InternshipSearch: React.FC = () => {
   const [years, setYears] = useState<Option[]>();
   const studentPerPage = 10;
   const navigate = useNavigate();
+
+  const clearFilter = (filterType: string) => {
+    if (filterType === 'grade') setFilteredGrade(null);
+    if (filterType === 'semester') setFilteredSemester(null);
+  };
 
   const getAuthHeader = () => {
     const token = localStorage.getItem("accessToken");
@@ -247,34 +252,60 @@ const filteredInternships = internships.filter(internship => {
         <h2>Staj Arama</h2>
         <input type="text" placeholder="Öğrenci Ara (İsim/Numara)" value={searchTerm} onChange={handleSearchChange} />
 
-        <div className="filters">
-          <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-grade" size="sm">
-              Sınıf
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => setFilteredGrade(null)}>Tümü</Dropdown.Item>
-              <Dropdown.Item onClick={() => setFilteredGrade(1)}>1. Sınıf</Dropdown.Item>
-              <Dropdown.Item onClick={() => setFilteredGrade(2)}>2. Sınıf</Dropdown.Item>
-              <Dropdown.Item onClick={() => setFilteredGrade(3)}>3. Sınıf</Dropdown.Item>
-              <Dropdown.Item onClick={() => setFilteredGrade(4)}>4. Sınıf</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-
-          <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-semester" size="sm">
-              Dönem
-            </Dropdown.Toggle>
-            {(years && years.length > 0) ? (
+        <Row className="mb-3 align-items-center">
+          <Col xs="auto" className="dropdown-col">
+            {/* Sınıf Dropdown */}
+            <Dropdown className="me-2">
+              <Dropdown.Toggle variant="success" id="dropdown-grade" size="sm" className="custom-dropdown">
+                Sınıf
+              </Dropdown.Toggle>
               <Dropdown.Menu>
-                {years.map( (e: any) => (
-                  <Dropdown.Item key={e.value} onClick={() => setFilteredSemester(e)}>{e.name}</Dropdown.Item>
-                ))}
+                <Dropdown.Item onClick={() => setFilteredGrade(null)}>Tümü</Dropdown.Item>
+                <Dropdown.Item onClick={() => setFilteredGrade(1)}>1. Sınıf</Dropdown.Item>
+                <Dropdown.Item onClick={() => setFilteredGrade(2)}>2. Sınıf</Dropdown.Item>
+                <Dropdown.Item onClick={() => setFilteredGrade(3)}>3. Sınıf</Dropdown.Item>
+                <Dropdown.Item onClick={() => setFilteredGrade(4)}>4. Sınıf</Dropdown.Item>
               </Dropdown.Menu>
-            ): null
-            }
-          </Dropdown>
-        </div>
+            </Dropdown>
+          </Col>
+
+          <Col xs="auto" className="dropdown-col">
+            {/* Dönem Dropdown */}
+            <Dropdown className="me-2">
+              <Dropdown.Toggle variant="success" id="dropdown-semester" size="sm" className="custom-dropdown">
+                Dönem
+              </Dropdown.Toggle>
+              {years && years.length > 0 && (
+                <Dropdown.Menu>
+                  {years.map((e: any) => (
+                    <Dropdown.Item key={e.value} onClick={() => setFilteredSemester(e)}>
+                      {e.name}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              )}
+            </Dropdown>
+          </Col>
+
+          <Col xs="auto" className="badge-col">
+            {/* Filtre Badge'leri */}
+            {filteredGrade !== null && (
+              <div className="custom-badge" onClick={() => clearFilter('grade')}>
+                {filteredGrade}. Sınıf
+                <FaTimesCircle className="close-icon" />
+              </div>
+            )}
+          </Col>
+
+          <Col xs="auto" className="badge-col">
+            {filteredSemester !== null && filteredSemester.name !== "Tümü" && (
+              <div className="custom-badge" onClick={() => clearFilter('semester')}>
+                {filteredSemester.name}
+                <FaTimesCircle className="close-icon" />
+              </div>
+            )}
+          </Col>
+        </Row>
         <div className='table-responsive'>
           <Table striped bordered hover size='sm' className='mt-4 fancy-table'>
             <thead>
