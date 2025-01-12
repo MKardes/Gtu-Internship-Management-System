@@ -1,8 +1,8 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique, CreateDateColumn} from "typeorm";
-import { Student } from "./student.entitiy";
-import { Company } from "./company.entitiy";
-import { Mentor } from "./mentor.entitiy";
-import { File } from "./file.entitiy";
+import { Student } from "./student.entity";
+import { Company } from "./company.entity";
+import { Mentor } from "./mentor.entity";
+import { File } from "./file.entity";
 
 enum InternshipStates {
     Begin = "begin",

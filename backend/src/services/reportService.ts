@@ -1,5 +1,5 @@
 import { AppDataSource } from "../../ormconfig";
-import { Internship } from "../entities/internship.entitiy";
+import { Internship } from "../entities/internship.entity";
 import utilService from "./utilService";
 import termService from "./termService";
 import departmentAdminService from "./departmentAdminService";
@@ -420,7 +420,7 @@ class reportService {
             const buffer = await readFile(filePath);
 
             const headers = {
-                'Content-Disposition': `attachment; filename=${fileName}`,
+                "Content-Disposition": `attachment; filename=${encodeURIComponent(fileName)}`,
                 'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
             }
 
