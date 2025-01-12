@@ -25,18 +25,7 @@
     border-radius: 4px;
     box-sizing: border-box; /* Padding’in de kutuya dahil edilmesini sağlar */
   }
-  
-  .filters {
-    display: flex;
-    flex-wrap: wrap; /* Responsive olması için satır kırılmalarına izin ver */
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  
-  .filters .dropdown {
-    display: inline-block;
-  }
-  
+
   /* table {
     width: 100%;
     border-collapse: collapse;
@@ -97,9 +86,6 @@
   }
   
   @media (max-width: 768px) {
-    .filters {
-      flex-direction: column; /* Filtreleri dikey yerleştir */
-    }
   
     table {
       font-size: 12px; /* Yazı boyutunu küçült */
@@ -163,3 +149,65 @@
         white-space: nowrap; /* Hücrelerin taşmasını engelle ve kaydırılabilir yap */
     }
   }
+
+
+  .selected-filters {
+    margin-bottom: 15px;
+  }
+  
+/* Dropdown butonları ve filtreler için daha kompakt stil */
+.compact-row {
+  gap: 5px; /* Aralarındaki mesafe için */
+}
+
+/* Dropdown butonları için stil */
+.custom-dropdown {
+  height: 38px; /* Sabit yükseklik */
+  display: flex;
+  align-items: center;
+  padding: 0 8px; /* Yatay boşluk azaltıldı */
+}
+
+
+/* Filtre badge'leri için stil */
+.custom-badge {
+  background-color: #003366; /* Koyu mavi */
+  color: white;
+  border: 2px solid #001a33;
+  border-radius: 3px;
+  padding: 5px 10px;
+  height: 38px; /* Dropdown butonuyla aynı yükseklik */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.custom-badge .close-icon {
+  margin-left: 10px;
+  font-size: 14px;
+  color: white;
+  cursor: pointer;
+}
+
+.custom-badge:hover {
+  background-color: #001a33;
+}
+
+/* Kolonların düzeni */
+.dropdown-col, .badge-col {
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive ayarlamalar */
+@media (max-width: 768px) {
+  .dropdown-col, .badge-col {
+    flex: 1 1 100%; /* Küçük ekranlarda tam genişlik */
+    margin-bottom: 10px;
+  }
+
+  .custom-badge {
+    width: auto; /* Küçük ekranlarda genişlemeyi önlemek için */
+  }
+}
