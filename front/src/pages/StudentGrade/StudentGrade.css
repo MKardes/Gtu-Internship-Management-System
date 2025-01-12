@@ -26,16 +26,6 @@ input[type="text"] {
   box-sizing: border-box; /* Padding’in de kutuya dahil edilmesini sağlar */
 }
 
-.filters {
-  display: flex;
-  flex-wrap: wrap; /* Responsive olması için satır kırılmalarına izin ver */
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.filters .dropdown {
-  display: inline-block;
-}
 
 /* table {
   width: 100%;
@@ -100,9 +90,6 @@ overflow: hidden;
 }
 
 @media (max-width: 768px) {
-  .filters {
-    flex-direction: column; /* Filtreleri dikey yerleştir */
-  }
 
   table {
     font-size: 12px; /* Yazı boyutunu küçült */
