@@ -7,6 +7,8 @@ import { Internship } from "../../src/entities/internship.entity";
 import { File } from "../../src/entities/file.entity";
 import { google } from 'googleapis';
 import pdf from 'pdf-parse';
+import { DRIVE_FOLDER_ID } from '../config';
+import { logger } from '../utils/ResponseHandler';
 
 
 
@@ -42,33 +44,26 @@ async function streamToBuffer(stream: any): Promise<Buffer> {
     4- add the extracted information to the database
 */
 async function parsePdf() {
-    
-    try {
-        
-        // authorize the jwtClient and get the drive object
-        await jwtClient.authorize();
-        const drive = google.drive({ version: 'v3', auth: jwtClient });
+    // authorize the jwtClient and get the drive object
+    await jwtClient.authorize();
+    const drive = google.drive({ version: 'v3', auth: jwtClient });
 
-        // get all pdf files from the drive
-        const res = await drive.files.list({
-            fields: 'files(id, name, webViewLink, webContentLink)',
-            q: "mimeType='application/pdf'",
-        });
+    const folderId = DRIVE_FOLDER_ID;
 
-        // read the content of each pdf file and extract the student, company, mentor and internship information
-        // then add the extracted information to the database
-        const files = res.data.files;
-        if (files && files.length) {
-            for (const file of files) {
-                const fileContent = (await readFileContent(file.id, drive)).text;
-                const staj = extractInternship(fileContent);
-                await addInternship(staj, file);
-            }
-        } else {
-            console.log('No PDF files found.');
+    const res = await drive.files.list({
+        fields: 'files(id, name, webViewLink, webContentLink)',
+        q: `'${folderId}' in parents and mimeType='application/pdf'`,
+    });
+
+    // read the content of each pdf file and extract the student, company, mentor and internship information
+    // then add the extracted information to the database
+    const files = res.data.files;
+    if (files && files.length) {
+        for (const file of files) {
+            const fileContent = (await readFileContent(file.id, drive)).text;
+            const staj = extractInternship(fileContent);
+            await addInternship(staj, file);
         }
-    } catch (err) {
-        console.error('An error occured: ', err);
     }
 }
 
@@ -179,108 +174,104 @@ function extractInternship(text: string)
 
 
 async function addInternship(staj: any, file: any) {
-    try {
-        // Get repositories
-        const departmentRepository = AppDataSource.getRepository(Department);
-        const studentRepository = AppDataSource.getRepository(Student);
-        const companyRepository = AppDataSource.getRepository(Company);
-        const mentorRepository = AppDataSource.getRepository(Mentor);
-        const internshipRepository = AppDataSource.getRepository(Internship);
-        const fileRepository = AppDataSource.getRepository(File);
+    // Get repositories
+    const departmentRepository = AppDataSource.getRepository(Department);
+    const studentRepository = AppDataSource.getRepository(Student);
+    const companyRepository = AppDataSource.getRepository(Company);
+    const mentorRepository = AppDataSource.getRepository(Mentor);
+    const internshipRepository = AppDataSource.getRepository(Internship);
+    const fileRepository = AppDataSource.getRepository(File);
 
-        let fileRepo = await fileRepository.findOne({ where: { name: file.name } });
-        if (!fileRepo) {
-            fileRepo = new File();
-            fileRepo.name = file.name;
-            fileRepo.drive_link = file.webViewLink;
-            await fileRepository.save(fileRepo);
-            //console.log("Dosya eklendi");
-        } else {
-            //console.log("Dosya zaten var");
-            return ;
-        }
-        
-
-        // Insert or get department
-        let department = await departmentRepository.findOne({
-            where: { department_name: staj.student.departman },
-        });
-        if (!department) {
-            department = departmentRepository.create({ department_name: staj.student.departman });
-            await departmentRepository.save(department);
-            //console.log("Departman eklendi");
-        } else {
-            //console.log("Departman zaten var");
-        }
-
-        // Insert or get student
-        let student = await studentRepository.findOne({
-            where: { school_id: staj.student.ogrenci_no },
-        });
-        if (!student) {
-            student = new Student();
-            student.school_id = staj.student.ogrenci_no;
-            student.turkish_id = staj.student.tc;
-            student.name = staj.student.ad;
-            student.surname = staj.student.soyad;
-            student.email = staj.student.email;
-            student.department = department;
-
-
-            await studentRepository.save(student);
-            //console.log("Öğrenci eklendi");
-        } else {
-            //console.log("Öğrenci zaten var");
-        }
-
-        // Insert or get company
-        let company = await companyRepository.findOne({
-            where: { name: staj.company.ad },
-        });
-        if (!company) {
-            company = new Company();
-            company.name = staj.company.ad;
-            company.address = staj.company.adres;
-            await companyRepository.save(company);
-            //console.log("Şirket eklendi");
-        } else {
-            //console.log("Şirket zaten var");
-        }
-
-        // Insert or get mentor
-        let mentor = await mentorRepository.findOne({
-            where: { name: staj.mentor.ad },
-        });
-        if (!mentor) {
-            mentor = new Mentor();
-            mentor.name = staj.mentor.ad;
-            mentor.surname = staj.mentor.soyad;
-            mentor.phone_number = staj.mentor.numara;
-            mentor.mail = staj.mentor.eposta;
-
-            await mentorRepository.save(mentor);
-            //console.log("Mentor eklendi");
-        } else {
-            //console.log("Mentor zaten var");
-        }
-
-        // Insert internship
-        const internship = new Internship();
-        internship.begin_date = new Date(staj.begin_date.split(".")[2], staj.begin_date.split(".")[1], staj.begin_date.split(".")[0], 0, 0, 0, 0);
-        internship.end_date = new Date(staj.end_date.split(".")[2], staj.end_date.split(".")[1], staj.end_date.split(".")[0], 0, 0, 0, 0);
-        internship.student = student;
-        internship.company = company;
-        internship.mentor = mentor;
-        internship.type = staj.nthStaj;
-        internship.name = fileRepo;
-        internship.grade = parseInt(staj.grade);
-
-        await internshipRepository.save(internship);
-
-        //console.log("Staj başarıyla eklendi");
-    } catch (err) {
-        console.error("Bir hata oluştu: ", err);
+    let fileRepo = await fileRepository.findOne({ where: { name: file.name } });
+    if (!fileRepo) {
+        fileRepo = new File();
+        fileRepo.name = file.name;
+        fileRepo.drive_link = file.webViewLink;
+        await fileRepository.save(fileRepo);
+        //console.log("Dosya eklendi");
+    } else {
+        //console.log("Dosya zaten var");
+        return ;
     }
+    
+
+    // Insert or get department
+    let department = await departmentRepository.findOne({
+        where: { department_name: staj.student.departman },
+    });
+    if (!department) {
+        department = departmentRepository.create({ department_name: staj.student.departman });
+        await departmentRepository.save(department);
+        //console.log("Departman eklendi");
+    } else {
+        //console.log("Departman zaten var");
+    }
+
+    // Insert or get student
+    let student = await studentRepository.findOne({
+        where: { school_id: staj.student.ogrenci_no },
+    });
+    if (!student) {
+        student = new Student();
+        student.school_id = staj.student.ogrenci_no;
+        student.turkish_id = staj.student.tc;
+        student.name = staj.student.ad;
+        student.surname = staj.student.soyad;
+        student.email = staj.student.email;
+        student.department = department;
+
+
+        await studentRepository.save(student);
+        //console.log("Öğrenci eklendi");
+    } else {
+        //console.log("Öğrenci zaten var");
+    }
+
+    // Insert or get company
+    let company = await companyRepository.findOne({
+        where: { name: staj.company.ad },
+    });
+    if (!company) {
+        company = new Company();
+        company.name = staj.company.ad;
+        company.address = staj.company.adres;
+        await companyRepository.save(company);
+        //console.log("Şirket eklendi");
+    } else {
+        //console.log("Şirket zaten var");
+    }
+
+    // Insert or get mentor
+    let mentor = await mentorRepository.findOne({
+        where: { name: staj.mentor.ad },
+    });
+    if (!mentor) {
+        mentor = new Mentor();
+        mentor.name = staj.mentor.ad;
+        mentor.surname = staj.mentor.soyad;
+        mentor.phone_number = staj.mentor.numara;
+        mentor.mail = staj.mentor.eposta;
+
+        await mentorRepository.save(mentor);
+        //console.log("Mentor eklendi");
+    } else {
+        //console.log("Mentor zaten var");
+    }
+
+    // Insert internship
+    const internship = new Internship();
+    internship.begin_date = new Date(staj.begin_date.split(".")[2], staj.begin_date.split(".")[1], staj.begin_date.split(".")[0], 0, 0, 0, 0);
+    internship.end_date = new Date(staj.end_date.split(".")[2], staj.end_date.split(".")[1], staj.end_date.split(".")[0], 0, 0, 0, 0);
+    internship.student = student;
+    internship.company = company;
+    internship.mentor = mentor;
+    internship.type = staj.nthStaj;
+    internship.name = fileRepo;
+    internship.grade = parseInt(staj.grade);
+
+    await internshipRepository.save(internship);
+
+    logger.log(`[SERVER] - ${staj.nthStaj === '1' ? 'First': 'Second'} internship for student '${staj.student?.ad + ' ' + staj.student?.soyad}' is read from drive successfully!`)
 }
 
 

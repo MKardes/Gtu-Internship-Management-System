@@ -14,6 +14,7 @@ import { AppDataSource } from '../ormconfig';
 import { API_PORT, API_URL } from './config';
 import { parsePdf } from './drive/pdfparse'
 import cron from 'node-cron';
+import { logger } from './utils/ResponseHandler';
 
 AppDataSource.initialize()
   .then(() => {
@@ -48,12 +49,12 @@ app.listen(API_PORT, () => {
 });
 
 //her 30dk'da bir pdf dosyalarını parse eder
-cron.schedule('34 * * * *', async () => {
-  console.log("Scheduled task started: Parsing PDF files...");
+cron.schedule('*/30 * * * * *', async () => {
+  logger.log("[SERVER] - Scheduled task started: Parsing PDF files...");
   try {
-      await parsePdf();
-      console.log("Scheduled task completed: PDF files parsed successfully.");
+    await parsePdf();
+    logger.log("[SERVER] - Scheduled task finished successfully.");
   } catch (error) {
-      console.error("Scheduled task error: ", error);
+    logger.log(`[SERVER] - Scheduled task had an error.`);
   }
 });
