@@ -2,6 +2,10 @@ import { format } from "path";
 import { AppDataSource } from "../../ormconfig";
 import { Internship } from "../entities/internship.entity";
 import { Term } from "../entities/term.entity";
+import { Student } from "../entities/student.entity";
+import { Company } from "../entities/company.entity";
+import { Mentor } from "../entities/mentor.entity";
+import { File } from "../entities/file.entity";
 import nodemailer from "nodemailer";
 import { formatDate } from "date-fns";
 import { debug } from "console";
@@ -9,6 +13,19 @@ import departmentAdminService from "./departmentAdminService";
 
 class DashboardService {
   private _departmentAdminService = new departmentAdminService();
+
+  FormatTurk = (date: Date): string => {
+    const months = [
+      "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+      "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+    ];
+  
+    const day = date.getDate(); // Gün
+    const month = months[date.getMonth()]; // Ay (Türkçe)
+    const year = date.getFullYear(); // Yıl
+  
+    return `${day} ${month} ${year}`;
+  };
 
   async getStudents(userID: any, grade?: any, semester?: any): Promise<{ status: number; data: any[] }> {
     try {
@@ -22,6 +39,8 @@ class DashboardService {
         .leftJoinAndSelect('internship.student', 'student', 'student.id = internship.student_id')
         .leftJoinAndSelect('internship.mentor', 'mentor', 'mentor.id = internship.mentor_id')
         .leftJoinAndSelect('internship.company', 'company', 'company.id = internship.company_id')
+        .leftJoinAndSelect('internship.name', 'file', 'file.id = internship.file_id')
+        
         .andWhere('student.department_id = :usrDepartment', {usrDepartment: userDepartment.id});
 
       if (grade) {
@@ -70,9 +89,21 @@ class DashboardService {
         'mentor.surname',
         'mentor.mail',
         'mentor.phone_number',
+        'file.name',
+        'file.drive_link',
       ]).getMany();
 
-      return { status: 200, data: students };
+      const newstudents = students.map((e: any) => {
+        return {
+          ...e,
+          begin_date: this.FormatTurk(e.begin_date),
+          end_date: this.FormatTurk(e.end_date),
+          created_at: this.FormatTurk(e.created_at),
+        }
+      }
+      )
+
+      return { status: 200, data: newstudents };
     } catch (error) {
       console.error('Error fetching students:', error);
       return { status: 500, data: [] };
