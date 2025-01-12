@@ -39,7 +39,7 @@ class DashboardService {
         queryBuilder.andWhere('internship.end_date <= :endDate', { endDate: termDates[7] });
       }
 
-      queryBuilder.orderBy('student.name', 'ASC');
+      queryBuilder.orderBy('internship.created_at', 'DESC');
 
       // Fetch both student and internship columns
       const students = await queryBuilder.select([
