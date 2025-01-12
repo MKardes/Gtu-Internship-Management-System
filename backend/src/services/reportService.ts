@@ -420,7 +420,7 @@ class reportService {
             const buffer = await readFile(filePath);
 
             const headers = {
-                'Content-Disposition': `attachment; filename=${fileName}`,
+                "Content-Disposition": `attachment; filename=${encodeURIComponent(fileName)}`,
                 'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
             }
 
