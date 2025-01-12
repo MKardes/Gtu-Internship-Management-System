@@ -27,7 +27,6 @@ const Home: React.FC = () => {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         
-        console.log(user.token);
         if (user.role === "SuperAdmin") {
           navigate("/super-admin");
         } else {
@@ -56,15 +55,15 @@ const Home: React.FC = () => {
       const { accessToken, refreshToken } = response.data;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-      fetchUserData();
-      console.log(user.token);
-        if (user.role === "SuperAdmin") {
+      
+      await fetchUserData();
+
+        if (user?.role === "SuperAdmin") {
           navigate("/super-admin");
         } else {
           navigate("/dashboard");
         }
     } catch (error) {
-      console.error("Hata:", error);
       setShow(true);
     } finally {
       setLoading(false);
