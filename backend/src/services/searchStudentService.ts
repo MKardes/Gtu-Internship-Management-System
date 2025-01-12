@@ -5,17 +5,24 @@ import { Term } from "../entities/term.entity";
 import nodemailer from "nodemailer";
 import { formatDate } from "date-fns";
 import { debug } from "console";
+import departmentAdminService from "./departmentAdminService";
 
 class DashboardService {
+  private _departmentAdminService = new departmentAdminService();
 
-  async getStudents(grade?: any, semester?: any): Promise<{ status: number; data: any[] }> {
+  async getStudents(userID: any, grade?: any, semester?: any): Promise<{ status: number; data: any[] }> {
     try {
+      if (!userID) throw new Error("Kullanıcı bulunamadı!");
+
+      const userDepartment = await this._departmentAdminService.findUserDepartmentByUserId(userID);
+      if (!userDepartment) throw new Error('Kullanıcının departmanı bulunamadı!');
+
       const queryBuilder = AppDataSource.getRepository(Internship)
         .createQueryBuilder('internship')
         .leftJoinAndSelect('internship.student', 'student', 'student.id = internship.student_id')
         .leftJoinAndSelect('internship.mentor', 'mentor', 'mentor.id = internship.mentor_id')
-        .leftJoinAndSelect('internship.company', 'company', 'company.id = internship.company_id');
-
+        .leftJoinAndSelect('internship.company', 'company', 'company.id = internship.company_id')
+        .andWhere('student.department_id = :usrDepartment', {usrDepartment: userDepartment.id});
 
       if (grade) {
         queryBuilder.andWhere('internship.grade = :grade', { grade: parseInt(grade, 10) });
