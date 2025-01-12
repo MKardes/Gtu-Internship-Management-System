@@ -58,12 +58,10 @@ const MyReports: React.FC = () => {
       responseType: 'blob',
     });
 
-
-
     const contentDisposition = response.headers['content-disposition'];
     const fileName = contentDisposition
-        ? contentDisposition.split('filename=')[1].trim().replace(/"/g, '')
-        : 'report.docx';
+        ? decodeURIComponent(contentDisposition.split('filename=')[1]).trim().replace(/"/g, '')
+        : 'report.docx'; // Varsayılan dosya adı
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
