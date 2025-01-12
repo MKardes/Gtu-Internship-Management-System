@@ -119,7 +119,7 @@ const MyReports: React.FC = () => {
                   <td>{report.term}</td>
                   <td>{report.date}</td>
                   <td>
-                    <div className="d-flex justify-content-start gap-2">
+                    <div className="d-flex justify-content-center gap-2">
                       <button
                         className="btn btn-success btn-sm"
                         onClick={() => handleDownload(report)}
