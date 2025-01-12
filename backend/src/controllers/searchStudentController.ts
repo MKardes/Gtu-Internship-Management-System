@@ -4,8 +4,8 @@ import { logRequest } from '../utils/ResponseHandler';
 
 const service = new dashboardService();
 
-const getStudents = async (req: Request, res: Response) => {
-    const result = await service.getStudents(req.query.grade, req.query.semester);
+const getStudents = async (req: any, res: Response) => {
+    const result = await service.getStudents(req?.user?.id as string, req.query.grade, req.query.semester);
     logRequest(res, result, 'GET /students', req);
 }
 
