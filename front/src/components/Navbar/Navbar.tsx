@@ -215,7 +215,7 @@ const Navigation: React.FC = () => {
     return (  
       <>
           {/* Overlay when toggle is clicked */}
-          {showOverlay && (
+          {showOverlay && user && (
             <div className="overlay" onClick={toggleOverlay}>
                <div className="overlay-content" onClick={e => e.stopPropagation()}>
                     {user.role == 'SuperAdmin' &&
