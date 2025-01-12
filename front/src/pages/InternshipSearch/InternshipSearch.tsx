@@ -184,32 +184,10 @@ const filteredInternships = internships.filter(internship => {
     setShowConfirmModal(false); // Confirmation modal'ını kapat
   };
 
-  const handleNextStep = (internshipId: number) => {
-    setInternships((prevInternships) =>
-      prevInternships.map((internship) => {
-        if (internship.id === internshipId) {
-          // Sıradaki aşamayı belirle
-          const currentState = internship.state;
-          const nextState = getNextState(currentState);
-          return { ...internship, state: nextState }; // Durumu güncelle
-        }
-        return internship;
-      })
-    );
-  };
-  // Bir sonraki durumu döndüren yardımcı fonksiyon
-  const getNextState = (currentState: InternshipStates): InternshipStates => {
-    switch (currentState) {
-      case InternshipStates.Begin:
-        return InternshipStates.ReportReceived;
-      case InternshipStates.ReportReceived:
-        return InternshipStates.ReportApproved;
-      case InternshipStates.ReportApproved:
-        return InternshipStates.Completed;
-      default:
-        return currentState; // Eğer son durumdaysa değişiklik yapma
-    }
-  };
+  const getState = (deg: number) => {
+    if (deg === 4) return "Staj Sonuçlandı";
+    else return Object.values(StateConversions)[deg];
+  }
 
   const isStateDone = (state: InternshipStates, deg: number) => {
     switch (deg) {
@@ -397,13 +375,12 @@ const filteredInternships = internships.filter(internship => {
                       {nums.map((e: any) => (
                         <ListGroup.Item>
                           <div style={{display: "flex"}}>
-                            <strong>Durum {e} - </strong>
-                            <p>{isStateDone(selectedInternship.state, e)}</p>
+                            <strong>{getState(e)}</strong>
                             <div className='flex'>
                               {isStateDone(selectedInternship.state, e) === 'Tamamlandı' ?
                                 <FaCheckCircle className="ms-2 text-success" />
                               : isStateDone(selectedInternship.state, e) === 'Başarısız' ?
-                                <FaTimesCircle className="ms-2 text-red-600" />
+                                <FaTimesCircle className="ms-2 text-danger" />
                               : null
                               }
                             </div>
