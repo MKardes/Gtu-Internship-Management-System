@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Card, Dropdown, OverlayTrigger, Pagination, ToggleButton, Tooltip, Badge, Row, Col} from 'react-bootstrap';
+import { Card, Dropdown, OverlayTrigger, Pagination, ToggleButton, Tooltip, Badge, Row, Col } from 'react-bootstrap';
 import { Button, Modal, ListGroup, Table } from 'react-bootstrap';
 import { FaCheckCircle, FaSearch, FaTimesCircle } from 'react-icons/fa';
 import './InternshipSearch.css';
@@ -55,42 +55,42 @@ const InternshipSearch: React.FC = () => {
   const getAuthHeader = () => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
-        navigate("/login");
+      navigate("/login");
     }
     return {
-        Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     };
-};
+  };
 
-const getYears = async () => {
-  try {
-    const res = await axios.get(`/api/terms`, {
-      headers: getAuthHeader()
-    });
-    const termData = res.data
-                          .sort((a: any, b: any) => b.name.localeCompare(a.name))
-                          .map((e: any, index: number) => ({
-                              name: e.name,
-                              value: index + 1,
-                          }));
+  const getYears = async () => {
+    try {
+      const res = await axios.get(`/api/terms`, {
+        headers: getAuthHeader()
+      });
+      const termData = res.data
+        .sort((a: any, b: any) => b.name.localeCompare(a.name))
+        .map((e: any, index: number) => ({
+          name: e.name,
+          value: index + 1,
+        }));
 
-    termData.unshift({
-      name: "Tümü",
-      value: 0,
-    })
-    setYears(termData);
-  } catch (e) {
-    console.error(e)
+      termData.unshift({
+        name: "Tümü",
+        value: 0,
+      })
+      setYears(termData);
+    } catch (e) {
+      console.error(e)
+    }
   }
-}
 
-const filteredInternships = internships.filter(internship => {
-  return (
-    (internship.student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    internship.student.surname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    internship.student.school_id.includes(searchTerm))
-  );
-});
+  const filteredInternships = internships.filter(internship => {
+    return (
+      (internship.student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        internship.student.surname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        internship.student.school_id.includes(searchTerm))
+    );
+  });
 
   const indexOfLastStudent = activeStudentPage * studentPerPage;
   const indexOfFirstStudent = indexOfLastStudent - studentPerPage;
@@ -113,6 +113,7 @@ const filteredInternships = internships.filter(internship => {
         headers: getAuthHeader(),
       });
       setInternships(response.data);
+      console.log(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -168,11 +169,11 @@ const filteredInternships = internships.filter(internship => {
   const handleConfirmModalOpen = () => {
     setShowConfirmModal(true); // Confirmation modal'ını aç
   };
-  
+
   const handleConfirmModalClose = () => {
     setShowConfirmModal(false); // Confirmation modal'ını kapat
   };
-  
+
   const handleConfirmRemove = async () => {
     await axios.put(`/api/internships/${selectedInternship.id}/state`, {
       is_sgk_uploaded: false
@@ -194,20 +195,20 @@ const filteredInternships = internships.filter(internship => {
       case 1:
         return "Tamamlandı";
       case 2:
-        if (state === InternshipStates.Begin){
+        if (state === InternshipStates.Begin) {
           return '-'
         }
         return "Tamamlandı";
       case 3:
-        if (state === InternshipStates.Begin || state === InternshipStates.ReportReceived){
+        if (state === InternshipStates.Begin || state === InternshipStates.ReportReceived) {
           return '-'
         }
         return "Tamamlandı";
       case 4:
-        if (state === InternshipStates.Failed){
+        if (state === InternshipStates.Failed) {
           return 'Başarısız'
         }
-        if (state === InternshipStates.Completed){
+        if (state === InternshipStates.Completed) {
           return 'Tamamlandı'
         }
         return "-";
@@ -215,7 +216,7 @@ const filteredInternships = internships.filter(internship => {
   }
 
   useEffect(() => {
-    if(selectedInternship){
+    if (selectedInternship) {
       setIsSGKUploaded(selectedInternship.is_sgk_uploaded);
     }
   }, [selectedInternship])
@@ -292,6 +293,8 @@ const filteredInternships = internships.filter(internship => {
                 <th className='internship-table-writtings text-center'>Soyisim</th>
                 <th className='internship-table-writtings text-center'>Öğrenci Numarası</th>
                 <th className='internship-table-writtings text-center'>Şirket</th>
+                <th className='internship-table-writtings text-center'>Başlangıç Tarihi</th>
+                <th className='internship-table-writtings text-center'>Bitiş Tarihi</th>
                 <th className='internship-table-writtings text-center'>Staj Türü</th>
                 <th className='internship-table-writtings text-center'>Detaylar</th>
               </tr>
@@ -303,6 +306,8 @@ const filteredInternships = internships.filter(internship => {
                   <td className='internship-table-writtings text-center'>{internship.student.surname}</td>
                   <td className='internship-table-writtings text-center'>{internship.student.school_id}</td>
                   <td className='internship-table-writtings text-center'>{internship.company.name}</td>
+                  <td className='internship-table-writtings text-center'>{internship.begin_date}</td>
+                  <td className='internship-table-writtings text-center'>{internship.end_date}</td>
                   <td className='internship-table-writtings text-center'>{internship.type}</td>
                   <td className='internship-table-writtings text-center justify-content-center'>
                     <Button className='custom-button' onClick={() => handleShowModal(internship)}>
@@ -327,13 +332,13 @@ const filteredInternships = internships.filter(internship => {
           const page = startPage + index; // Gösterilecek sayfaları dinamik ol
           if (page > totalUserPages) return null; // Toplam sayfa sayısından büyükse
           return (
-              <Pagination.Item
-                  key={page}
-                  active={page === activeStudentPage} // Aktif sayfa ise stil uygula
-                  onClick={() => handleStudentPageChange(page)}
-              >
-                  {page}
-              </Pagination.Item>
+            <Pagination.Item
+              key={page}
+              active={page === activeStudentPage} // Aktif sayfa ise stil uygula
+              onClick={() => handleStudentPageChange(page)}
+            >
+              {page}
+            </Pagination.Item>
           );
         })}
         {/* Sağ Ok */}
@@ -342,124 +347,133 @@ const filteredInternships = internships.filter(internship => {
           disabled={activeStudentPage === totalUserPages}
         />
       </Pagination>
-    {/* Modal component */}
+      {/* Modal component */}
       <Modal size="lg" dialogClassName="modal-90w"
         aria-labelledby="example-custom-modal-styling-title" show={showModal} onHide={handleCloseModal}>
-          <Modal.Header closeButton>
-          </Modal.Header>
-          <Modal.Body>
-            {selectedInternship && (
-              <>
-                {/* Öğrenci Bilgileri Kutusu */}
-                <Card className="mb-4">
+        <Modal.Header closeButton>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedInternship && (
+            <>
+              {/* Öğrenci Bilgileri Kutusu */}
+              <Card className="mb-4">
                 <Card.Header>Öğrenci Bilgileri</Card.Header>
-                    <Card.Body>
-                        <p><strong>İsim:</strong> {selectedInternship.student.name}</p>
-                        <p><strong>Soyisim:</strong> {selectedInternship.student.surname}</p>
-                        <p><strong>Öğrenci Numarası:</strong> {selectedInternship.student.school_id}</p>
-                        <p><strong>Email:</strong> {selectedInternship.student.email}</p>
-                        <p><strong>Staj Türü:</strong> {selectedInternship.type}</p>
-                    </Card.Body>
-                </Card>
+                <Card.Body>
+                  <p><strong>İsim:</strong> {selectedInternship.student.name}</p>
+                  <p><strong>Soyisim:</strong> {selectedInternship.student.surname}</p>
+                  <p><strong>Öğrenci Numarası:</strong> {selectedInternship.student.school_id}</p>
+                  <p><strong>Email:</strong> {selectedInternship.student.email}</p>
+                  <p><strong>Staj Türü:</strong> {selectedInternship.type}</p>
+                  <p><strong>Başlangıç Tarihi:</strong> {selectedInternship.begin_date}</p>
+                  <p><strong>Bitiş Tarihi:</strong> {selectedInternship.end_date}</p>
+                  <p>
+                    <strong>Staj Fişi:</strong>{" "}
+                    <a href={selectedInternship.name.drive_link} target="_blank" rel="noopener noreferrer">
+                      {selectedInternship.name.name}
+                    </a>
+                  </p>
 
-                {/* Staj Aşamaları Kutusu */}
-            <Card className="mb-4">
-              <Card.Body>
-                <Card.Title className="text-center">{selectedInternship.company.name}</Card.Title>
-                <p className="text-center">
-                  <strong>İletişim:</strong> {selectedInternship.mentor.name} {selectedInternship.mentor.surname} (Supervisor), Tel: {selectedInternship.mentor.phone_number}
-                </p>
+                </Card.Body>
+              </Card>
+
+              {/* Staj Aşamaları Kutusu */}
+              <Card className="mb-4">
+                <Card.Body>
+                  <Card.Title className="text-center">{selectedInternship.company.name}</Card.Title>
+                  <p className="text-center">
+                    <strong>İletişim:</strong> {selectedInternship.mentor.name} {selectedInternship.mentor.surname} (Supervisor), Tel: {selectedInternship.mentor.phone_number}
+                  </p>
                   <Card className="mb-4">
-                    <Card.Header style={{ backgroundColor: "#cce5ff"}}>Staj Aşamaları</Card.Header>
+                    <Card.Header style={{ backgroundColor: "#cce5ff" }}>Staj Aşamaları</Card.Header>
                     <ListGroup>
                       {nums.map((e: any) => (
                         <ListGroup.Item>
-                          <div style={{display: "flex"}}>
+                          <div style={{ display: "flex" }}>
                             <strong>{getState(e)}</strong>
                             <div className='flex'>
                               {isStateDone(selectedInternship.state, e) === 'Tamamlandı' ?
                                 <FaCheckCircle className="ms-2 text-success" />
-                              : isStateDone(selectedInternship.state, e) === 'Başarısız' ?
-                                <FaTimesCircle className="ms-2 text-danger" />
-                              : null
+                                : isStateDone(selectedInternship.state, e) === 'Başarısız' ?
+                                  <FaTimesCircle className="ms-2 text-danger" />
+                                  : null
                               }
                             </div>
                           </div>
                         </ListGroup.Item>
-                        ))
+                      ))
                       }
                     </ListGroup>
                   </Card>
-                <p>
-                  <div className="d-flex align-items-center">
-                    <strong className="me-3">SGK Raporu:</strong> {/* Sağ tarafa boşluk ekledik */}
-                    <div style={{ position: "relative", display: "inline-block" }}></div>
-                    <OverlayTrigger
-                      placement="top"
-                      overlay={
-                        <Tooltip id="button-tooltip">
-                          {isSGKUploaded 
-                            ? "SGK yüklendi. Kaldırmak için tıklayın."
-                            : "SGK yüklenmedi. Yüklemek için tıklayın."}
-                        </Tooltip>
-                      }
-                    >
-                      <ToggleButton
-                        className="px-2 items-center justify-center"
-                        id="toggle-check"
-                        type="checkbox"
-                        variant={isSGKUploaded ? "outline-success" : "outline-danger"}
-                        checked={isSGKUploaded}
-                        size='sm'
-                        value="1"
-                        onClick={handleToggle}
+                  <p>
+                    <div className="d-flex align-items-center">
+                      <strong className="me-3">SGK Raporu:</strong> {/* Sağ tarafa boşluk ekledik */}
+                      <div style={{ position: "relative", display: "inline-block" }}></div>
+                      <OverlayTrigger
+                        placement="top"
+                        overlay={
+                          <Tooltip id="button-tooltip">
+                            {isSGKUploaded
+                              ? "SGK yüklendi. Kaldırmak için tıklayın."
+                              : "SGK yüklenmedi. Yüklemek için tıklayın."}
+                          </Tooltip>
+                        }
                       >
-                        {isSGKUploaded ? (
-                          <FaCheckCircle className="me-1" style={{ fontSize: "0.9rem" }} />
-                        ) : (
-                          <FaTimesCircle className="me-1" style={{ fontSize: "0.9rem" }} />
-                        )}
-                        <span style={{ fontSize: "0.85rem" }}>
-                          {isSGKUploaded ? "Yüklendi" : "Yüklenmedi"}
-                        </span>
-                      </ToggleButton>
-                    </OverlayTrigger>
-                  </div>
-                  <div className="d-flex align-items-center mb-3">
-                    <strong className="me-3">Durum:</strong>
-                    <span>{StateConversions[selectedInternship.state as keyof typeof StateConversions]}</span>
-                  </div>
-                </p>
+                        <ToggleButton
+                          className="px-2 items-center justify-center"
+                          id="toggle-check"
+                          type="checkbox"
+                          variant={isSGKUploaded ? "outline-success" : "outline-danger"}
+                          checked={isSGKUploaded}
+                          size='sm'
+                          value="1"
+                          onClick={handleToggle}
+                        >
+                          {isSGKUploaded ? (
+                            <FaCheckCircle className="me-1" style={{ fontSize: "0.9rem" }} />
+                          ) : (
+                            <FaTimesCircle className="me-1" style={{ fontSize: "0.9rem" }} />
+                          )}
+                          <span style={{ fontSize: "0.85rem" }}>
+                            {isSGKUploaded ? "Yüklendi" : "Yüklenmedi"}
+                          </span>
+                        </ToggleButton>
+                      </OverlayTrigger>
+                    </div>
+                    <div className="d-flex align-items-center mb-3">
+                      <strong className="me-3">Durum:</strong>
+                      <span>{StateConversions[selectedInternship.state as keyof typeof StateConversions]}</span>
+                    </div>
+                  </p>
                 </Card.Body>
-                </Card>
-                {/* Burada daha fazla öğrenci bilgisi ekleyebilirsiniz */}
-              </>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Kapat
-            </Button>
-          </Modal.Footer>
-        </Modal>
+              </Card>
+              {/* Burada daha fazla öğrenci bilgisi ekleyebilirsiniz */}
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Kapat
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
-        {/* SGK kaldırma onay modali */}
-        <Modal show={showConfirmModal} onHide={handleConfirmModalClose}>
+      {/* SGK kaldırma onay modali */}
+      <Modal show={showConfirmModal} onHide={handleConfirmModalClose}>
         <Modal.Header closeButton>
-            <Modal.Title>Onay Gerekli</Modal.Title>
+          <Modal.Title>Onay Gerekli</Modal.Title>
         </Modal.Header>
         <Modal.Body>SGK yüklemesini kaldırmak istediğinizden emin misiniz?</Modal.Body>
         <Modal.Footer >
-            <div style={{  display: "flex", gap: "10px" }}>
-                <Button variant="secondary" onClick={handleConfirmModalClose}>
-                Vazgeç
-                </Button>
-                <Button variant="danger" onClick={handleConfirmRemove}>
-                Kaldır
-                </Button>
-            </div>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <Button variant="secondary" onClick={handleConfirmModalClose}>
+              Vazgeç
+            </Button>
+            <Button variant="danger" onClick={handleConfirmRemove}>
+              Kaldır
+            </Button>
+          </div>
         </Modal.Footer>
-        </Modal>
+      </Modal>
     </div>
   );
 };
