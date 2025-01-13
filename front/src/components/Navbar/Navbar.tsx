@@ -110,6 +110,7 @@ const Navigation: React.FC = () => {
 
     const handleShowTermModal = () => {
       setShowTermModal(true);
+      toggleOverlay()
     };
   
     const handleCloseTermModal = () => {
@@ -118,6 +119,7 @@ const Navigation: React.FC = () => {
   
     const handleShowModal = () => {
       setShowModal(true);
+      toggleOverlay()
     };
   
     const handleCloseModal = () => {
