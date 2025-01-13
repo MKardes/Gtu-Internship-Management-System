@@ -259,6 +259,8 @@ const filteredInternships = internships.filter(internship => {
                 <th className='internship-table-writtings text-center'>Öğrenci Numarası</th>
                 <th className='internship-table-writtings text-center'>Şirket</th>
                 <th className='internship-table-writtings text-center'>Staj Türü</th>
+                <th className='internship-table-writtings text-center'>Başlangıç Tarihi</th>
+                <th className='internship-table-writtings text-center'>Bitiş Tarihi</th>
                 <th className='internship-table-writtings text-center'>Mail Gönder</th>
                 <th className='internship-table-writtings text-center'>Staj Durumu</th>
               </tr>
@@ -272,6 +274,8 @@ const filteredInternships = internships.filter(internship => {
                   <td className='internship-table-writtings text-center'>{internship.student.school_id}</td>
                   <td className='internship-table-writtings text-center'>{internship.company.name}</td>
                   <td className='internship-table-writtings text-center'>{internship.type}</td>
+                  <td className='internship-table-writtings text-center'>{internship.begin_date}</td>
+                  <td className='internship-table-writtings text-center'>{internship.end_date}</td>
                   <td className='internship-table-writtings text-center'>
                     <Button className='custom-button' onClick={() => handleMailModalOpen(internship)}>
                       <TbMailUp />
