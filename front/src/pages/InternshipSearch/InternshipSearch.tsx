@@ -368,9 +368,17 @@ const InternshipSearch: React.FC = () => {
                   <p><strong>Bitiş Tarihi:</strong> {selectedInternship.end_date}</p>
                   <p>
                     <strong>Staj Fişi:</strong>{" "}
-                    <a href={selectedInternship.name.drive_link} target="_blank" rel="noopener noreferrer">
-                      {selectedInternship.name.name}
-                    </a>
+                    {selectedInternship.name?.drive_link ? (
+                      <a
+                        href={selectedInternship.name.drive_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {selectedInternship.name.name}
+                      </a>
+                    ) : (
+                      "Staj fişi mevcut değil"
+                    )}
                   </p>
 
                 </Card.Body>
