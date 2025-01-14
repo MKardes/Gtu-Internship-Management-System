@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { format, toZonedTime } from 'date-fns-tz';
 
 class Logger {
     private logFilePath: string;
@@ -15,7 +16,14 @@ class Logger {
     }
 
     private getCurrentTimestamp(): string {
-        return new Date().toISOString();
+        const date = new Date();
+        const timeZone = 'Europe/Istanbul';
+
+        const zonedDate = toZonedTime(date, timeZone);
+
+        const formattedDate = format(zonedDate, 'yyyy-MM-dd HH:mm:ssXXX', { timeZone });
+
+        return formattedDate;
     }
 
     log(message: string): void {
