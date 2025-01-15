@@ -192,6 +192,7 @@ const SuperAdminPage: React.FC = () => {
                                         onChange={(e) => setInputDepartmentName(e.target.value)}
                                         required
                                     />
+                                    <span className='text-danger fs-6'>Departman adının Staj Fişleri'ndeki isimler ile tam olarak eşleştiklerinden emin olunuz !</span>
                                 </Form.Group>
                                 <Button 
                                     type="submit"
