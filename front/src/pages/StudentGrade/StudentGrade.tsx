@@ -292,7 +292,7 @@ const filteredInternships = internships.filter(internship => {
                         onChange={((e :any) => { handleStatusChange(e, internship.id);})}
                         style={{ transform: 'scale(1.2)', marginLeft: '2px', marginRight: '2px'}}/>
                       <label className="form-check-label" style={{ color: 'black', fontSize: '14px', marginLeft: '4px', fontWeight: 'normal' }} >
-                        Tamamlandı
+                        Başarılı
                       </label>
                     </div>
                     <div className="form-check" style={{ display: 'flex', alignItems: 'center' }}>
