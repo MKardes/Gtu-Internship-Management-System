@@ -51,7 +51,6 @@ const SuperAdminPage: React.FC = () => {
     // Create New Department Admin
     const handleCreateDepartmentAdmin = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("admins", admins);
         const newAdmin = {
             full_name: inputUsername,
             mail: inputEmail,
@@ -192,6 +191,7 @@ const SuperAdminPage: React.FC = () => {
                                         onChange={(e) => setInputDepartmentName(e.target.value)}
                                         required
                                     />
+                                    <span className='text-danger fs-6'>Departman adının Staj Fişleri'ndeki isimler ile tam olarak eşleştiklerinden emin olunuz !</span>
                                 </Form.Group>
                                 <Button 
                                     type="submit"

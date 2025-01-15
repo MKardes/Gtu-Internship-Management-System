@@ -119,7 +119,6 @@ const filteredInternships = internships.filter(internship => {
       return;
     }
   
-    console.log(selectedInternshipForMail.student.email)
     const emailData = {
       email: selectedInternshipForMail.student.email, // Öğrenci mail adresi
       subject: emailSubject,

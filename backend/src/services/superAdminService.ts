@@ -53,7 +53,6 @@ export class superAdminService {
     
 
     async createDepartmentAdmin(userData: any) {
-        console.log("userData", userData);
         try {
             if (!utilService.isValidName(userData.full_name))
                 return { status: 400, data: { message: 'Geçersiz isim' } };
