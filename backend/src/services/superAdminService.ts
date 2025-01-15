@@ -4,8 +4,13 @@ import { User } from '../entities/user.entity';
 import { Department } from '../entities/department.entity';
 import utilService from './utilService';
 import bcrypt from 'bcrypt';
+import { Internship } from '../entities/internship.entity';
+import { Student } from '../entities/student.entity';
 
 export class superAdminService {
+    private internshipRepository = AppDataSource.getRepository(Internship);
+    private studentRepository = AppDataSource.getRepository(Student);
+
     findDepartmentById(department_id: string) {
         const departmentRepository = AppDataSource.getRepository(Department);
         return departmentRepository.findOne({ where: { id: department_id } });
@@ -115,6 +120,24 @@ export class superAdminService {
 
             if (users.length > 0)// Departmana ait kullanıcıları sil
                 await userRepository.remove(users);
+
+            const internships = await this.internshipRepository.createQueryBuilder('int')
+                                .leftJoinAndSelect('int.student', "st")
+                                .leftJoinAndSelect('st.department', "dp")
+                                .where('dp.id = :dprtId', { dprtId: department.id })
+                                .getMany();
+
+            if (internships.length > 0){
+                await this.internshipRepository.remove(internships);
+            }
+            
+            const students = await this.studentRepository.createQueryBuilder('st')
+                                .leftJoinAndSelect('st.department', "dp")
+                                .where('dp.id = :dprtId', { dprtId: department.id })
+                                .getMany();
+            if (students.length > 0){
+                await this.studentRepository.remove(students);
+            }
 
             await departmentRepository.remove(department);// Departmanı sil
 
