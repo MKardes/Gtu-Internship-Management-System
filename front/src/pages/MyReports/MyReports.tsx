@@ -50,7 +50,6 @@ const MyReports: React.FC = () => {
     };
 
   const handleDownload = async (report: any) => {
-    console.log(`Rapor indiriliyor: ${report.name}`);
     const response = await axios.get(`/api/report/${report.file}`, {
       headers: {
           ...getAuthHeader(),

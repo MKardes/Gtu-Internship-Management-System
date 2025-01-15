@@ -51,7 +51,6 @@ const SuperAdminPage: React.FC = () => {
     // Create New Department Admin
     const handleCreateDepartmentAdmin = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("admins", admins);
         const newAdmin = {
             full_name: inputUsername,
             mail: inputEmail,
