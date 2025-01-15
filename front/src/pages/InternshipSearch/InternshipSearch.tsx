@@ -113,7 +113,6 @@ const InternshipSearch: React.FC = () => {
         headers: getAuthHeader(),
       });
       setInternships(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -145,20 +144,9 @@ const InternshipSearch: React.FC = () => {
         })
         setRefetch(!refetch);
         setIsSGKUploaded(true);
-      } else if (showConfirmMessage) {
-        // Eğer onay mesajı gösterilmişse ve tekrar tıklanırsa "Yüklenmedi" durumuna geç
-        await axios.put(`/api/internships/${selectedInternship.id}/state`, {
-          is_sgk_uploaded: false
-        }, {
-          headers: getAuthHeader(),
-        })
-        setRefetch(!refetch);
-        setIsSGKUploaded(false);
-        setShowConfirmMessage(false); // Onay mesajını sıfırla
       } else {
         // İlk tıklamada onay mesajını göster
         setShowConfirmMessage(true);
-        setTimeout(() => setShowConfirmMessage(false), 3000); // 3 saniye sonra otomatik gizle
         handleConfirmModalOpen(); // Onay modal'ını aç
       }
     } catch (e) {
@@ -182,7 +170,7 @@ const InternshipSearch: React.FC = () => {
     })
     setRefetch(!refetch);
     setIsSGKUploaded(false); // SGK yüklemesini kaldır
-    setShowConfirmModal(false); // Confirmation modal'ını kapat
+    handleConfirmModalClose();
   };
 
   const getState = (deg: number) => {
