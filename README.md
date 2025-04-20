@@ -125,3 +125,6 @@ npm run start
 #in ./front directory 
 npm run start
 ```
+
+<h3>Author ✍️</h3>
+<h2>MKardes</h2>
