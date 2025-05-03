@@ -1,3 +1,8 @@
+<div align="center">
+	<img  src="front/src/assets/logo.jpg" width="300" />
+	<h1>GTU Internship Management System</h1>
+</div>
+
 <h2>Installation Guide</h2>
 
 Install a Postgresql DB
